@@ -39,10 +39,12 @@ func (a *App) run() {
 
 	a.router.Route("/web", func(r chi.Router) {
 		r.Get("/", web.New(dbService))
+		r.Get("/get_lesson/{offset}", web.NewLessonsHandler(dbService))
 		r.Get("/stylesheet", web.NewStyleSheetHandler())
 
 	})
 	a.router.Handle("/static/css/*", http.StripPrefix("/static/css/", http.FileServer(http.Dir(filepath.Join("internal", "templates", "css")))))
+	a.router.Handle("/static/js/*", http.StripPrefix("/static/js/", http.FileServer(http.Dir(filepath.Join("internal", "templates", "js")))))
 	go func() {
 		log.Println("Starting worker")
 		log.Fatal(http.ListenAndServe(":8282", a.router))

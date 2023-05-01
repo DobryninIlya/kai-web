@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <title>web-kai</title>
     <link rel="stylesheet" href="main.css">
+
+    <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+    <script>
+        vkBridge.send('VKWebAppInit');
+        // vkBridge.send('VKWebAppAllowNotifications');
+        vkBridge.send('VKWebAppAllowMessagesFromGroup');
+    </script>
 </head>
 <body>
 <p class="header_text">Расписание</p>

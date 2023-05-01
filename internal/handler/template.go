@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 )
 
 const path = "templates"
@@ -46,18 +47,34 @@ func getLesson(data []interface{}) string {
 	return result
 }
 
-// func GetMainView(data []interface{}) []byte {
-func GetMainView(lessons []service.Lesson) []byte {
+// func GetMainView(date []interface{}) []byte {
+func GetMainView(lessons []service.Lesson, date time.Time) []byte {
 	tmp, _ := GetMainTemplate()
-	allLessonData := ""
-	for _, lesson := range lessons {
-		prepodName := service.GetShortenName(lesson.PrepodName)
-		allLessonData += getLesson([]interface{}{lesson.DayTime, "11:10", lesson.DisciplName, prepodName})
-
-	}
-	result := fmt.Sprintf(tmp, allLessonData)
+	tmpFilled := fmt.Sprintf(tmp, date.Format("Monday, 02 January"), "%v")
+	result := fmt.Sprintf(tmpFilled, GetLessonList(lessons))
 	return []byte(result)
 }
+
+func GetLessonList(lessons []service.Lesson) string {
+	allLessonData := ""
+	nameStyle := ""
+	for _, lesson := range lessons {
+		//prepodName := service.GetShortenName(lesson.PrepodName)
+		lessonDate := strings.TrimSpace(lesson.DayDate)
+		room := service.GetRoom(lesson.AudNum)
+		//lessonName := service.GetLessonName(lesson.DisciplName)
+		lessonName := strings.TrimSpace(lesson.DisciplName)
+		if len(lesson.DisciplName)/2 >= 30 {
+			nameStyle = "font-size: 18px;"
+		}
+		allLessonData += getLesson([]interface{}{lesson.DayTime, room, nameStyle, lessonName, lessonDate})
+		nameStyle = ""
+
+	}
+	//result := fmt.Sprintf(template, allLessonData)
+	return allLessonData
+}
+
 func readFile(path string) ([]string, error) {
 	_, err := os.Stat(path)
 	if err != nil {
