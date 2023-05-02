@@ -14,13 +14,20 @@ type result struct {
 
 func NewLessonsHandler(service *database.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		offset := chi.URLParam(r, "offset")
-		offsetI, err := strconv.Atoi(offset)
-		if err != nil || offsetI < 0 {
+		uId := chi.URLParam(r, "uId")
+		uIdI, err := strconv.Atoi(uId)
+		params := r.URL.Query()
+		margin := params.Get("margin")
+		marginI, err := strconv.Atoi(margin)
+		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
-		lessons, _ := service.GetCurrentDaySchedule(23546, offsetI)
+		if err != nil || uIdI < 0 {
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+		lessons, _ := service.GetCurrentDaySchedule(uIdI, marginI)
 		data := handler.GetLessonList(lessons)
 		var d result
 		d.data = data

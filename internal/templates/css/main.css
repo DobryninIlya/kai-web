@@ -27,7 +27,7 @@ body {
     position: relative;
     margin-left: auto;
     margin-right: auto;
-    width: 336px;
+    width: 366px;
     height: auto;
     left: 0px;
     top: 0px;
@@ -190,6 +190,20 @@ body {
     max-width: 336px;
     /*margin: 20px;*/
     background: #FFFFFF;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    margin-left: 15px;
+    margin-right: 15px;
+}
+
+.lesson_none {
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 25px;
+    line-height: 25px;
+    letter-spacing: -0.01em;
 }
 
 @font-face {

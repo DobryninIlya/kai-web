@@ -39,7 +39,7 @@ func (a *App) run() {
 
 	a.router.Route("/web", func(r chi.Router) {
 		r.Get("/", web.New(dbService))
-		r.Get("/get_lesson/{offset}", web.NewLessonsHandler(dbService))
+		r.Get("/get_lesson/{uId}", web.NewLessonsHandler(dbService))
 		r.Get("/stylesheet", web.NewStyleSheetHandler())
 
 	})

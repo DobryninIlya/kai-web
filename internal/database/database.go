@@ -10,6 +10,19 @@ type Service struct {
 	conn *pgx.Conn
 }
 
+func (s *Service) GetGroupByUserId(id int) int {
+	rows, err := s.conn.Query("SELECT groupp FROM users WHERE id_vk = $1", id)
+	if err != nil {
+		log.Println("Ошибка запроса группы")
+		log.Println(err)
+	}
+	var result int
+	defer rows.Close()
+	rows.Next()
+	rows.Scan(&result)
+	return result
+}
+
 func (s *Service) GetScheduleByGroup(id int) Schedule {
 	rows, err := s.conn.Query("SELECT shedule FROM saved_timetable WHERE groupp = $1", id)
 	if err != nil {
@@ -24,10 +37,11 @@ func (s *Service) GetScheduleByGroup(id int) Schedule {
 	return scheduleStruct
 }
 
-func (s *Service) GetCurrentDaySchedule(group int, margin int) ([]Lesson, time.Time) {
+func (s *Service) GetCurrentDaySchedule(uId int, margin int) ([]Lesson, time.Time) {
 	day := time.Now().AddDate(0, 0, margin)
 	dayNum := day.Weekday()
-	groupSchedule := s.GetScheduleByGroup(group)
+
+	groupSchedule := s.GetScheduleByGroup(s.GetGroupByUserId(uId))
 	lessons := make([]Lesson, 2)
 	switch {
 	case dayNum == 1:

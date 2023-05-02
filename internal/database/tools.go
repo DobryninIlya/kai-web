@@ -86,3 +86,7 @@ func GetLessonName(name string) string {
 	}
 	return cut(name, 20)
 }
+
+func GetNullDaySchedule() string {
+	return "<div class=\"lesson_list\" id=\"lesson_list\">\n    <div class=\"lesson_none\"> <p>Занятий не найдено</p></div>\n</div>"
+}

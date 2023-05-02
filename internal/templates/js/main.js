@@ -2,16 +2,24 @@ const sliderContainer = document.querySelector('.schedule_block');
 const sliderWrapper = document.querySelector('.schedule-wrapper');
 const prevButton = document.querySelector('.prev-button');
 const nextButton = document.querySelector('.next-button');
+const find = document.querySelector('.schedule_block');
 
 let slideIndex = 0;
 const slideWidth = sliderContainer.offsetWidth;
 var elem;
+
+const params = new URLSearchParams(window.location.search);
+const user_id = params.get('vk_user_id');
+
 // Функция для загрузки новых слайдов
 async function loadSlides() {
-    const response = await fetch(`/web/get_lesson/
-${slideIndex}`);
+    const response = await fetch(`/web/get_lesson/${user_id}?margin=${sliderWrapper.childElementCount}`);
     var html = await response.text();
-    var index = slideIndex+1
+    if (slideIndex >=10) {
+        return
+    }
+    var index = sliderWrapper.childElementCount
+
     html = " <div class=\"schedule\" id=\"" + index + "\">\n" +
         "    <div class=\"schedule_header\">\n" +
         "      <p class=\"lesson_date\">%v</p>\n" +
@@ -19,16 +27,25 @@ ${slideIndex}`);
         "    <div class=\"lesson_list\" id=\"lesson_list\">" + html + "</div>\n" +
         "  </div>"
     sliderWrapper.insertAdjacentHTML('beforeend', html);
+
+    elem = find.querySelector('[id="' + index + '"]');
+    elemAfter = elem.querySelector('.lesson_list')
+    // find.style.height = elemAfter.offsetHeight + "px" // TODO продолжить тут. - не меняется высота слайдера нормально при свайпах
+    var currentSlideHeight = elemAfter.offsetHeight
+    elem.style.height = `${currentSlideHeight + 55}px`;
 }
 
 // Кнопка "Вперед"
 nextButton.addEventListener('click', () => {
     slideIndex++;
     sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth}px)`;
-    var find = document.querySelector('.schedule-wrapper');
-    elem = find.querySelector('[id="' + slideIndex + '"]');
-    find.style.maxHeight = elem.offsetHeight + "px" // TODO продолжить тут. - не меняется высота слайдера нормально при свайпах
-    console.log(elem.offsetHeight + "px " + '[id="' + slideIndex + '"]')
+
+    // elem = find.querySelector('[id="' + slideIndex + '"]');
+    // elemAfter = elem.querySelector('.lesson_list')
+    // find.style.height = elemAfter.offsetHeight + "px" // TODO продолжить тут. - не меняется высота слайдера нормально при свайпах
+    // var currentSlideHeight = elemAfter.offsetHeight
+    // find.style.height = `${currentSlideHeight + 55}px`;
+
     // Если достигнут конец слайдера, загружаем новые слайды
     if (sliderWrapper.offsetWidth - sliderContainer.offsetWidth < sliderContainer.scrollLeft) {
         loadSlides();
@@ -43,6 +60,8 @@ prevButton.addEventListener('click', () => {
     if (slideIndex > 0) {
         slideIndex--;
         sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth}px)`;
+
+
     }
 });
 
@@ -59,17 +78,18 @@ sliderWrapper.addEventListener('touchmove', (event) => {
     sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth - delta}px)`;
 });
 sliderWrapper.addEventListener('touchend', () => {
-    if (slideWidth*sliderWrapper.childElementCount >= sliderContainer.offsetWidth) {
+    if (slideWidth*sliderWrapper.childElementCount >= sliderContainer.offsetWidth && sliderWrapper.childElementCount-1 < 10) {
         loadSlides();
     }
     if (currentX !== null) {
         const delta = startX - currentX;
         const threshold = slideWidth / 3;
-        if (delta > threshold && slideIndex < sliderWrapper.childElementCount - 1) {
+        if (delta > threshold && slideIndex < sliderWrapper.childElementCount - 1 ) {
             slideIndex++;
         } else if (delta < -threshold && slideIndex > 0) {
             slideIndex--;
         }
+
         sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth}px)`;
         startX = null;
         currentX = null;

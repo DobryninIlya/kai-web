@@ -50,7 +50,11 @@ func getLesson(data []interface{}) string {
 // func GetMainView(date []interface{}) []byte {
 func GetMainView(lessons []service.Lesson, date time.Time) []byte {
 	tmp, _ := GetMainTemplate()
+
 	tmpFilled := fmt.Sprintf(tmp, date.Format("Monday, 02 January"), "%v")
+	if len(lessons) == 0 {
+		return []byte(fmt.Sprintf(tmpFilled, service.GetNullDaySchedule()))
+	}
 	result := fmt.Sprintf(tmpFilled, GetLessonList(lessons))
 	return []byte(result)
 }
