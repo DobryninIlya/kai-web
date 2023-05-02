@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>web-kai</title>
   <link rel="stylesheet" href="/static/css/main.css">
-<!--  <script src="/static/js/slider_new.js"></script>-->
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script>
     vkBridge.send('VKWebAppInit');
@@ -14,17 +13,26 @@
 <body>
 <p class="header_text">Расписание</p>
 <div class="schedule_block">
-  <div class="schedule_header">
-    <p class="lesson_date">%v</p>
-  </div>
-  <div class="lesson_list" id="lesson_list">
-  %v
-  </div>
-</div>
-<button class="prev-btn">Назад</button>
-<button class="next-btn">Вперед</button>
+  <div class="schedule-wrapper">
 
-<script src="/static/js/slider_new.js"></script>
+  <div class="schedule" id="0">
+    <div class="schedule_header">
+      <p class="lesson_date">%v</p>
+    </div>
+    <div class="lesson_list" id="lesson_list">
+      %v
+    </div>
+  </div>
+    <br>
+    <br>
+  </div>
+
+</div>
+<button class="prev-button">Назад</button>
+<button class="next-button">Вперед</button>
+
+<!--<script src="/static/js/slider_new.js"></script>-->
+<script src="/static/js/main.js"></script>
 
 </body>
 </html>

@@ -32,8 +32,11 @@ body {
     left: 0px;
     top: 0px;
     alignment: center;
-    background: #FFFFFF;
+    background: #222534;
     border-radius: 10px;
+
+    overflow: hidden; /*swipe*/
+    /*display: flex;*/
 }
 .schedule_header {
     position: relative;
@@ -45,6 +48,8 @@ body {
     border-top-right-radius: 10px;
     display: block;
     background: #01C782;
+
+    overflow: hidden;
 }
 .lesson_date {
     position: absolute;
@@ -169,6 +174,22 @@ body {
     overflow: hidden;
 
     color: #838383;
+}
+
+.schedule-wrapper {
+    display: flex;
+    flex-direction: row;
+    /*overflow-x: auto;*/
+    scroll-behavior: smooth;
+    background: #222534;
+}
+
+.schedule {
+    flex-shrink: 0;
+    width: 100%;
+    max-width: 336px;
+    /*margin: 20px;*/
+    background: #FFFFFF;
 }
 
 @font-face {
