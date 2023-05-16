@@ -10,16 +10,21 @@ import (
 func New(service *database.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := r.URL.Query()
-		uId := params.Get("vk_user_id")
-		userId, err := strconv.Atoi(uId)
+		idStr := params.Get("vk_user_id")
+		id, err := strconv.Atoi(idStr)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
+		}
+		if service.IsRegistredUser(id) {
+			data := handler.GetMainView()
+			w.WriteHeader(http.StatusOK)
+			w.Write(data)
+			return
+		} else {
+			data := handler.GetRegistrationView()
+			w.WriteHeader(http.StatusOK)
+			w.Write(data)
 			return
 		}
-		lessons, date := service.GetCurrentDaySchedule(userId, 0)
-		//age := params.Get("age")
-		data := handler.GetMainView(lessons, date)
-		w.WriteHeader(http.StatusOK)
-		w.Write(data)
 	}
 }

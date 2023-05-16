@@ -32,6 +32,19 @@ type Schedule struct {
 	Day4 []Lesson `json:"4,omitempty"`
 }
 
+type ExamStruct struct {
+	PrepodName     string `json:"prepodName"`
+	ExamDate       string `json:"examDate"`
+	DisciplNum     string `json:"disciplNum"`
+	PrepodNameEnc  string `json:"prepodNameEnc"`
+	PrepodLogin    string `json:"prepodLogin"`
+	AudNum         string `json:"audNum"`
+	BuildNum       string `json:"buildNum"`
+	DisciplNameEnc string `json:"disciplNameEnc"`
+	DisciplName    string `json:"disciplName"`
+	ExamTime       string `json:"examTime"`
+}
+
 func GetScheduleStruct(body []byte) Schedule {
 	var shed Schedule
 	err := json.Unmarshal(body, &shed)
@@ -39,4 +52,14 @@ func GetScheduleStruct(body []byte) Schedule {
 		log.Println(err)
 	}
 	return shed
+}
+
+func GetExamStruct(body []byte) ([]ExamStruct, error) {
+	var shed []ExamStruct
+	err := json.Unmarshal(body, &shed)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+	return shed, nil
 }

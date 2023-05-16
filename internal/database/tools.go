@@ -90,3 +90,12 @@ func GetLessonName(name string) string {
 func GetNullDaySchedule() string {
 	return "<div class=\"lesson_list\" id=\"lesson_list\">\n    <div class=\"lesson_none\"> <p>Занятий не найдено</p></div>\n</div>"
 }
+
+func CheckInSlice(slice []string, name string) bool {
+	for _, elem := range slice {
+		if elem == name {
+			return true
+		}
+	}
+	return false
+}

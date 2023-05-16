@@ -1,0 +1,184 @@
+.exam_header {
+    position: absolute;
+    top: 50%;
+    margin-top: -0.625em;
+    /*margin-left: auto;*/
+    /*margin-right: auto;*/
+    text-align: center;
+    /*alignment: center;*/
+    width: 100%;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 22px;
+    /*letter-spacing: -0.065em;*/
+    color: #FFFFFF;
+}
+.schedule_exam_block {
+    align-items: center;
+}
+.exam {
+    /*flex-shrink: 0;*/
+    width: 100%;
+    max-width: 336px;
+    /* margin: 20px; */
+    background: #FFFFFF;
+    /* border-top-left-radius: 10px; */
+    /* border-top-right-radius: 10px; */
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 15px;
+    /*display: block;*/
+}
+
+.exam_item {
+    max-height: 102px;
+    min-height: 88px;
+    height: auto;
+    width: 100%;
+    background-color: white;
+    display: flex;
+
+}
+
+.exam::after {
+    content: "";
+    position: relative;
+    bottom: 1px; /* Сдвигаем на 5px вниз */
+    left: 5%;
+    width: 90%;
+    height: 1px; /* Задаем толщину нижней границы */
+    background-color: black; /* Задаем цвет границы */
+}
+
+.exam_name {
+    max-width: 231px;
+    width: 100%;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    /*position: relative;*/
+    top: 26px;
+    left: 8px;
+    margin: 0px;
+    margin-bottom: 2px;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 20px;
+    letter-spacing: -0.065em;
+
+    color: #000000;
+}
+
+.exam_teacher {
+    /*position: relative;*/
+    width: 242px;
+    height: 18px;
+
+    left: 8px;
+    /*bottom: -42px;*/
+    margin: 0px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 18px;
+    letter-spacing: -0.065em;
+
+    color: #838383;
+}
+
+/*.exam_left_content {*/
+/*    display: flex;*/
+/*    flex-direction: column;*/
+/*}*/
+.name_teacher {
+    max-height: 67px;
+    height: auto;
+    width: 242px;
+    display: flex;
+    bottom: 4px;
+    left: 23px;
+    flex-direction: column;
+}
+
+.exam_top_line {
+    top: 0px;
+    display: flex;
+}
+.exam_left_content {
+    width: auto;
+    height: auto;
+    flex-basis: 261px;
+    flex-shrink: 0;
+    margin-left: 5px;
+    margin-bottom: 2px;
+}
+.exam_date {
+    margin: 5px;
+    left: 10px;
+
+    left: 10.51%;
+    right: 71.28%;
+    top: 21.68%;
+    bottom: 76.18%;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 18px;
+    letter-spacing: -0.065em;
+    background-color: #4542DE;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: #FFFFFF;
+}
+.exam_right_content {
+    right: 0px;
+    height: auto;
+    width: 100%;
+    justify-content: center;
+    display: flex;
+    flex: 1;
+}
+
+.exam_place {
+    display: inline-block;
+    margin: auto;
+}
+.exam_auditory_building {
+    margin: 0px;
+    left: 76.15%;
+    right: 10.77%;
+    top: 24.17%;
+    bottom: 72.39%;
+
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 29px;
+    /* identical to box height */
+
+    letter-spacing: -0.065em;
+
+    color: #000000;
+
+    justify-content: center;
+    display: flex;
+}
+.exam_auditory_building#exam_auditory {
+    border-bottom: 1px solid #000000;
+}
+
+.exam_list {
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 336px;
+}

@@ -8,10 +8,6 @@ import (
 	"strconv"
 )
 
-type result struct {
-	data string `json:"data"`
-}
-
 func NewLessonsHandler(service *database.Service) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		uId := chi.URLParam(r, "uId")
@@ -29,8 +25,6 @@ func NewLessonsHandler(service *database.Service) func(w http.ResponseWriter, r 
 		}
 		lessons, _ := service.GetCurrentDaySchedule(uIdI, marginI)
 		data := handler.GetLessonList(lessons)
-		var d result
-		d.data = data
 		//value, _ := json.Marshal(&d)
 		//w.Header().Set("Content-Type", "application/json")
 		//w.Header().Set("Access-Control-Allow-Origin", "*")
