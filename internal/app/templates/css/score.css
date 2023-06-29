@@ -1,0 +1,96 @@
+.score_block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 336px;
+
+    border-radius: 20px 20px 20px 20px;
+    margin-bottom: 100px;
+    padding-bottom: 20px;
+}
+
+.score_header {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 56px;
+    background: #412FB3;
+    border-radius:  20px 20px 0px 0px;
+
+
+}
+
+.score_header_text {
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 100.52%;
+    /* or 20px */
+
+    letter-spacing: -0.065em;
+
+    color: #FFFFFF;
+}
+
+#left {
+    /*margin-left: 37px;*/
+    flex-basis: 70%;
+
+}
+
+#right {
+    flex-basis: 30%;
+    /*margin-left: 256px;*/
+}
+
+.score_header_text {
+    display: block;
+
+}
+
+.score_elem {
+    position: relative;
+    display: flex;
+    width: auto;
+    height: auto;
+    left: 0px;
+    top: 0px;
+    background: white;
+    /* border-bottom: 2px solid #000000; */
+    border-bottom: none;
+}
+
+.score_name {
+    flex-basis: 70%;
+    text-align: center;
+}
+
+.score_value {
+    flex-basis: 30%;
+    text-align: center;
+}
+
+.score_main {
+    display: block;
+    width: auto;
+    border-radius: 15px;
+}
+
+.score_elem {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 100.52%;
+    /* or 15px */
+
+    display: flex;
+    align-items: center;
+    letter-spacing: -0.065em;
+
+    color: #000000;
+}
+

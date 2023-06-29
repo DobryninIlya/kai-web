@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>web-kai</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/score.css">
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <script>
+    vkBridge.send('VKWebAppInit');
+    vkBridge.send('VKWebAppAllowMessagesFromGroup');
+
+  </script>
+<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/bodymovin/5.7.4/lottie.min.js"></script>-->
+  <script type="module" src="/static/js/lottie.js"></script>
+  <script type="module" src="/static/js/main.js"></script>
+  <script type="module" src="/static/js/loader.js"></script>
+<!--  <script async src="/static/js/loader.js"></script>-->
+  <script async src="/static/js/menu.js"></script>
+  <script type="module" src="/static/js/exam.js"></script>
+  <script type="module" src="/static/js/score.js"></script>
+  <script type="module" src="/static/js/teacher.js"></script>
+
+
+
+
+</head>
+<body>
+<div class="main_block">
+  <div class="preloader">
+    <div class="loader" id="loader"></div>
+  </div>
+  <div class="schedule_main_block">
+  <div class="schedule_block">
+  <p class="header_text">Расписание</p>
+  <div class="schedule-wrapper">
+  </div>
+</div>
+</div>
+  <div class="schedule_exam_block"></div>
+  <div class="score_block"></div>
+  <div class="teacher_block"></div>
+  <div class="auth_error_block" style="display: none;">
+    <div class="auth_error_header">
+      Ошибка
+    </div>
+    <div class="auth_error_body">
+      <p class="auth_error_text">
+        Чтобы просматривать эту страницу, необходимо войти по номеру зачетной книжки или студенческому билету
+      </p>
+      <button class="enter_button">Войти</button>
+    </div>
+  </div>
+</div>
+<div class="menu_bar">
+  <div class="menu_item" id="menu_exam"><img class="menu_icon" src="static/img/menu_exam.svg"></div>
+  <div class="menu_item" id="menu_score"><img class="menu_icon" src="static/img/menu_score.svg"></div>
+  <div class="menu_item" id="menu_schedule"><img class="menu_icon" src="static/img/menu_schedule.svg"></div>
+  <div class="menu_item" id="menu_teachers"><img class="menu_icon" src="static/img/menu_teacher.svg"></div>
+  <div class="menu_item" id="menu_services"><img class="menu_icon" src="static/img/menu_service.svg"></div>
+</div>
+<input type="text" size="40" value="2" readonly="true" style="display: none;" id="action_id">
+</div>
+<!--<script src="/static/js/slider_new.js"></script>-->
+
+
+</body>
+</html>

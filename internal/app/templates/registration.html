@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>web-kai</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/registration.css">
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <script>
+    vkBridge.send('VKWebAppInit');
+
+  </script>
+  <script async src="/static/js/main.js"></script>
+  <script async src="/static/js/registration.js"></script>
+
+</head>
+<body>
+<div class="registration_block">
+  <p class="header_text">Регистрация</p>
+  <div class="line"></div>
+  <div class="input_box" id="info_text">
+    <p class="info_text">Выберите способ входа.</p>
+    <p class="info_text">Вы можете зарегистрироваться как новый пользователь только лишь по номеру группы. </p>
+    <p class="info_text">Или же вы можете войти по номеру студ билета и иметь доступ ко всем функциям, включая БРС</p>
+    <button class="registration_button">Регистрация</button>
+    <button class="auth_button">Войти по студ билету</button>
+  </div>
+  <div class="input_box" id="main">
+
+    <select class="role_input" id="role_select">
+      <option value="value1">Студент</option>
+      <option value="value2">Родитель</option>
+      <option value="value3">Преподаватель</option>
+    </select>
+    <div id="result">
+      <input type="number" class="input_group" id="input_group" oninput="if(this.value.length>6) this.value=this.value.slice(0,6)" placeholder="Введите группу">
+    </div>
+    <p class="error_form"></p>
+    <button class="submit_button">Подтвердить</button>
+  </div>
+  <!--  <input type="text" class="input_role">-->
+
+</div>
+
+</div>
+<!--<script src="/static/js/slider_new.js"></script>-->
+
+
+</body>
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>web-kai</title>
+  <link rel="stylesheet" href="/static/css/main.css">
+  <link rel="stylesheet" href="/static/css/registrationIDcard.css">
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  <script>
+    vkBridge.send('VKWebAppInit');
+
+  </script>
+  <script async src="/static/js/main.js"></script>
+<!--  <script async src="/static/js/verification.js"></script>-->
+
+</head>
+<body>
+<div class="registration_block">
+  <p class="header_text">Авторизация по студ. билету</p>
+  <div class="line"></div>
+  <div class="auth_conatiner">
+    <div class="auth_header">
+      <p class="auth_header_text">Вход</p>
+    </div>
+    <div class="subitem">
+      <p class="subitem_text">Подразделение</p>
+      <select class="fac_input" id="fac_select">
+      </select>
+    </div>
+    <div class="subitem">
+      <p class="subitem_text">Курс</p>
+      <select class="kurs_input" id="kurs_select">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </div>
+    <div class="subitem">
+      <p class="subitem_text">Группа</p>
+      <select class="fac_input" id="group_select">
+      </select>
+    </div>
+    <div class="subitem">
+      <p class="subitem_text">ФИО</p>
+      <select class="fac_input" id="name_select">
+        <!--        <option>ИКТЗИ</option>-->
+      </select>
+    </div>
+    <div class="subitem">
+      <p class="subitem_text">Номер зачетки</p>
+      <input type="number" class="input_group" id="input_group" oninput="if(this.value.length>6) this.value=this.value.slice(0,6)" placeholder="Введите номер">
+
+    </div>
+    <p class="error_form"></p>
+    <button class="submit_button">Подтвердить</button>
+    <!--        <option>ИКТЗИ</option>-->
+
+  </div>
+
+  <!--  <input type="text" class="input_role">-->
+
+</div>
+
+</div>
+<!--<script src="/static/js/slider_new.js"></script>-->
+
+
+</body>
+</html>

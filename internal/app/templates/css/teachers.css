@@ -1,0 +1,86 @@
+.teachers_main {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    max-width: 336px;
+
+    border-radius: 20px 20px 20px 20px;
+    margin-bottom: 100px;
+    padding-bottom: 20px;
+}
+
+.teachers_header_text {
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 20px;
+    line-height: 100.52%;
+    /* or 20px */
+
+    letter-spacing: -0.065em;
+
+    color: #FFFFFF;
+}
+.teachers_header {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height: 56px;
+    background: #412FB3;
+    border-radius:  20px 20px 0px 0px;
+
+
+}
+
+.teacher_elem {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 100.52%;
+    display: block;
+    align-items: center;
+    letter-spacing: -0.065em;
+    color: #000000;
+
+    position: relative;
+    width: auto;
+    height: auto;
+    left: 0px;
+    top: 0px;
+    background: white;
+    /* border-bottom: 2px solid #000000; */
+    border-bottom: none;
+
+    padding: 10px;
+
+
+}
+.teacher_name {
+    /*height: auto;*/
+    margin: 0px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 16px;
+    line-height: 100.52%;
+    /* or 15px */
+
+    letter-spacing: -0.065em;
+
+    color: #000000;
+}
+
+.teacher_lesson {
+    margin: 0px;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    letter-spacing: -0.065em;
+
+    color: #838383;
+}

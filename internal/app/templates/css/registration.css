@@ -1,0 +1,142 @@
+.line {
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+    height: 0px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+
+    border: 1px solid #CA9632;
+}
+input {
+    position: relative;
+    display: block;
+    /*width: 232px;*/
+    max-width: 232px;
+    width: 100%;
+    height: 39px;
+    /*left: 91px;*/
+    /*top: 315px;*/
+    padding: 0px;
+    border: 0px;
+    background: #FFFFFF;
+    border-radius: 50px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.role_input {
+    position: relative;
+    height: 39px;
+    width: 100%;
+    background: #FFFFFF;
+    border-radius: 50px;
+    margin-bottom: 10px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.input_box {
+    max-width: 232px;
+
+    /*width: 100%;*/
+    display: flex;
+    flex-direction: column;
+    margin-right: auto;
+    margin-left: auto;
+
+
+}
+
+.submit_button {
+    position: relative;
+    width: 100%;
+    height: 39px;
+    max-height: 39px;
+    margin-right: auto;
+    margin-left: auto;
+    background: #2C73C6;
+    border-radius: 50px;
+    margin-top: 10px;
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    color: #FFFFFF;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0px;
+}
+
+.error_form {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 15px;
+    color: red;
+    margin: 7px;
+}
+
+.info_text {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 15px;
+    line-height: 15px;
+    color: white;
+    margin: 7px;
+}
+
+.registration_button {
+    position: relative;
+    width: 100%;
+    height: 39px;
+    max-height: 39px;
+    margin-right: auto;
+    margin-left: auto;
+    background: #2C73C6;
+    border-radius: 50px;
+    margin-top: 10px;
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    color: #FFFFFF;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0px;
+}
+
+.auth_button {
+    position: relative;
+    width: 100%;
+    height: 39px;
+    max-height: 39px;
+    margin-right: auto;
+    margin-left: auto;
+    background: #01C782;
+    border-radius: 50px;
+    margin-top: 10px;
+    text-align: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 22px;
+    color: #FFFFFF;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 0px;
+}
