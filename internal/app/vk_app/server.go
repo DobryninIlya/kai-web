@@ -23,10 +23,10 @@ type App struct {
 	logger *logrus.Logger
 }
 
-func newApp(store sqlstore.StoreInterface) *App {
+func newApp(store sqlstore.StoreInterface, bindAddr string) *App {
 	router := chi.NewRouter()
 	server := &http.Server{
-		Addr:    ":8282",
+		Addr:    bindAddr,
 		Handler: router,
 	}
 	a := &App{
