@@ -15,9 +15,10 @@ window.addEventListener('load', () => {
     getFac();
 });
 
+
 function getFac() {
     selectKurs.selectedIndex = -1;
-    fetch('/web/attestation/get_fac')
+    fetch(`/web/attestation/get_fac${window.location.search}`)
         .then(response => response.json())
         .then(data => {
             const options = data.result;
@@ -32,7 +33,7 @@ function getFac() {
 }
 function getGroups(p_fac, p_kurs) {
     selectGroup.innerHTML = ''; // очищаем все значения option
-    fetch(`/web/attestation/get_groups?p_fac=${p_fac}&p_kurs=${p_kurs}`)
+    fetch(`/web/attestation/get_groups${window.location.search}&p_fac=${p_fac}&p_kurs=${p_kurs}`)
         .then(response => response.json())
         .then(data => {
             const options = data.result;
@@ -48,7 +49,7 @@ function getGroups(p_fac, p_kurs) {
 
 function getPerson(p_fac, p_kurs, p_group) {
     selectName.innerHTML = ''; // очищаем все значения option
-    fetch(`/web/attestation/get_person?p_fac=${p_fac}&p_kurs=${p_kurs}&p_group=${p_group}`, { method: 'GET' })
+    fetch(`/web/attestation/get_person${window.location.search}&p_fac=${p_fac}&p_kurs=${p_kurs}&p_group=${p_group}`, { method: 'GET' })
         .then(response => response.json())
         .then(data => {
             const options = data.result;

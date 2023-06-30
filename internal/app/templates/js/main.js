@@ -189,6 +189,7 @@ enterButton.addEventListener('click', function (event) {
             script.src = '/static/js/verification.js';
             script.onload = () => {
                 getFac() // вызываем функцию getFac() после загрузки скрипта
+                authErrorBlock.style.display = "none"
             };
             scoreBlock.appendChild(script);
             getFac();

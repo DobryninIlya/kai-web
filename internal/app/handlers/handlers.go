@@ -14,7 +14,7 @@ var (
 )
 
 func errorHandler(w http.ResponseWriter, r *http.Request, code int, err error) {
-	respond(w, r, code, map[string]string{"errorHandler": err.Error()})
+	respond(w, r, code, map[string]string{"error": err.Error()})
 }
 
 func respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {

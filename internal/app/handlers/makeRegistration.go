@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"net/http"
@@ -25,14 +26,19 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 		var groupId int
 		var login string
 		groupReal, err := strconv.Atoi(res.Identificator)
-		if err == nil {
+		if err == nil { // В таком случае ожидаем числовой ID
 			login = ""
-			groupId, _ = store.Schedule().GetIdByGroup(groupReal)
+			groupId, err = store.Schedule().GetIdByGroup(groupReal)
+			if err != nil {
+				log.Printf(err.Error())
+				errorHandler(w, r, http.StatusBadRequest, errBadID)
+				return
+			}
 			if groupId == 0 {
 				errorHandler(w, r, http.StatusBadRequest, errBadID)
 				return
 			}
-		} else {
+		} else { // В таком случае ожидаем стринговый ID
 			login = res.Identificator
 		}
 

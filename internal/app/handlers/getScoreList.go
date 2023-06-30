@@ -20,7 +20,7 @@ func NewScoreListHandler(store sqlstore.StoreInterface) func(w http.ResponseWrit
 		scoreInfo, err := store.Verification().GetPersonInfoScore(uIdI)
 		if err != nil {
 			log.Printf("Ошибка получения списка оценок, %v", err)
-			respond(w, r, http.StatusInternalServerError, err)
+			respond(w, r, http.StatusNotFound, err)
 			return
 		}
 		scoreElementList, err := handler.GetScoresStruct(scoreInfo.Faculty, scoreInfo.Course, scoreInfo.GroupId, scoreInfo.Idcard, scoreInfo.Studentid)

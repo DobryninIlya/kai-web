@@ -33,7 +33,7 @@ function makeRegistration() {
         vk_id: parseInt(params.get('vk_user_id'))
     }
 
-    fetch("/web/registration", {
+    fetch("/web/registration"+window.location.search, {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
