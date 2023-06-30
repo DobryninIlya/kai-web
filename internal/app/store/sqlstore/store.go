@@ -45,7 +45,7 @@ func (s *Store) Schedule() *ScheduleRepository {
 }
 
 func (s *Store) Verification() *VerificationRepository {
-	if s.scheduleRepository != nil {
+	if s.verificationRepository != nil {
 		return s.verificationRepository
 	}
 
