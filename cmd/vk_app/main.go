@@ -6,14 +6,17 @@ import (
 	"github.com/BurntSushi/toml"
 	"log"
 	app "main/internal/app/vk_app"
+	"path"
 )
 
 var (
-	configPath string
+	configPath     string
+	configPathTest string
 )
 
 func init() {
-	flag.StringVar(&configPath, "config-path", "configs/vk_app.toml", "path to config file")
+	flag.StringVar(&configPath, "config-path", path.Join("configs", "vk_app.toml"), "path to config file")
+	flag.StringVar(&configPathTest, "config-path-test", path.Join("..", "..", "configs", "vk_app.toml"), "path to config file")
 }
 
 func main() {

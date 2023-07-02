@@ -74,12 +74,10 @@ func Test_isContainDate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, got1 := isContainDate(tt.args.data, tt.args.margin)
-			if got != tt.want {
+			if got != tt.want || got1 != tt.want1 {
 				t.Errorf("isContainDate() got = %v, want %v", got, tt.want)
 			}
-			if got1 != tt.want1 {
-				t.Errorf("isContainDate() got1 = %v, want %v", got1, tt.want1)
-			}
+
 		})
 	}
 }
