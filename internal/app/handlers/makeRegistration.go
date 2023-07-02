@@ -54,6 +54,7 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			respond(w, r, http.StatusOK, []byte("{\"status\": \"ok\"}"))
 			return
 		} else {
+			log.Printf("error when user create: %v", err)
 			errorHandler(w, r, http.StatusBadRequest, errCantCreate)
 		}
 
