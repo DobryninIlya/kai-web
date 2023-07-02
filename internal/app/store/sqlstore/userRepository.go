@@ -27,6 +27,7 @@ func (r *UserRepository) Create(u *model.User) error {
 
 func (r *UserRepository) Find(id int) (*model.User, error) {
 	u := &model.User{}
+	var login sql.NullString
 	if err := r.store.db.QueryRow(
 		"SELECT id_vk, name, groupp, distribution, admlevel, groupreal, \"dateChange\", distr, warn, "+
 			"expiration, banhistory, ischeked, role, login, potok_lecture, has_own_shed, affiliate FROM public.users"+
@@ -46,7 +47,7 @@ func (r *UserRepository) Find(id int) (*model.User, error) {
 		&u.BanHistory,
 		&u.IsChecked,
 		&u.Role,
-		&u.Login,
+		&login,
 		&u.PotokLecture,
 		&u.HasOwnShed,
 		&u.Affiliate,
@@ -56,6 +57,11 @@ func (r *UserRepository) Find(id int) (*model.User, error) {
 		}
 
 		return nil, err
+	}
+	if login.Valid {
+		u.Login = login.String
+	} else {
+		u.Login = ""
 	}
 
 	return u, nil
