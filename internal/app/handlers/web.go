@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tools"
 	"net/http"
@@ -22,6 +23,9 @@ func New(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Requ
 			w.Write(data)
 			return
 		} else {
+			if err != nil {
+				log.Printf("Error when user create: %v", err)
+			}
 			data := tools.GetRegistrationView()
 			w.WriteHeader(http.StatusOK)
 			w.Write(data)
