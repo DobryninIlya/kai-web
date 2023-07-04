@@ -1,4 +1,3 @@
-import { showLoader, hideLoader } from './loader.js';
 const sliderContainer = document.querySelector('.schedule_block');
 const scheduleExamBlock = document.querySelector('.schedule_exam_block');
 const scoreBlock = document.querySelector('.score_block');
@@ -9,7 +8,7 @@ const nextButton = document.querySelector('.arrow-right');
 const find = document.querySelector('.schedule_block');
 const authErrorBlock = document.querySelector(".auth_error_block");
 const enterButton = document.querySelector(".enter_button");
-
+const loaderHTML = "<p class=\"loader_text\">Подождите.<br>Идет загрузка данных....</p>"
 let slideIndex = 0;
 let isFetching = false;
 let newElements = false;
@@ -60,7 +59,6 @@ function prevButtonFunction() {
 
 // Функция для загрузки новых слайдов
  function loadSlides(margin = null) {
-
     if (isFetching && sliderWrapper.childElementCount > 1) {
         return false;
     }
@@ -71,7 +69,6 @@ function prevButtonFunction() {
      } else {
          pageMargin = margin
      }
-     showLoader()
 
      fetch(`/web/get_lesson/${user_id}${controlParamsString}&margin=${pageMargin}`)
          .then(response => response.text())
@@ -113,7 +110,6 @@ function prevButtonFunction() {
              elem.style.height = `${currentSlideHeight + 55}px`;
 
              isFetching = false; // устанавливаем флаг в false, чтобы указать, что запрос завершился
-             hideLoader();
          })
          .catch(error => {
              console.error(error);

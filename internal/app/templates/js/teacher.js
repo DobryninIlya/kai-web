@@ -1,5 +1,4 @@
-import { showLoader, hideLoader } from './loader.js';
-let urlParams = new URLSearchParams(window.location.search);
+// let urlParams = new URLSearchParams(window.location.search);
 var teacher = "?"
 for (const [key, value] of urlParams.entries()) {
     teacher = teacher + key + "=" + value + "&"
@@ -8,7 +7,7 @@ teacher= teacher.slice(0, -1)
 var teacherResult = ""
 menu_teachers.addEventListener("click",  function () {
     if (teacherResult == "") {
-        showLoader()
+        teacher_block.insertAdjacentHTML('beforeend', loaderHTML);
         fetch(`/web/teacher${teacher}`)
             .then(response => {
                 if (!response.ok) {
@@ -20,7 +19,6 @@ menu_teachers.addEventListener("click",  function () {
                     teacher_block.innerHTML = html
                 })
             })
-        hideLoader()
 
     }
 })
