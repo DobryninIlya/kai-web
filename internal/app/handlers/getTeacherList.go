@@ -1,11 +1,22 @@
 package handler
 
 import (
+	model "main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tools"
 	"net/http"
 	"strconv"
 )
+
+var teachersNull = make([]model.Prepod, 1)
+
+func init() {
+	teachersNull[0] = model.Prepod{
+		LessonType: nil,
+		Name:       " Нет данных",
+		Lesson:     "",
+	}
+}
 
 func NewTeacherHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -23,6 +34,9 @@ func NewTeacherHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter
 			return
 		}
 		teachers := store.Schedule().GetTeacherListStruct(user.Group)
+		if len(teachers) == 0 {
+			teachers = teachersNull
+		}
 		data := tools.GetTeacherList(teachers)
 		respond(w, r, http.StatusOK, []byte(data))
 	}

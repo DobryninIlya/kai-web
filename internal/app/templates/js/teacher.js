@@ -16,9 +16,12 @@ menu_teachers.addEventListener("click",  function () {
                 }
                 response.text() .then(html => {
                     response.ok
+                    teacherResult = html
                     teacher_block.innerHTML = html
                 })
-            })
+            }).catch(error => {
+            console.error(error);
+        });
 
     }
 })
