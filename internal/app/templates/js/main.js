@@ -35,13 +35,12 @@ const monthsOfYear = ['Января', 'Февраля', 'Марта', 'Апре�
 
 
 function nextButtonFunction() {
-    console.log("nextButton clicked")
     if (slideWidth*sliderWrapper.childElementCount >= sliderContainer.offsetWidth && sliderWrapper.childElementCount-1 < 10) {
         newElements = loadSlides();
     }
     if (newElements || slideIndex+1 < 10) {
         slideIndex++;
-        sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth}px)`;
+        sliderWrapper.style.transform = `translate(${-slideIndex * (slideWidth + 6 )}px)`;
         newElements = false
 
         resizeWrapper()
@@ -51,7 +50,7 @@ function nextButtonFunction() {
 function prevButtonFunction() {
     if (slideIndex > 0) {
         slideIndex--;
-        sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth}px)`;
+        sliderWrapper.style.transform = `translate(${-slideIndex * (slideWidth + 6 )}px)`;
     }
     resizeWrapper()
 };

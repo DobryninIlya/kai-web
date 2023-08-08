@@ -102,6 +102,10 @@ func GetLessonList(lessons []model.Lesson) string {
 		//prepodName := service.GetShortenName(lesson.PrepodName)
 		lessonDate := strings.TrimSpace(lesson.DayDate)
 		room := database.GetRoom(lesson.AudNum)
+		lesson.BuildNum = strings.TrimSpace(lesson.BuildNum)
+		if len(lesson.BuildNum) < 3 {
+			room = lesson.BuildNum + "зд. " + room
+		}
 		//lessonName := service.GetLessonName(lesson.DisciplName)
 		lessonName := strings.TrimSpace(lesson.DisciplName)
 		if len(lesson.DisciplName)/2 >= 30 {
