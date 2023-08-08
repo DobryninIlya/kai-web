@@ -110,6 +110,11 @@ function prevButtonFunction() {
              elem.style.height = `${currentSlideHeight + 55}px`;
 
              isFetching = false; // устанавливаем флаг в false, чтобы указать, что запрос завершился
+
+             // Если запрос первый, делаем еще один
+             if (margin == 0) {
+                 loadSlides(1);
+             }
          })
          .catch(error => {
              console.error(error);
@@ -169,7 +174,7 @@ sliderWrapper.addEventListener('touchend', () => {
             slideIndex--;
         }
 
-        sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth}px)`;
+        sliderWrapper.style.transform = `translate(${-slideIndex * (slideWidth + 6 )}px)`;
         startX = null;
         currentX = null;
     }
@@ -207,7 +212,7 @@ enterButton.addEventListener('click', function (event) {
 window.onload = function () {
     loadSlides(0)
 
-    loadSlides(1)
+    // loadSlides(1)
 
 };
 
