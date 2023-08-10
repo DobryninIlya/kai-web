@@ -86,7 +86,6 @@ function prevButtonFunction() {
              var dayOfWeek = daysOfWeek[currDate.getDay()];
              var monthOfYear = monthsOfYear[currDate.getMonth()];
              var formattedDate = `${dayOfWeek}, ${currDate.getDate()} ${monthOfYear}`;
-             console.log(dayWeekDelta, formattedDate, dayOfWeek, monthOfYear)
 
 
              html = " <div class=\"schedule\" id=\"" + index + "\">\n" +

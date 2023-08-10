@@ -62,11 +62,52 @@ menu_services.addEventListener("click",  function () {
 
 })
 
+
 mail_to_improvement.addEventListener("click", function (event) {
     event.preventDefault();
     window.location.href = "https://m.vk.com/topic-182372147_43301544";;
 })
+
 mail_to_developer.addEventListener("click", function (event) {
     event.preventDefault();
     window.location.href = "https://t.me/dobryninilya";
 })
+
+const donate_tinkoff = document.getElementById("donate_tinkoff");
+const h_donate_tinkoff = document.getElementById("h_donate_tinkoff");
+const donate_donut = document.getElementById("donate_donut");
+const h_donate_donut = document.getElementById("h_donate_donut");
+const donate_app = document.getElementById("donate_app");
+const add_to_homescreen = document.getElementById("add_to_homescreen");
+
+
+donate_tinkoff.addEventListener("click", function (event) {
+    event.preventDefault();
+    h_donate_tinkoff.click();
+    // window.location.href = "https://www.tinkoff.ru/cf/7EDMYnSmO68";
+})
+
+donate_donut.addEventListener("click", function (event) {
+    event.preventDefault();
+    h_donate_donut.click();
+    // window.location.href = "https://vk.com/botraspisanie?w=app6887721_-182372147";
+})
+
+add_to_homescreen.addEventListener("click", function (event) {
+    window.vkBridge.send("VKWebAppAddToHomeScreenInfo")
+        .then((hs_info) => {
+            console.log(hs_info["is_feature_supported"])
+            is_feature_supported = hs_info["is_feature_supported"]
+            console.log(hs_info["is_added_to_home_screen"])
+
+        })
+        .catch((error) => {
+            // Обработка события в случае ошибки
+            console.log(error);
+        });
+    if (is_feature_supported) {
+        window.vkBridge.send("VKWebAppAddToHomeScreen");
+    }
+})
+
+

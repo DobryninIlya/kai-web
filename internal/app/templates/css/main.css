@@ -492,3 +492,9 @@ body {
 a:visited {
     color: white; /* здесь нужно указать цвет, который вы хотите использовать для посещенных ссылок */
 }
+
+.services_block {
+    display: block;
+    height: 100%;
+    margin-bottom: 100px;
+}

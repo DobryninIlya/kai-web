@@ -1,0 +1,7 @@
+{
+  "name": "web-kai",
+  "version": "1.0.0",
+  "devDependencies": {
+    "@vkontakte/vk-bridge": "^2.10.0"
+  }
+}
