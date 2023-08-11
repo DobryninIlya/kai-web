@@ -173,6 +173,9 @@ func GetScoresStruct(fac, kurs, group, zach, stud int) ([]ScoreElement, error) {
 
 func GetScores(fac, kurs, group, zach int, stud int) ([]byte, error) {
 	scores, err := GetScoresStruct(fac, kurs, group, zach, stud)
+	if err != nil {
+		return nil, err
+	}
 	var result ScoreTableAnswer
 	result.Result = scores
 	res, err := json.Marshal(result)

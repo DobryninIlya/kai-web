@@ -138,7 +138,7 @@ async function sendVerificationData()  {
         if (response.ok) {
             console.log("Verification data sent successfully!");
             return true
-        } else if (response.status == 404) {
+        } else if (response.status == 404 || response.status == 400) {
             errorForm.innerHTML = "Номер зачетной книжки неверный!"
         }
         else {
