@@ -15,7 +15,7 @@ type UserRepository struct {
 // Create ...
 func (r *UserRepository) Create(u *model.User) error {
 	return r.store.db.QueryRow(
-		"INSERT INTO public.users(id_vk, name, groupp, distribution, admlevel, groupreal, \"dateChange\", balance, distr, warn, expiration, banhistory, ischeked, role, login, potok_lecture, has_own_shed, affiliate)"+
+		"INSERT INTO users(id_vk, name, groupp, distribution, admlevel, groupreal, \"dateChange\", balance, distr, warn, expiration, banhistory, ischeked, role, login, potok_lecture, has_own_shed, affiliate)"+
 			"VALUES ($1, '', $2, 1, 1, $3, Now(), 0, 0, 0, '2020-01-01', 0, 0, $4, $5, true, false, false) RETURNING id_vk",
 		u.ID,
 		u.Group,
