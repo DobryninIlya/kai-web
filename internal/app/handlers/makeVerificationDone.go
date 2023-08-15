@@ -32,7 +32,7 @@ func NewVerificationDoneTemplate(store sqlstore.StoreInterface) func(w http.Resp
 		}
 		groupId, _ := store.Schedule().GetIdByGroup(ver.Groupname)
 		if groupId == 0 {
-			errorHandler(w, r, http.StatusBadRequest, errUserNotFound)
+			errorHandler(w, r, http.StatusNotFound, errUserNotFound)
 			return
 		}
 		u := &model.User{
@@ -44,7 +44,7 @@ func NewVerificationDoneTemplate(store sqlstore.StoreInterface) func(w http.Resp
 
 		_, err = tools.GetScores(ver.Faculty, ver.Course, ver.Group, ver.ID, ver.Student)
 		if err != nil { // Если данные БРС получены, можно сохранять в базе
-			errorHandler(w, r, http.StatusBadRequest, err)
+			errorHandler(w, r, http.StatusNotFound, err)
 			return
 		}
 
