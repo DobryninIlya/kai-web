@@ -17,8 +17,8 @@ select.addEventListener("change", function() {
 });
 
 submitButton.addEventListener("click",  (event) => {
-   if (select.selectedIndex == 2) {
-       errorText.textContent = "Временно недоступна регистрация преподавателей"
+   if (select.selectedIndex == 2 || select.selectedIndex == 1) {
+       errorText.textContent = "Временно недоступна регистрация преподавателей и родителей"
        return
    }
     makeRegistration()

@@ -38,6 +38,9 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 				errorHandler(w, r, http.StatusBadRequest, errBadID)
 				return
 			}
+		} else if groupReal == 0 {
+			errorHandler(w, r, http.StatusBadRequest, errBadID)
+			return
 		} else { // В таком случае ожидаем стринговый айди
 			login = res.Identificator
 		}
