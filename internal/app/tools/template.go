@@ -220,6 +220,10 @@ func GetExamList(examElems []model.Exam) string {
 	}
 	examsAllString := ""
 	examElementTemplate, _ := GetExamTemplate()
+	if len(examElems) == 0 {
+		examsAllString += fmt.Sprintf(examElementTemplate, "", "", "Данные не найдены", "", "", "")
+		return fmt.Sprintf(mainTemplate, examsAllString)
+	}
 	for _, exam := range examElems {
 		prepodName := database.GetShortenName(exam.PrepodName)
 		examsAllString += fmt.Sprintf(examElementTemplate, exam.ExamDate, exam.ExamTime, exam.DisciplName, prepodName, exam.AudNum, exam.BuildNum) + "\n"
