@@ -148,11 +148,11 @@ body {
     /*position: absolute;*/
     max-width: 231px;
     max-height: 32px;
-
+    height: 100%;
     font-family: 'Inter';
     font-style: normal;
     font-weight: 400;
-    font-size: 22px;
+    font-size: 19px;
     line-height: 16px;
     letter-spacing: -0.065em;
 
@@ -160,7 +160,13 @@ body {
 
     top: 17px;
     margin: 0px;
-    /*overflow: hidden;*/
+
+    display: inline-block;
+    width: 100%;
+    line-height: normal;
+    text-align: left;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 .lesson_freq {
     position: absolute;
@@ -223,7 +229,7 @@ body {
     height: 0;
     border-style: solid;
     background-color: inherit;
-    z-index: 9999;
+    z-index: 9990;
 }
 
 .arrow-left {
@@ -502,3 +508,114 @@ a:visited {
     height: 100%;
     margin-bottom: 100px;
 }
+
+#popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    /*padding: 20px;*/
+    background-color: #fff;
+    border: 1px solid #000;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    z-index: 9999; /* установка z-index для отображения поверх других элементов */
+    right: 200%;
+}
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.3); /* установка прозрачности для затемнения */
+    z-index: 9998; /* установка z-index ниже, чем у всплывающего окна */
+}
+
+.popup-visible {
+    display: block;
+    opacity: 1;
+    right: 0;
+}
+
+
+.popup_header {
+    position: relative;
+    max-width: 336px;
+    width: 336px;
+    height: 35px;
+    left: 0px;
+    top: 0px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    display: block;
+    background: #2F46B3;
+    overflow: hidden;
+}
+
+.popup_header_text {
+    position: absolute;
+    top: 50%;
+    margin-top: -0.625em;
+    text-align: center;
+    width: 100%;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 18px;
+    line-height: normal;
+    color: #FFFFFF;
+}
+
+.pop {
+    width: 100%;
+    max-width: 336px;
+    background: #FFFFFF;
+    border-radius: 15px;
+    /*margin-left: calc((100% - 336px) / 2);*/
+    /*margin-right: calc((100% - 336px) / 2);*/
+}
+
+.popup_body {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.popup_subheader {
+    width: 100%;
+    display: block;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 15px;
+    text-align: left;
+    letter-spacing: -0.065em;
+    color: #838383;
+    margin: 3px;
+}
+
+.popup_maintext {
+    width: 100%;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 300;
+    font-size: 18px;
+    line-height: 22px;
+    color: #000000;
+    margin: 3px;
+    padding-left: 12px;
+}
+
+.hidden_payload {
+    display: none;
+}
+.active {
+    pointer-events: auto; /* активируем блок при нажатии на другой */
+}
+
+.unactive {
+    pointer-events: none; /* активируем блок при нажатии на другой */
+}
+

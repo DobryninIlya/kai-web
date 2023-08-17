@@ -3,6 +3,7 @@ package database
 import (
 	"fmt"
 	"strings"
+	"unicode"
 	"unicode/utf8"
 )
 
@@ -58,6 +59,29 @@ func GetRoom(room string) string {
 		return strings.TrimSpace(result)
 	}
 	return room
+}
+
+func GetShortenLessonName(name string) string {
+	if len(name)/2 <= 21 { // Если строка короткая, то незачем собирать аббревиатуру
+		return name
+	}
+	name = strings.TrimSpace(name)
+	words := strings.Split(name, " ")
+	var letters string
+	for _, word := range words {
+		r, size := utf8.DecodeRuneInString(word)
+		if size == 1 {
+			continue
+		}
+		if unicode.IsUpper(r) || len(word) > 4 {
+			r = unicode.ToUpper(r)
+		} else if unicode.IsLower(r) {
+			r = unicode.ToLower(r)
+		}
+		letters += string(r)
+	}
+	return letters
+
 }
 
 func GetLessonName(name string) string {

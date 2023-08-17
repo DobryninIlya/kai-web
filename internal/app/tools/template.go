@@ -108,9 +108,9 @@ func GetLessonList(lessons []model.Lesson) string {
 		}
 		//lessonName := service.GetLessonName(lesson.DisciplName)
 		lessonName := strings.TrimSpace(lesson.DisciplName)
-		if len(lesson.DisciplName)/2 >= 30 {
-			nameStyle = "font-size: 18px;"
-		}
+		//if len(lesson.DisciplName)/2 >= 30 {
+		//	nameStyle = "font-size: 18px;"
+		//}
 		lessonType := strings.TrimSpace(lesson.DisciplType)
 		if lessonType == "лек" {
 			lessonTypeDiv = fmt.Sprintf(lessonTypeDiv, "6CC241", "Лекция")
@@ -121,7 +121,10 @@ func GetLessonList(lessons []model.Lesson) string {
 		} else {
 			lessonTypeDiv = fmt.Sprintf(lessonTypeDiv, "3DA0E7", lessonType)
 		}
-		allLessonData += getLesson([]interface{}{lesson.DayTime, room, lessonTypeDiv, nameStyle, lessonName, lessonDate})
+		allLessonData += getLesson([]interface{}{
+			lesson.DayTime, room, lessonTypeDiv, nameStyle, database.GetShortenLessonName(lessonName), lessonDate,
+			database.GetShortenLessonName(lessonName), lessonName, lesson.PrepodName, fmt.Sprintf("%v здание, %v ауд.", lesson.BuildNum, lesson.AudNum), lessonTypeDiv,
+		})
 		nameStyle = ""
 
 	}
