@@ -175,16 +175,6 @@ function resizeWrapper() {
 
 
 
-// Кнопка "Назад"
-// prevButton.addEventListener('click', () => {
-//     prevButtonClick()
-// });
-//     if (slideIndex > 0) {
-//         slideIndex--;
-//         sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth}px)`;
-//     }
-//     resizeWrapper()
-// });
 
 // Обработчик свайпа
 let startX = null;
