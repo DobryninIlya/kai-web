@@ -10,8 +10,8 @@ const authErrorBlock = document.querySelector(".auth_error_block");
 const enterButton = document.querySelector(".enter_button");
 
 const popup = document.getElementById('popup');
-const popupOverlay = document.createElement('div'); // создаем элемент для затемнения
-
+const popupOverlay = document.createElement('div');
+popupOverlay.classList.add('popup-overlay');
 
 const loaderHTML = "<p class=\"loader_text\">Подождите.<br>Идет загрузка данных....</p>"
 let slideIndex = 0;
@@ -122,22 +122,22 @@ function prevButtonFunction() {
              // Всплывающее окно с доп инфой о расписании
              let scheduleItems = document.querySelectorAll('.schedule_item');
 
-             const popupOverlay = document.createElement('div'); // создаем элемент для затемнения
-             popupOverlay.classList.add('popup-overlay'); // добавляем класс для затемнения
+
 
              scheduleItems.forEach((item) => {
                  item.addEventListener('click', () => {
                      const hiddenPayload = item.querySelector('.hidden_payload').innerHTML
                      popup.innerHTML = hiddenPayload;
-                     document.body.appendChild(popupOverlay); // добавляем затемнение в DOM
                      popup.classList.add('popup-visible');
                      popup.classList.add('active');
                      popup.classList.remove('unactive');
+
+                     document.body.appendChild(popupOverlay);
                      setTimeout(() => {
                          popup.style.opacity = '1';
                      }, 10);
                  });
-             // });
+                 // });
 
 
              popup.addEventListener('click', () => {
@@ -145,9 +145,10 @@ function prevButtonFunction() {
                  popup.style.opacity = '0';
                  popup.classList.remove('active');
                  popup.classList.add('unactive');
+                  // удаляем затемнение из DOM
                  setTimeout(() => {
                      popup.classList.remove('popup-visible');
-                     document.body.removeChild(popupOverlay); // удаляем затемнение из DOM
+                     document.body.removeChild(popupOverlay);
                  }, 300);
              });
              });
