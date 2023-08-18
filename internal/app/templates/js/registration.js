@@ -6,9 +6,7 @@ const errorText = document.querySelector(".error_form");
 const registrationButton = document.querySelector(".registration_button");
 const authButton = document.querySelector(".auth_button");
 
-const currentUrl = window.location.href;
-const hash = new URL(currentUrl).hash; // или currentUrl.substring(currentUrl.indexOf("#"))
-console.log(hash);
+
 
 
 
@@ -59,6 +57,14 @@ function makeRegistration() {
                 errorText.textContent = "Произошла неизвестная ошибка."
                 return
             }
+            window.vkBridge.send("VKWebAppStorageSet", {"key": "after_delete", "value": ""})
+                .then((data) => {
+                    console.log(data)
+                })
+                .catch((error) => {
+                    // Обработка события в случае ошибки
+                    console.log(error);
+                });
             location.reload()
 
         })
@@ -100,12 +106,44 @@ authButton.addEventListener("click",  function(event) {
 
 })
 
+// window.vkBridge.subscribe((event) => {
+//     console.log(event)
+//     if (!event.detail) {
+//         return;
+//     }
+//
+//     const { type, data } = event.detail;
+//
+//     if (type === 'VKWebAppLocationChanged') {
+//         // Reading result of the Code Reader
+//         console.log(data.location);
+//     }
+//
+//     if (type === 'VKWebAppOpenCodeReaderFailed') {
+//         // Catching the error
+//         console.log(data.error_type, data.error_data);
+//     }
+// });
+// // window.vkBridge.send("VKWebAppSetLocation", {"location": "reset_group"})
+// const currentUrl = window.location.href;
+// const hash = new URL(currentUrl).hash; // или currentUrl.substring(currentUrl.indexOf("#"))
+// console.log(hash);
 window.onload = function () {
-    if (hash=="#reset_group") {
+    let after_delete
+    window.vkBridge.send("VKWebAppStorageGet", {"keys": ["after_delete"]})
+        .then((data) => {
+            const keysValues = data.keys.map(item => ({[item.key]: item.value}));
+            after_delete = keysValues[0]['after_delete'];
+            if (keysValues[0]['after_delete']=="change_group") {
 
-        const inputBox = document.getElementById("main");
-        inputBox.style.display = "block"
-        const infoText = document.getElementById("info_text");
-        infoText.style.display = "none"
-    }
+                const inputBox = document.getElementById("main");
+                inputBox.style.display = "block"
+                const infoText = document.getElementById("info_text");
+                infoText.style.display = "none"
+            }
+        })
+        .catch((error) => {
+            console.log(error);
+        });
+
 };

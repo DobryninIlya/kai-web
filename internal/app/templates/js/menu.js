@@ -94,6 +94,7 @@ donate_donut.addEventListener("click", function (event) {
 })
 
 add_to_homescreen.addEventListener("click", function (event) {
+    is_feature_supported = false
     window.vkBridge.send("VKWebAppAddToHomeScreenInfo")
         .then((hs_info) => {
             console.log(hs_info["is_feature_supported"])

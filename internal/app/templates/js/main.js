@@ -228,13 +228,28 @@ enterButton.addEventListener('click', function (event) {
 
 
 reset_group.addEventListener('click', function (event) {
-    window.vkBridge.send("VKWebAppSetLocation", {"location": "reset_group"});
-    fetch("/web/delete_user" + window.location.search)
-        .then(response => response.text())
-        .then(html => {
-            location.reload();
+    window.vkBridge.send("VKWebAppSetLocation", {"location": ""})
+        .then((data) => {
+            fetch("/web/delete_user" + window.location.search)
+                .then(response => response.text())
+                .then(html => {
+                    window.vkBridge.send("VKWebAppStorageSet", {"key": "after_delete", "value": "change_group"})
+                        .then((data) => {
+                            console.log(data)
+                            location.reload()
+                        })
+                        .catch((error) => {
+                            // Обработка события в случае ошибки
+                            console.log(error);
+                        });
+
+                })
+                .catch(error => console.log(error));
         })
-        .catch(error => console.log(error));
+        .catch((error) => {
+            console.log(error);
+        });
+
 });
 
 
