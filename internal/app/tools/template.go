@@ -77,6 +77,15 @@ func GetExamTemplate() (string, error) {
 	return strings.Join(data, "\n"), nil
 }
 
+func GetNullTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "null_response.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
 func getLesson(data []interface{}) string {
 	tmp, _ := GetLessonTemplate()
 	result := fmt.Sprintf(tmp, data...)
@@ -154,8 +163,12 @@ func GetTeachersTemplate() (string, error) {
 
 func GetTeacherList(prepodList []model.Prepod) string {
 	mainTemplate, err := GetMainTeachersTemplate()
+	nullTemplate, err := GetNullTemplate()
 	if err != nil {
 		log.Printf("Ошибка teachers template %v", err)
+	}
+	if len(prepodList) == 0 {
+		return fmt.Sprintf(mainTemplate, nullTemplate)
 	}
 	teacherDiv, err := GetTeachersTemplate()
 	if err != nil {
@@ -218,13 +231,14 @@ func GetScoreList(scoreList []ScoreElement) string {
 
 func GetExamList(examElems []model.Exam) string {
 	mainTemplate, err := GetExamMainTemplate()
+	nullTemplate, err := GetNullTemplate()
 	if examElems == nil || err != nil {
 		return mainTemplate
 	}
 	examsAllString := ""
 	examElementTemplate, _ := GetExamTemplate()
 	if len(examElems) == 0 {
-		examsAllString += fmt.Sprintf(examElementTemplate, "", "", "Данные не найдены", "", "", "")
+		examsAllString = nullTemplate
 		return fmt.Sprintf(mainTemplate, examsAllString)
 	}
 	for _, exam := range examElems {

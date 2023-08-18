@@ -620,3 +620,26 @@ a:visited {
     pointer-events: none; /* активируем блок при нажатии на другой */
 }
 
+.null_response {
+    width:100%;
+    height: 80px;
+    background: white;
+    display: flex;
+    border-radius: 0px 0px 20px 20px;
+}
+
+.null_response_text {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 25px;
+    line-height: 15px;
+    text-align: left;
+    letter-spacing: -0.065em;
+    color: #000000;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+}
