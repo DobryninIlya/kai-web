@@ -229,7 +229,12 @@ enterButton.addEventListener('click', function (event) {
 
 reset_group.addEventListener('click', function (event) {
     window.vkBridge.send("VKWebAppSetLocation", {"location": "reset_group"});
-    location.reload();
+    fetch("/web/delete_user" + window.location.search)
+        .then(response => response.text())
+        .then(html => {
+            location.reload();
+        })
+        .catch(error => console.log(error));
 });
 
 
