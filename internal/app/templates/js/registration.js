@@ -6,6 +6,13 @@ const errorText = document.querySelector(".error_form");
 const registrationButton = document.querySelector(".registration_button");
 const authButton = document.querySelector(".auth_button");
 
+const currentUrl = window.location.href;
+const hash = new URL(currentUrl).hash; // или currentUrl.substring(currentUrl.indexOf("#"))
+console.log(hash);
+
+
+
+
 select.addEventListener("change", function() {
     const selectedOption = select.options[select.selectedIndex];
     var placeholder = "Введите группу"
@@ -90,21 +97,15 @@ authButton.addEventListener("click",  function(event) {
         })
         .catch(error => console.log(error));
 
-    // fetch('/web/verification' + window.location.search)
-    //     .then(response => response.text())
-    //     .then(html => {
-    //         const parser = new DOMParser();
-    //         const doc = parser.parseFromString(html, 'text/html');
-    //         const script = doc.querySelector('script');
-    //         const code = script.innerHTML;
-    //         const head = document.querySelector('head');
-    //         const body = document.querySelector('body');
-    //         head.innerHTML = doc.head.innerHTML;
-    //         body.innerHTML = doc.body.innerHTML;
-    //         const newScript = document.createElement('script');
-    //         newScript.innerHTML = code;
-    //         body.appendChild(newScript);
-    //     });
 
 })
 
+window.onload = function () {
+    if (hash=="#reset_group") {
+
+        const inputBox = document.getElementById("main");
+        inputBox.style.display = "block"
+        const infoText = document.getElementById("info_text");
+        infoText.style.display = "none"
+    }
+};

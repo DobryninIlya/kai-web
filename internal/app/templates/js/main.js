@@ -8,6 +8,7 @@ const nextButton = document.querySelector('.arrow-right');
 const find = document.querySelector('.schedule_block');
 const authErrorBlock = document.querySelector(".auth_error_block");
 const enterButton = document.querySelector(".enter_button");
+const reset_group = document.getElementById("reset_group");
 
 const popup = document.getElementById('popup');
 const popupOverlay = document.createElement('div');
@@ -226,20 +227,20 @@ enterButton.addEventListener('click', function (event) {
 });
 
 
-// function showLoader() {
-//     loaderContainer.style.display = 'block';
-// }
-//
-// function hideLoader() {
-//     loaderContainer.style.display = 'none';
-// }
+reset_group.addEventListener('click', function (event) {
+    window.vkBridge.send("VKWebAppSetLocation", {"location": "reset_group"});
+    location.reload();
+});
+
 
 
 
 window.onload = function () {
     loadSlides(0)
-
-    // loadSlides(1)
+     // текущий хэш в строке URL
+    // const currentUrl = window.location.href;
+    // const hash = new URL(currentUrl).hash; // или currentUrl.substring(currentUrl.indexOf("#"))
+    // console.log(hash); // текущий хэш в строке URL
 
 };
 

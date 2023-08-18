@@ -59,6 +59,7 @@ func (a *App) configureRouter() {
 		r.Use(a.checkSign)
 		r.Get("/", handler.New(a.store))
 		r.Post("/registration", handler.NewRegistrationHandler(a.store))
+		r.Get("/delete_user", handler.NewDeleteUserHandler(a.store))
 		r.Get("/verification", handler.NewVerificationTemplate())
 		r.Post("/verification/done", handler.NewVerificationDoneTemplate(a.store))
 		r.Get("/get_lesson/{uId}", handler.NewLessonsHandler(a.store))

@@ -25,6 +25,13 @@ func (r *UserRepository) Create(u *model.User) error {
 	).Scan(&u.ID)
 }
 
+func (r *UserRepository) Delete(id int) error {
+	return r.store.db.QueryRow(
+		"DELETE FROM users WHERE id_vk=$1 RETURNING id_vk",
+		id,
+	).Scan(&id)
+}
+
 func (r *UserRepository) Find(id int) (*model.User, error) {
 	u := &model.User{}
 	var login sql.NullString
