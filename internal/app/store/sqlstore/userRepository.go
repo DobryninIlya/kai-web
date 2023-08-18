@@ -82,7 +82,7 @@ func (r *UserRepository) MakeVerification(v *model.VerificationParams, u *model.
 	).Scan(&id); err != nil {
 		return err
 	}
-
+	u.GroupReal = v.Groupname
 	if res, _ := r.Find(u.ID); res == nil {
 		err := r.Create(u)
 

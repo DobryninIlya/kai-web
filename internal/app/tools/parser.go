@@ -24,7 +24,7 @@ var faculties map[int]string
 
 func init() {
 	faculties = make(map[int]string, 6)
-	faculties[1] = "ИАЭП"
+	faculties[1] = "ИАНТЭ"
 	faculties[2] = "ФМФ"
 	faculties[3] = "ИАЭП"
 	faculties[4] = "ИКТЗИ"
@@ -139,7 +139,11 @@ type ScoreTableAnswer struct {
 }
 
 func GetScoresStruct(fac, kurs, group, zach, stud int) ([]ScoreElement, error) {
-	data := fmt.Sprintf("p_fac=%v&p_kurs=%v&p_group=%v&p_stud=%v&p_zach=%v&p_sub=%v", fac, kurs, group, stud, zach, "%CE%F2%EF%F0%E0%E2%E8%F2%FC")
+	zachStr := strconv.Itoa(zach)
+	if zach < 100000 {
+		zachStr = "0" + zachStr
+	}
+	data := fmt.Sprintf("p_fac=%v&p_kurs=%v&p_group=%v&p_stud=%v&p_zach=%v&p_sub=%v", fac, kurs, group, stud, zachStr, "%CE%F2%EF%F0%E0%E2%E8%F2%FC")
 	req, err := http.NewRequest("POST", oldKaiURL, strings.NewReader(data))
 	req.Header.Set("Accept-Language", "ru-RU")
 	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
