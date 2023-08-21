@@ -136,6 +136,7 @@ func getSubgroupForDate(data, ex1, ex2 string, isEven bool) string {
 	return ""
 }
 func isContainsInDict(date string) bool {
+	date = strings.ToLower(date)
 	for _, v := range reservedDict {
 		if v == date {
 			return true
