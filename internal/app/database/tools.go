@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -65,6 +66,10 @@ func GetShortenLessonName(name string) string {
 	if len(name)/2 <= 21 { // Если строка короткая, то незачем собирать аббревиатуру
 		return name
 	}
+	re := regexp.MustCompile("\\s+")
+	name = re.ReplaceAllString(name, " ")
+	re = regexp.MustCompile("\\s{2,}")
+	name = re.ReplaceAllString(name, " ")
 	name = strings.TrimSpace(name)
 	words := strings.Split(name, " ")
 	var letters string
