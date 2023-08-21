@@ -579,6 +579,7 @@ a:visited {
 }
 
 .popup_body {
+    padding-top: 8px;
     padding-left: 15px;
     padding-right: 15px;
 }

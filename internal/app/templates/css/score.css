@@ -100,3 +100,36 @@
     border-radius: 0px 0px 20px 20px;
     background-color: white;
 }
+
+.score_subheader {
+    color: #000;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: 0.9px;
+    text-align: center;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.score_maintext {
+    margin-top: 7px;
+    color: #000;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 200;
+    line-height: normal;
+    letter-spacing: -1.3px;
+}
+
+.score_info {
+    color: #000;
+    font-size: 15px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    letter-spacing: -0.975px;
+    padding-left: 0px;
+    padding-top: 10px;
+}

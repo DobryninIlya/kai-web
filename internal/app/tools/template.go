@@ -225,7 +225,11 @@ func GetScoreList(scoreList []ScoreElement) string {
 	scoreAllString := ""
 	scoreElementTemplate, _ := GetScoreTemplate()
 	for _, elem := range scoreList {
-		scoreAllString += fmt.Sprintf(scoreElementTemplate, elem.Name, elem.PreviouslyScore) + "\n"
+		scoreAllString += fmt.Sprintf(scoreElementTemplate, elem.Name, elem.PreviouslyScore,
+			elem.Final, strings.TrimSpace(elem.Name), elem.ScoreCurrent1, elem.ScoreMax1,
+			elem.ScoreCurrent2, elem.ScoreMax2, elem.ScoreCurrent3, elem.ScoreMax3,
+			elem.AdditionalScore, elem.Final,
+		) + "\n"
 	}
 	return fmt.Sprintf(scoreTemplate, scoreAllString)
 }
