@@ -60,6 +60,7 @@ func formScheduleList(lessons []model.Lesson, margin int) []model.Lesson {
 	isEven := (week%2 + chetn) == 0
 	for _, lesson := range lessons {
 		date := strings.TrimSpace(lesson.DayDate)
+		date = strings.ToLower(date)
 		re := regexp.MustCompile(`^[.-]+[.\s]+$`) // регулярное выражение для точек и тире
 		if re.MatchString(date) {
 			date = ""
@@ -136,7 +137,6 @@ func getSubgroupForDate(data, ex1, ex2 string, isEven bool) string {
 	return ""
 }
 func isContainsInDict(date string) bool {
-	date = strings.ToLower(date)
 	for _, v := range reservedDict {
 		if v == date {
 			return true
