@@ -55,7 +55,7 @@ func (r *ScheduleRepository) GetIdByGroup(id int) (int, error) {
 }
 
 func formScheduleList(lessons []model.Lesson, margin int) []model.Lesson {
-	_, week := time.Now().ISOWeek()
+	_, week := time.Now().AddDate(0, 0, margin).ISOWeek()
 	result := make([]model.Lesson, 0)
 	isEven := (week%2 + chetn) == 0
 	for _, lesson := range lessons {
