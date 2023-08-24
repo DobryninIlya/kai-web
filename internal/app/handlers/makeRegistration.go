@@ -49,7 +49,7 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			ID:        res.VkId,
 			Group:     groupId,
 			GroupReal: groupReal,
-			Role:      int8(res.Role),
+			Role:      int8(res.Role) + 1,
 			Login:     login,
 		}
 		//if val, err := service.MakeRegistration(res); val {
