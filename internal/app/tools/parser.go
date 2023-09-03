@@ -138,12 +138,39 @@ type ScoreTableAnswer struct {
 	Result []ScoreElement `json:"result"`
 }
 
+func tryToGetPaidFormStudent(data string) *goquery.Document {
+	req, _ := http.NewRequest("POST", oldKaiURL, strings.NewReader(data))
+	req.Header.Set("Accept-Language", "ru-RU")
+	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
+	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7")
+	resp, err := http.DefaultClient.Do(req)
+	//resp, err := http.Get(oldKaiURL + data)
+	if err != nil {
+		log.Printf("Ошибка парсинга: %v", err)
+	}
+	defer resp.Body.Close()
+	reader := bufio.NewReader(resp.Body)
+	decoder := charmap.Windows1251.NewDecoder()
+	transformReader := transform.NewReader(reader, decoder)
+	bufReader := bufio.NewReader(transformReader)
+
+	doc, err := goquery.NewDocumentFromReader(bufReader)
+	if err != nil {
+		log.Printf("Произошла ошибка парсинга БРС: %v", err)
+	}
+	return doc
+}
+
 func GetScoresStruct(fac, kurs, group, zach, stud int) ([]ScoreElement, error) {
 	zachStr := strconv.Itoa(zach)
 	if zach < 100000 {
 		zachStr = "0" + zachStr
 	}
 	data := fmt.Sprintf("p_fac=%v&p_kurs=%v&p_group=%v&p_stud=%v&p_zach=%v&p_sub=%v", fac, kurs, group, stud, zachStr, "%CE%F2%EF%F0%E0%E2%E8%F2%FC")
+	//decoded, err := url.QueryUnescape("%D0%9F")
+	platnikChar := "%CF"
+	dataCopy := fmt.Sprintf("p_fac=%v&p_kurs=%v&p_group=%v&p_stud=%v&p_zach=%v&p_sub=%v", fac, kurs, group, stud, platnikChar+zachStr, "%CE%F2%EF%F0%E0%E2%E8%F2%FC")
 	req, err := http.NewRequest("POST", oldKaiURL, strings.NewReader(data))
 	req.Header.Set("Accept-Language", "ru-RU")
 	req.Header.Set("Accept-Encoding", "gzip, deflate, br")
@@ -162,11 +189,15 @@ func GetScoresStruct(fac, kurs, group, zach, stud int) ([]ScoreElement, error) {
 
 	doc, err := goquery.NewDocumentFromReader(bufReader)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("Произошла ошибка парсинга БРС: %v", err)
 	}
 	table := doc.Find("table[id=\"reyt\"] tr")
 	if table.Nodes == nil {
-		return []ScoreElement{}, errors.New("Неправильный номер зачетной книжки.")
+		doc = tryToGetPaidFormStudent(dataCopy) // Ищем данные для платной формы (Прибавляем букву П к номеру)
+		table = doc.Find("table[id=\"reyt\"] tr")
+		if table.Nodes == nil {
+			return []ScoreElement{}, errors.New("Неправильный номер зачетной книжки.")
+		}
 	}
 	scoreElems := make([]ScoreElement, 0)
 	table.Find("td").Each(func(i int, s *goquery.Selection) {
