@@ -126,7 +126,7 @@ func GetLessonList(lessons []model.Lesson) string {
 		} else if lessonType == "пр" {
 			lessonTypeDiv = fmt.Sprintf(lessonTypeDiv, "E77A3D", "Практика")
 		} else if lessonType == "л.р." {
-			lessonTypeDiv = fmt.Sprintf(lessonTypeDiv, "3DD2E7", "Практика")
+			lessonTypeDiv = fmt.Sprintf(lessonTypeDiv, "3DD2E7", "Лабораторная работа")
 		} else {
 			lessonTypeDiv = fmt.Sprintf(lessonTypeDiv, "3DA0E7", lessonType)
 		}

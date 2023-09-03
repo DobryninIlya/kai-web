@@ -47,17 +47,18 @@ func GetRoom(room string) string {
 	}
 
 	if len(room) > 5 {
-		result := ""
-		parts := strings.Split(room, " ")
-		for _, part := range parts {
-			result += cut(part, 3)
-			if len(part) > 3 {
-				result += ". "
-			} else {
-				result += " "
-			}
-		}
-		return strings.TrimSpace(result)
+		room = cut(room, 6)
+		//result := ""
+		//parts := strings.Split(room, " ")
+		//for _, part := range parts {
+		//	result += cut(part, 3)
+		//	if len(part) > 3 {
+		//		result += ". "
+		//	} else {
+		//		result += " "
+		//	}
+		//}
+		//return strings.TrimSpace(result)
 	}
 	return room
 }
