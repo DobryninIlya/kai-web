@@ -306,6 +306,13 @@ body {
 .main_block {
     opacity: 1;
     transition: opacity 0.2s ease-in-out;
+    height: 100%;
+    padding-bottom: 55px;
+}
+
+#developed_by {
+    top: 55px;
+    position: relative;
 }
 
 @font-face {
