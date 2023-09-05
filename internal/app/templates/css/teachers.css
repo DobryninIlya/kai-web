@@ -13,6 +13,9 @@
 
 .teachers_body {
     border-radius: 0px 0px 20px 20px;
+    padding-bottom: 20px;
+    background: white;
+}
 }
 
 .teachers_header_text {
