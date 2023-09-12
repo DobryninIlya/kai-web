@@ -5,7 +5,9 @@ for (const [key, value] of urlParams.entries()) {
 }
 paramsExam= paramsExam.slice(0, -1)
 var exams = ""
-menu_exam.addEventListener("click",  function () {
+open_exam.addEventListener("click", examListShow)
+menu_exam.addEventListener("click",  examListShow)
+function examListShow () {
     if (exams == "") {
         schedule_exam_block.insertAdjacentHTML('beforeend', loaderHTML);
         fetch(`/web/exam${paramsExam}`)
@@ -15,4 +17,4 @@ menu_exam.addEventListener("click",  function () {
                 schedule_exam_block.innerHTML = exams
             })
     }
-})
+};

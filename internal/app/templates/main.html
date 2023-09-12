@@ -43,24 +43,29 @@
   <div class="services_block" style="display: none; margin-bottom:100px;">
     <p class="header_text">О ПРОЕКТЕ</p>
     <div class="logo_container">
-    <img class="img_logo" src="static/img/logo_white_bg.png">
+    <img class="img_logo" src="static/img/logo_white_bg.svg">
     </div>
     <br>
       <div class="contact_buttons_row">
         <div class="contact_button" id="add_to_homescreen">Добавить на гл. экран (Android)</div>
+        <div class="contact_button" id="open_exam">Экзамены</div>
+        <div class="contact_button" id="open_homework" style="opacity: 50%;">Задания</div>
+        <div class="contact_button" id="open_schedule_editor" style="opacity: 50%;">Добавить пару</div>
+        <div class="contact_button" id="open_classmates_list" style="opacity: 50%;">Одногруппники</div>
+        <div class="contact_button" id="open_icalendar" style="opacity: 50%;">Экспорт в календарь</div>
         <div class="contact_button" id="reset_group">Сбросить номер группы</div>
-        <p class="project_description" style="font-size: 12px;">* Если расписание не отображается, возможно, вам следует уточнить номер группы по этой кнопке</p>
-        <div class="contact_button" id="mail_to_developer">ЛС разработчика</div>
+<!--        <p class="project_description" style="font-size: 12px;">* Если расписание не отображается, возможно, вам следует уточнить номер группы по этой кнопке</p>-->
+        <div class="contact_button" id="mail_to_developer">Сообщение разработчику</div>
         <div class="contact_button" id="mail_to_improvement">Предложения по улучшению</div>
         <div class="contact_button" id="open_rules" onclick="window.location.href='https://vk.com/topic-182372147_49433874'">Правила</div>
-      </div>
-    <p class="project_description">Данный проект является тестовым и направлен на выявление интереса у студентов к подобному формату получения расписания.
-      Если вам будет интересен данный проект, то в дальнейшем его ждет сильное развитие. Вся активность будет собираться, анализироваться и будет приниматься решение о дальнейших нововведениях.
-      Вы также можете присоединиться к разработке или оставить свое пожелание по функционалу.
-      Также вы можете поддержать разработчика материально:
-      <br>
-    </p>
-    <div class="contact_buttons_row">
+<!--      </div>-->
+<!--    <p class="project_description">Данный проект является тестовым и направлен на выявление интереса у студентов к подобному формату получения расписания.-->
+<!--      Если вам будет интересен данный проект, то в дальнейшем его ждет сильное развитие. Вся активность будет собираться, анализироваться и будет приниматься решение о дальнейших нововведениях.-->
+<!--      Вы также можете присоединиться к разработке или оставить свое пожелание по функционалу.-->
+<!--      Также вы можете поддержать разработчика материально:-->
+<!--      <br>-->
+<!--    </p>-->
+<!--    <div class="contact_buttons_row">-->
       <div class="contact_button" id="donate_tinkoff" style="background: #D46600">Перевод</div>
       <div class="contact_button" id="donate_donut" onclick="window.location.href='https://vk.com/botraspisanie?source=description&w=donut_payment-182372147'" style="background: #D46600">Подписка Donut</div>
       <div class="contact_button" id="donate_app" style="background: #D46600">Донат с отображением в паблике</div>
@@ -71,7 +76,7 @@
 <!--      <br>-->
       <a href="https://vk.com/botraspisanie?w=app6887721_-182372147" style="display:none;" id="h_donate_app">Донат с отображением в паблике</a>
 
-    <p class="project_description" id="developed_by"> Developed by Ilya Dobrynin
+<!--    <p class="project_description" id="developed_by"> Developed by Ilya Dobrynin-->
     </p>
   </div>
   <div class="auth_error_block" style="display: none;">
@@ -86,14 +91,19 @@
     </div>
   </div>
 </div>
+<input type="text" size="40" value="2" readonly="true" style="display: none;" id="action_id">
 <div class="menu_bar">
-  <div class="menu_item" id="menu_exam"><img class="menu_icon" src="static/img/menu_exam.svg"></div>
+<!--  <div class="menu_item" id="menu_services"><img class="menu_icon" src="static/img/menu_service.svg"></div>-->
+  <div class="menu_item" id="menu_services"><svg xmlns="http://www.w3.org/2000/svg" width="41" height="28" viewBox="0 0 41 28" fill="none">
+    <path d="M2 26.1533H38.7891" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <path d="M2 14.1025H38.7891" stroke="white" stroke-width="3" stroke-linecap="round"/>
+    <path d="M2 2.05078L38.7891 2.05078" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  </svg></div>
   <div class="menu_item" id="menu_score"><img class="menu_icon" src="static/img/menu_score.svg"></div>
   <div class="menu_item" id="menu_schedule"><img class="menu_icon" src="static/img/menu_schedule.svg"></div>
   <div class="menu_item" id="menu_teachers"><img class="menu_icon" src="static/img/menu_teacher.svg"></div>
-  <div class="menu_item" id="menu_services"><img class="menu_icon" src="static/img/menu_service.svg"></div>
+  <div class="menu_item" id="menu_exam"><img class="menu_icon" src="static/img/full_shed.svg"></div>
 </div>
-<input type="text" size="40" value="2" readonly="true" style="display: none;" id="action_id">
 </div>
 
 

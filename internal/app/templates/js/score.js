@@ -6,7 +6,10 @@
 // }
 // scoreExam= scoreExam.slice(0, -1)
 var score = ""
-menu_score.addEventListener("click",  function () {
+menu_score.addEventListener("click", scoreListShow)
+
+
+function scoreListShow() {
     if (score == "") {
         score_block.insertAdjacentHTML('beforeend', loaderHTML);
         fetch(`/web/scoretable?${urlParams}`)
@@ -41,6 +44,6 @@ menu_score.addEventListener("click",  function () {
 
             })
     }
-})
+};
 
 

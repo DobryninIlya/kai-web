@@ -1,4 +1,5 @@
 const menu_exam = document.getElementById("menu_exam");
+const open_exam = document.getElementById("open_exam");
 const menu_score = document.getElementById("menu_score");
 const menu_schedule = document.getElementById("menu_schedule");
 const menu_teachers = document.getElementById("menu_teachers");
@@ -33,6 +34,11 @@ menu_exam.addEventListener("click",  function () {
     main_block.style.opacity = "1"
     schedule_exam_block.style.display = "block";
 })
+open_exam.addEventListener("click",  function () {
+    hideAll();
+    main_block.style.opacity = "1"
+    schedule_exam_block.style.display = "block";
+})
 
 menu_schedule.addEventListener("click",  function () {
     hideAll();
@@ -47,6 +53,7 @@ menu_score.addEventListener("click",  function () {
     score_block.style.display = "block"
 
 })
+
 
 menu_teachers.addEventListener("click",  function () {
     hideAll();
