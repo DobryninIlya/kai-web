@@ -26,6 +26,7 @@ function hideAll() {
     teacher_block.style.display = "none"
     services_block.style.display = "none"
     auth_error_block.style.display = "none"
+    window.scrollTo(0, 0);
 }
 
 
