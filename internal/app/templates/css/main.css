@@ -33,7 +33,7 @@ body {
     left: 0px;
     top: 0px;
     alignment: center;
-    background: #222534;
+    /*background: #222534;*/
     border-radius: 10px;
     opacity: 1;
     overflow: hidden; /*swipe*/
@@ -192,7 +192,7 @@ body {
     flex-direction: row;
     /*overflow-x: auto;*/
     scroll-behavior: smooth;
-    background: #222534;
+    /*background: #222534;*/
     transition: transform 0.5s ease-out;
 }
 

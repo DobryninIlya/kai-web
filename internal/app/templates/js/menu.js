@@ -97,9 +97,7 @@ add_to_homescreen.addEventListener("click", function (event) {
     is_feature_supported = false
     window.vkBridge.send("VKWebAppAddToHomeScreenInfo")
         .then((hs_info) => {
-            console.log(hs_info["is_feature_supported"])
             is_feature_supported = hs_info["is_feature_supported"]
-            console.log(hs_info["is_added_to_home_screen"])
 
         })
         .catch((error) => {

@@ -23,6 +23,7 @@ function initVK() {
         .catch((error) => {
             console.log(error);
         });
+
     addToHSInvite(add_to_hs);
     joinGroupInvite(join_group);
 }
@@ -51,6 +52,9 @@ function addToHSInvite(add_to_hs) {
                     // Обработка события в случае ошибки
                     console.log(error);
                 });
+        } else {
+            var element = document.getElementById("add_to_homescreen");
+            element.parentNode.removeChild(element);
         }
     }
 }
