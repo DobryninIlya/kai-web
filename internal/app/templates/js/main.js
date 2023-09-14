@@ -179,14 +179,26 @@ function resizeWrapper() {
 
 // Обработчик свайпа
 let startX = null;
+let startY = null;
 let currentX = null;
+let currentY = null;
 sliderWrapper.addEventListener('touchstart', (event) => {
     startX = event.touches[0].pageX;
+    startY = event.touches[0].pageY;
 });
 sliderWrapper.addEventListener('touchmove', (event) => {
     event.preventDefault();
     currentX = event.touches[0].pageX;
+    currentY = event.touches[0].pageY;
+    // const currentY = event.touches[0].pageY;
     const delta = startX - currentX;
+
+    // Проверяем, движется ли палец вверх или вниз
+    if (Math.abs(currentY - startY) > Math.abs(delta)) {
+        // Движение вверх - скроллим страницу
+        return;
+    }
+
     sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth - delta}px)`;
 });
 sliderWrapper.addEventListener('touchend', () => {
