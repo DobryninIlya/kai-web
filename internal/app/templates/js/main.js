@@ -196,7 +196,13 @@ sliderWrapper.addEventListener('touchmove', (event) => {
     // Проверяем, движется ли палец вверх или вниз
     if (Math.abs(currentY - startY) > Math.abs(delta)) {
         // Движение вверх или вниз - скроллим страницу
-        window.scrollBy(0, currentY - startY);
+        if (currentY - startY < 0) {
+            window.scrollBy(0, 5);
+        } else {
+            window.scrollBy(0, -5);
+        }
+        sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth }px)`;
+
         return;
     }
     sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth - delta}px)`;
