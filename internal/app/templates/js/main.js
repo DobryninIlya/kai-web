@@ -195,10 +195,10 @@ sliderWrapper.addEventListener('touchmove', (event) => {
 
     // Проверяем, движется ли палец вверх или вниз
     if (Math.abs(currentY - startY) > Math.abs(delta)) {
-        // Движение вверх - скроллим страницу
+        // Движение вверх или вниз - скроллим страницу
+        window.scrollBy(0, currentY - startY);
         return;
     }
-
     sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth - delta}px)`;
 });
 sliderWrapper.addEventListener('touchend', () => {
