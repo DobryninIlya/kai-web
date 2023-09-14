@@ -197,9 +197,9 @@ sliderWrapper.addEventListener('touchmove', (event) => {
     if (Math.abs(currentY - startY) > Math.abs(delta)) {
         // Движение вверх или вниз - скроллим страницу
         if (currentY - startY < 0) {
-            window.scrollBy(0, 5);
+            window.scrollBy(0, 10);
         } else {
-            window.scrollBy(0, -5);
+            window.scrollBy(0, -10);
         }
         sliderWrapper.style.transform = `translate(${-slideIndex * slideWidth }px)`;
 
