@@ -4,6 +4,7 @@ const menu_score = document.getElementById("menu_score");
 const menu_schedule = document.getElementById("menu_schedule");
 const menu_teachers = document.getElementById("menu_teachers");
 const menu_services = document.getElementById("menu_services");
+const open_schedule_editor = document.getElementById("open_schedule_editor");
 
 const mail_to_developer = document.getElementById("mail_to_developer");
 const mail_to_improvement = document.getElementById("mail_to_improvement");
@@ -15,6 +16,7 @@ const score_block = document.querySelector(".score_block");
 const teacher_block = document.querySelector(".teacher_block");
 const services_block = document.querySelector(".services_block");
 const auth_error_block = document.querySelector(".auth_error_block");
+const lesson_editor_block = document.querySelector(".lesson_editor_block");
 
 const action = document.getElementById("action_id");
 const address = "https://kai.ru/raspisanie?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=examSchedule&groupId="
@@ -26,10 +28,16 @@ function hideAll() {
     teacher_block.style.display = "none"
     services_block.style.display = "none"
     auth_error_block.style.display = "none"
+    lesson_editor_block.style.display = "none"
     window.scrollTo(0, 0);
 }
 
 
+open_schedule_editor.addEventListener("click",  function () {
+    hideAll();
+    main_block.style.opacity = "1"
+    lesson_editor_block.style.display = "block";
+})
 menu_exam.addEventListener("click",  function () {
     hideAll();
     main_block.style.opacity = "1"

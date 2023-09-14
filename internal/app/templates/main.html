@@ -40,6 +40,65 @@
   <div class="schedule_exam_block"></div>
   <div class="score_block"></div>
   <div class="teacher_block"></div>
+  <div class="lesson_editor_block" style="display: none;">
+    <p class="header_text">Редактор занятий</p>
+
+    <div class="lesson_editor">
+      <div class="lesson_editor_header">
+        <p class="lesson_editor_header_text">
+          Добавить пару
+        </p>
+      </div>
+      <div class="editor_body">
+      <p class="editor_text">
+        Введите название пары (до 30 символов)
+      </p>
+      <input type="text" class="input_lesson_name" oninput="if(this.value.length>30) this.value=this.value.slice(0,30)" placeholder="Введите название">
+      <p class="editor_text">
+        Выберите день недели
+      </p>
+      <select class="day_date_input">
+        <option value="day1">Понедельник</option>
+        <option value="day2">Вторник</option>
+        <option value="day3">Среда</option>
+        <option value="day4">Четверг</option>
+        <option value="day5">Пятница</option>
+        <option value="day6">Суббота</option>
+      </select>
+      <p class="editor_text">
+        Выберите периодичность
+      </p>
+      <select class="date_input">
+        <option value="oneveryday">Еженедельно</option>
+        <option value="onodd">По четным</option>
+        <option value="onnoodd">По нечетным</option>
+        <option value="onodd1">По четным 1 подгруппа, по нечетным 2</option>
+        <option value="onodd2">По четным 2 подгруппа, по нечетным 1</option>
+      </select>
+      <p class="editor_text">
+        Выберите тип пары
+      </p>
+      <select class="type_input">
+        <option value="lecture">Лекция</option>
+        <option value="practice">Практика</option>
+        <option value="lab">Лабораторная работа</option>
+        <option value="consultation">Консультация</option>
+      </select>
+      <p class="editor_text">
+        Выберите время начала
+      </p>
+      <select class="type_input">
+        <option value="0800">8:00</option>
+        <option value="0940">9:40</option>
+        <option value="1120">11:20</option>
+        <option value="1330">13:30</option>
+        <option value="1510">15:10</option>
+        <option value="1650">16:50</option>
+        <option value="1830">18:30</option>
+      </select>
+    </div>
+    </div>
+  </div>
   <div class="services_block" style="display: none; margin-bottom:100px;">
     <p class="header_text">О ПРОЕКТЕ</p>
     <div class="logo_container">
@@ -118,6 +177,7 @@
 <script src="/static/js/exam.js"></script>
 <script src="/static/js/score.js"></script>
 <script src="/static/js/teacher.js"></script>
+<script src="/static/js/editor.js"></script>
 <!--<script src="/static/js/popup.js"></script>-->
 
 </body>
