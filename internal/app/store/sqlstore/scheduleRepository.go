@@ -116,17 +116,19 @@ func getSubgroupForDate(data, ex1, ex2 string, isEven bool) string {
 			return data
 		}
 		if strings.Contains(parts[0], ex1) || strings.Contains(parts[0], ex2) {
-			if isEven {
-				return "[1 гр.]"
-			} else {
-				return "[2 гр.]"
-			}
+			return "[1 гр.]"
+			//if isEven {
+			//	return "[1 гр.]"
+			//} else {
+			//	return "[2 гр.]"
+			//}
 		} else if strings.Contains(parts[1], ex1) || strings.Contains(parts[1], ex2) {
-			if isEven {
-				return "[2 гр.]"
-			} else {
-				return "[1 гр.]"
-			}
+			return "[2 гр.]"
+			//if isEven {
+			//	return "[2 гр.]"
+			//} else {
+			//	return "[1 гр.]"
+			//}
 		}
 	} else {
 		if strings.Contains(data, ex1) || strings.Contains(data, ex2) {
