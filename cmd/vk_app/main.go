@@ -1,6 +1,5 @@
 package main
 
-//import "github.com/BurntSushi/toml"
 import (
 	"flag"
 	"github.com/BurntSushi/toml"
