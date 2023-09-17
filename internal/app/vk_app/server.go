@@ -125,6 +125,8 @@ func (a *App) logRequest(next http.Handler) http.Handler {
 	})
 }
 
+// Hello world func
+
 func (a *App) checkSign(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger := a.logger.WithFields(logrus.Fields{
@@ -140,6 +142,7 @@ func (a *App) checkSign(h http.Handler) http.Handler {
 		}
 		rw := &responseWriter{w, http.StatusOK}
 		h.ServeHTTP(rw, r)
+
 		return
 	})
 }
