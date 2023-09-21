@@ -143,8 +143,8 @@ function prevButtonFunction() {
                  // });
 
 
-             popup.addEventListener('click', () => {
-                 if (event.target.closest('.content-remover')) {
+             popup.addEventListener('click', (event) => {
+                 if (event.target.closest('.content-remover') || event.target.closest('.return-btn')) {
                      return
                  }
                  // popup.style.display = 'none';

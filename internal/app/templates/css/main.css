@@ -765,6 +765,64 @@ select {
 
 .remove-btn {
     padding: 5px;
-    background: darkred;
+    background: #E7523D;
+    display: block;
+    border-radius: 20px;
+    border: 0px;
+    color: white;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 12px;
+    line-height: 22px;
+}
+
+.cancel-btn {
+    padding: 5px;
+    background: #2C73C6;
+    display: inline-block;
+    border-radius: 20px;
+    border: 0px;
+    color: white;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 12px;
+    line-height: 22px;
+}
+
+.confirm-btn {
+    padding: 5px;
+    background: #6CC241;
+    display: inline-block;
+    border-radius: 20px;
+    border: 0px;
+    color: white;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 12px;
+    line-height: 22px;
+}
+
+.return-btn {
+    padding: 5px;
+    background: #6CC241;
+    display: inline-block;
+    border-radius: 20px;
+    border: 0px;
+    color: white;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 200;
+    font-size: 12px;
+    line-height: 22px;
+}
+
+.marked-deleted {
+    opacity: 30%;
+}
+
+.return-delete {
     display: block;
 }

@@ -66,7 +66,8 @@ func (a *App) configureRouter() {
 		r.Get("/exam", handler.NewExamHandler(a.store))
 		r.Get("/teacher", handler.NewTeacherHandler(a.store))
 		r.Get("/scoretable", handler.NewScoreListHandler(a.store))
-		r.Get("/delete_lesson", handler.NewDeleteLessonHandler(a.store))
+		r.Post("/delete_lesson", handler.NewDeleteLessonHandler(a.store))
+		r.Post("/return_lesson", handler.NewReturnLessonHandler(a.store))
 		r.Get("/stylesheet", handler.NewStyleSheetHandler())
 		//
 		r.Route("/attestation", func(r chi.Router) {

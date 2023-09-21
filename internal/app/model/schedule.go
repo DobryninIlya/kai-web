@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"github.com/jackc/pgx/pgtype"
+	"time"
+)
 
 type ScheduleSaved struct {
 	Group      int
@@ -39,4 +42,19 @@ type Prepod struct {
 	LessonType []string
 	Name       string
 	Lesson     string
+}
+
+type DeletedLessons struct {
+	Id              int64  `json:"id,omitempty"`
+	Groupid         int    `json:"groupid,omitempty"`
+	Creator         int    `json:"creator,omitempty"`
+	CreatorPlatform string `json:"creator_platform,omitempty"`
+	LessonId        int    `json:"lesson_id,omitempty"`
+	Date            pgtype.Date
+	Uniqstring      string `json:"uniqstring"`
+}
+
+type DeletedLessonsMin struct {
+	LessonId   int    `json:"lesson_id,omitempty"`
+	Uniqstring string `json:"uniqstring"`
 }

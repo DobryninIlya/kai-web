@@ -54,18 +54,54 @@ func (r ScheduleRepository) GetIdByGroup(id int) (int, error) {
 	return 0, nil
 }
 
-func (r ScheduleRepository) MarkDeletedLesson(user model.User, lessonId int) (int, error) {
+func (r ScheduleRepository) MarkDeletedLesson(user model.User, lessonId int, uniqString string) (int, error) {
 	var result int
 	if err := r.store.db.QueryRow(
-		"INSERT INTO public.deleted_lessons(groupid, creator, creator_platform, lesson_id, date) VALUES ($1, $2, $3, $4, NOW()) RETURNING id;",
+		"INSERT INTO public.deleted_lessons(groupid, creator, creator_platform, lesson_id, date, uniqstring) VALUES ($1, $2, $3, $4, NOW(), $5) RETURNING id;",
 		user.Group,
 		user.ID,
 		"vk",
 		lessonId,
+		uniqString,
 	).Scan(&result); err != nil {
 		return 0, err
 	}
 	return result, nil
+}
+
+func (r ScheduleRepository) ReturnDeletedLesson(user model.User, lessonId int, uniqString string) (int, error) {
+	var result int
+	if err := r.store.db.QueryRow(
+		"DELETE FROM public.deleted_lessons WHERE lesson_id=$1 AND uniqstring=$2 RETURNING id;",
+
+		lessonId,
+		uniqString,
+	).Scan(&result); err != nil {
+		return 0, err
+	}
+	return result, nil
+}
+
+func (r ScheduleRepository) GetDeletedLessonsByGroup(groupId int) ([]model.DeletedLessonsMin, error) {
+	var resultStructList []model.DeletedLessonsMin
+	rows, err := r.store.db.Query(
+		"SELECT lesson_id, uniqstring FROM public.deleted_lessons WHERE groupid=$1;",
+		groupId,
+	)
+	if err != nil {
+		return nil, err
+	}
+	resultStructList = make([]model.DeletedLessonsMin, 0)
+	for rows.Next() {
+		var lessonId model.DeletedLessonsMin
+		err := rows.Scan(&lessonId.LessonId, &lessonId.Uniqstring)
+		if err != nil {
+			log.Printf("Ошибка сканирования в GetDeletedLessonsByGroup: %v", err)
+			return nil, err
+		}
+		resultStructList = append(resultStructList, lessonId)
+	}
+	return resultStructList, nil
 }
 
 func formScheduleList(lessons []model.Lesson, margin int) []model.Lesson {

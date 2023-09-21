@@ -29,7 +29,8 @@ func NewLessonsHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter
 			return
 		}
 		lessons, _ := store.Schedule().GetCurrentDaySchedule(user.Group, marginI)
-		data := tools.GetLessonList(lessons)
+		lessonsDeleted, _ := store.Schedule().GetDeletedLessonsByGroup(user.Group)
+		data := tools.GetLessonList(lessons, lessonsDeleted)
 		respond(w, r, http.StatusOK, []byte(data))
 	}
 }

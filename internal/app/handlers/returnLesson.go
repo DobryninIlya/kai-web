@@ -9,7 +9,7 @@ import (
 	"strconv"
 )
 
-func NewDeleteLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewReturnLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := r.URL.Query()
 		uId := params.Get("vk_user_id")
@@ -30,13 +30,13 @@ func NewDeleteLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 		scoreInfo, err := store.Verification().GetPersonInfoScore(uIdI)
 		if err != nil || scoreInfo.GroupId == 0 {
 			log.Printf("Не удалось пометить занятие как удаленное: %v", err)
-			errorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не удалось пометить занятие как удаленное: %v", err)))
+			errorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
 			return
 		}
-		_, err = store.Schedule().MarkDeletedLesson(*user, lessonIdI, uniqString)
+		_, err = store.Schedule().ReturnDeletedLesson(*user, lessonIdI, uniqString)
 		if err != nil {
-			log.Printf("Не удалось пометить занятие как удаленное: %v", err)
-			errorHandler(w, r, http.StatusInternalServerError, errors.New(fmt.Sprintf("Не удалось пометить занятие как удаленное: %v", err)))
+			log.Printf("Не вернуть занятие в расписание: %v", err)
+			errorHandler(w, r, http.StatusInternalServerError, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
 			return
 		}
 		respond(w, r, http.StatusOK, nil)

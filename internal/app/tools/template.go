@@ -9,6 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strconv"
 	"strings"
 )
 
@@ -103,24 +104,36 @@ func GetRegistrationView() []byte {
 	return []byte(tmp)
 }
 
-func GetLessonList(lessons []model.Lesson) string {
+func GetLessonList(lessons []model.Lesson, deleted []model.DeletedLessonsMin) string {
 	allLessonData := ""
 	nameStyle := ""
 	for _, lesson := range lessons {
 		lessonTypeDiv := "<p class=\"lesson_type\" style=\"background-color: #%v\">%v</p>"
-		//prepodName := service.GetShortenName(lesson.PrepodName)
 		lessonDate := strings.TrimSpace(lesson.DayDate)
 		room := database.GetRoom(lesson.AudNum)
 		lesson.BuildNum = strings.TrimSpace(lesson.BuildNum)
 		if len(lesson.BuildNum) < 3 {
 			room = lesson.BuildNum + "зд. " + room
 		}
-		//lessonName := service.GetLessonName(lesson.DisciplName)
 		lessonName := strings.TrimSpace(lesson.DisciplName)
-		//if len(lesson.DisciplName)/2 >= 30 {
-		//	nameStyle = "font-size: 18px;"
-		//}
 		lessonType := strings.TrimSpace(lesson.DisciplType)
+		style := ""
+		disciplNum, err := strconv.Atoi(lesson.DisciplNum)
+		if err != nil {
+			log.Printf("Ошибка создания списка занятий GetLessonList : %v", err)
+			continue
+		}
+		uniqString := lessonType + "_" + strings.TrimSpace(lesson.DayTime) + "_" + strings.TrimSpace(lesson.DayDate)
+		removerStyle := ""
+		returnerStyle := "display: none;"
+		for _, deletedLesson := range deleted {
+			if deletedLesson.LessonId == disciplNum && strings.TrimSpace(deletedLesson.Uniqstring) == uniqString {
+				style = "marked-deleted"
+				removerStyle = "hidden"
+				returnerStyle = ""
+				break
+			}
+		}
 		if lessonType == "лек" {
 			lessonTypeDiv = fmt.Sprintf(lessonTypeDiv, "6CC241", "Лекция")
 		} else if lessonType == "пр" {
@@ -130,10 +143,12 @@ func GetLessonList(lessons []model.Lesson) string {
 		} else {
 			lessonTypeDiv = fmt.Sprintf(lessonTypeDiv, "3DA0E7", lessonType)
 		}
+		uniqstring := lessonType + "_" + strings.TrimSpace(lesson.DayTime) + "_" + strings.TrimSpace(lesson.DayDate)
 		allLessonData += getLesson([]interface{}{
+			style,
 			lesson.DayTime, room, lessonTypeDiv, nameStyle, database.GetShortenLessonName(lessonName), lessonDate,
 			database.GetShortenLessonName(lessonName), lessonName, lesson.PrepodName, fmt.Sprintf("%v здание, %v ауд.", lesson.BuildNum, lesson.AudNum),
-			lesson.DayDate, lesson.DayTime, lessonTypeDiv, lesson.DisciplNum,
+			lesson.DayDate, lesson.DayTime, lessonTypeDiv, lesson.DisciplNum, uniqstring, removerStyle, returnerStyle,
 		})
 		nameStyle = ""
 
@@ -141,7 +156,6 @@ func GetLessonList(lessons []model.Lesson) string {
 	if len(lessons) == 0 {
 		return database.GetNullDaySchedule()
 	}
-	//result := fmt.Sprintf(template, allLessonData)
 	return allLessonData
 }
 
