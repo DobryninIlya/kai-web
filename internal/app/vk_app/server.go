@@ -66,6 +66,7 @@ func (a *App) configureRouter() {
 		r.Get("/exam", handler.NewExamHandler(a.store))
 		r.Get("/teacher", handler.NewTeacherHandler(a.store))
 		r.Get("/scoretable", handler.NewScoreListHandler(a.store))
+		r.Get("/delete_lesson", handler.NewDeleteLessonHandler(a.store))
 		r.Get("/stylesheet", handler.NewStyleSheetHandler())
 		//
 		r.Route("/attestation", func(r chi.Router) {
@@ -125,8 +126,6 @@ func (a *App) logRequest(next http.Handler) http.Handler {
 	})
 }
 
-// Hello world func
-
 func (a *App) checkSign(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger := a.logger.WithFields(logrus.Fields{
@@ -138,6 +137,7 @@ func (a *App) checkSign(h http.Handler) http.Handler {
 				logrus.WarnLevel,
 				"the signature didn't match.",
 			)
+			w.WriteHeader(http.StatusForbidden)
 			return
 		}
 		rw := &responseWriter{w, http.StatusOK}

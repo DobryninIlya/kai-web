@@ -133,7 +133,7 @@ func GetLessonList(lessons []model.Lesson) string {
 		allLessonData += getLesson([]interface{}{
 			lesson.DayTime, room, lessonTypeDiv, nameStyle, database.GetShortenLessonName(lessonName), lessonDate,
 			database.GetShortenLessonName(lessonName), lessonName, lesson.PrepodName, fmt.Sprintf("%v здание, %v ауд.", lesson.BuildNum, lesson.AudNum),
-			lesson.DayDate, lesson.DayTime, lessonTypeDiv,
+			lesson.DayDate, lesson.DayTime, lessonTypeDiv, lesson.DisciplNum,
 		})
 		nameStyle = ""
 

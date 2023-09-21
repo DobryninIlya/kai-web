@@ -84,10 +84,9 @@ func Test_isContainDate(t *testing.T) {
 
 func Test_getSubgroupForDate(t *testing.T) {
 	type args struct {
-		data   string
-		ex1    string
-		ex2    string
-		isEven bool
+		data string
+		ex1  string
+		ex2  string
 	}
 	tests := []struct {
 		name string
@@ -98,47 +97,43 @@ func Test_getSubgroupForDate(t *testing.T) {
 		{
 			name: "",
 			args: args{
-				data:   "2.06 / 20.06",
-				ex1:    "02.06",
-				ex2:    "2.06",
-				isEven: true,
+				data: "2.06 / 20.06",
+				ex1:  "02.06",
+				ex2:  "2.06",
 			},
 			want: "[1 гр.]",
 		},
 		{
 			name: "",
 			args: args{
-				data:   "2.06 / 20.06",
-				ex1:    "02.06",
-				ex2:    "2.06",
-				isEven: false,
+				data: "3.06 / 20.06",
+				ex1:  "02.06",
+				ex2:  "3.06",
+			},
+			want: "[1 гр.]",
+		},
+		{
+			name: "",
+			args: args{
+				data: "2.06, 04.06 / 20.06, 25.06",
+				ex1:  "4.06",
+				ex2:  "04.06",
+			},
+			want: "[1 гр.]",
+		},
+		{
+			name: "",
+			args: args{
+				data: "2.06, 04.06 / 22.06, 25.06",
+				ex1:  "22.06",
+				ex2:  "22.06",
 			},
 			want: "[2 гр.]",
-		},
-		{
-			name: "",
-			args: args{
-				data:   "2.06, 04.06 / 20.06, 25.06",
-				ex1:    "4.06",
-				ex2:    "04.06",
-				isEven: true,
-			},
-			want: "[1 гр.]",
-		},
-		{
-			name: "",
-			args: args{
-				data:   "2.06, 04.06 / 20.06, 25.06",
-				ex1:    "20.06",
-				ex2:    "20.06",
-				isEven: false,
-			},
-			want: "[1 гр.]",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getSubgroupForDate(tt.args.data, tt.args.ex1, tt.args.ex2, tt.args.isEven); got != tt.want {
+			if got := getSubgroupForDate(tt.args.data, tt.args.ex1, tt.args.ex2); got != tt.want {
 				t.Errorf("getSubgroupForDate() = %v, want %v", got, tt.want)
 			}
 		})

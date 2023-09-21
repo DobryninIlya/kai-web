@@ -121,7 +121,7 @@ function prevButtonFunction() {
              }
 
              // Всплывающее окно с доп инфой о расписании
-             let scheduleItems = document.querySelectorAll('.schedule_item');
+             let scheduleItems = sliderWrapper.lastChild.querySelectorAll('.schedule_item');
 
 
 
@@ -137,11 +137,16 @@ function prevButtonFunction() {
                      setTimeout(() => {
                          popup.style.opacity = '1';
                      }, 10);
+
+
                  });
                  // });
 
 
              popup.addEventListener('click', () => {
+                 if (event.target.closest('.content-remover')) {
+                     return
+                 }
                  // popup.style.display = 'none';
                  popup.style.opacity = '0';
                  popup.classList.remove('active');

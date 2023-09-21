@@ -13,7 +13,7 @@ type UserRepository struct {
 }
 
 // Create ...
-func (r *UserRepository) Create(u *model.User) error {
+func (r UserRepository) Create(u *model.User) error {
 	return r.store.db.QueryRow(
 		"INSERT INTO users(id_vk, name, groupp, distribution, admlevel, groupreal, \"dateChange\", balance, distr, warn, expiration, banhistory, ischeked, role, login, potok_lecture, has_own_shed, affiliate)"+
 			"VALUES ($1, '', $2, 1, 1, $3, Now(), 0, 0, 0, '2020-01-01', 0, 0, $4, $5, true, false, false) RETURNING id_vk",
@@ -25,14 +25,14 @@ func (r *UserRepository) Create(u *model.User) error {
 	).Scan(&u.ID)
 }
 
-func (r *UserRepository) Delete(id int) error {
+func (r UserRepository) Delete(id int) error {
 	return r.store.db.QueryRow(
 		"DELETE FROM users WHERE id_vk=$1 RETURNING id_vk",
 		id,
 	).Scan(&id)
 }
 
-func (r *UserRepository) Find(id int) (*model.User, error) {
+func (r UserRepository) Find(id int) (*model.User, error) {
 	u := &model.User{}
 	var login sql.NullString
 	if err := r.store.db.QueryRow(
@@ -74,7 +74,7 @@ func (r *UserRepository) Find(id int) (*model.User, error) {
 	return u, nil
 }
 
-func (r *UserRepository) MakeVerification(v *model.VerificationParams, u *model.User) error {
+func (r UserRepository) MakeVerification(v *model.VerificationParams, u *model.User) error {
 	var id int
 	url := "INSERT INTO public.user_verification(id, date_update, faculty, course, group_id, idcard, groupname, studentid) VALUES ($1, Now(),$2, $3, $4, $5, $6, $7) RETURNING id"
 	if err := r.store.db.QueryRow(

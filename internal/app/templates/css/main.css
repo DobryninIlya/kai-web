@@ -600,9 +600,7 @@ a:visited {
 }
 
 .popup_body {
-    padding-top: 8px;
-    padding-left: 15px;
-    padding-right: 15px;
+    padding: 8px 15px 10px;
 }
 
 .popup_subheader {
@@ -635,7 +633,7 @@ a:visited {
     display: none;
 }
 .active {
-    pointer-events: auto; /* активируем блок при нажатии на другой */
+    c: auto; /* активируем блок при нажатии на другой */
 }
 
 .unactive {
@@ -758,4 +756,15 @@ select {
 
     margin-left: auto;
     margin-right: auto;
+}
+
+.hidden {
+    display: none;
+    opacity: 0;
+}
+
+.remove-btn {
+    padding: 5px;
+    background: darkred;
+    display: block;
 }

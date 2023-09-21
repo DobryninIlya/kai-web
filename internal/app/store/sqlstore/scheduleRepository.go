@@ -31,7 +31,7 @@ type GroupInfo struct {
 
 var groupList []GroupInfo
 
-func (r *ScheduleRepository) GetIdByGroup(id int) (int, error) {
+func (r ScheduleRepository) GetIdByGroup(id int) (int, error) {
 	var result string
 	if err := r.store.db.QueryRow(
 		"SELECT shedule FROM saved_timetable WHERE groupp=$1",
@@ -52,6 +52,20 @@ func (r *ScheduleRepository) GetIdByGroup(id int) (int, error) {
 	}
 
 	return 0, nil
+}
+
+func (r ScheduleRepository) MarkDeletedLesson(user model.User, lessonId int) (int, error) {
+	var result int
+	if err := r.store.db.QueryRow(
+		"INSERT INTO public.deleted_lessons(groupid, creator, creator_platform, lesson_id, date) VALUES ($1, $2, $3, $4, NOW()) RETURNING id;",
+		user.Group,
+		user.ID,
+		"vk",
+		lessonId,
+	).Scan(&result); err != nil {
+		return 0, err
+	}
+	return result, nil
 }
 
 func formScheduleList(lessons []model.Lesson, margin int) []model.Lesson {
@@ -79,7 +93,7 @@ func formScheduleList(lessons []model.Lesson, margin int) []model.Lesson {
 			lesson.DayDate = "[2 гр.]"
 			result = append(result, lesson)
 		} else if ex1, ex2 := isContainDate(date, margin); ex1+ex2 != "" {
-			lesson.DayDate = getSubgroupForDate(date, ex1, ex2, isEven)
+			lesson.DayDate = getSubgroupForDate(date, ex1, ex2)
 			result = append(result, lesson)
 		} else if !isContainsInDict(date) {
 			result = append(result, lesson)
@@ -109,7 +123,7 @@ func isContainDate(data string, margin int) (string, string) {
 	}
 	return "", ""
 }
-func getSubgroupForDate(data, ex1, ex2 string, isEven bool) string {
+func getSubgroupForDate(data, ex1, ex2 string) string {
 	if strings.Contains(data, "/") {
 		parts := strings.Split(data, "/")
 		if len(parts) != 2 {
