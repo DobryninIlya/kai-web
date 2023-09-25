@@ -7,6 +7,6 @@ import (
 
 func NewVerificationTemplate() func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		respond(w, r, http.StatusOK, tools.GetRegistrationIDcard())
+		Respond(w, r, http.StatusOK, tools.GetRegistrationIDcard())
 	}
 }

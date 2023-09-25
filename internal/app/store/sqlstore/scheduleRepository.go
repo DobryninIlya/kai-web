@@ -3,6 +3,7 @@ package sqlstore
 import (
 	"database/sql"
 	"encoding/json"
+	"errors"
 	"log"
 	"main/internal/app/database"
 	"main/internal/app/model"
@@ -102,6 +103,23 @@ func (r ScheduleRepository) GetDeletedLessonsByGroup(groupId int) ([]model.Delet
 		resultStructList = append(resultStructList, lessonId)
 	}
 	return resultStructList, nil
+}
+
+func (r ScheduleRepository) NewLesson(user model.User, lesson model.LessonNew) (int, error) {
+	var result int
+	jsonData, err := json.Marshal(lesson)
+	if err != nil {
+		return 0, errors.New("ошибка создания json структуры в NewLesson")
+	}
+	if err := r.store.db.QueryRow(
+		"INSERT INTO public.lessons(groupid, daynum, lesson_data) VALUES ($1, $2, $3) RETURNING id;",
+		user.Group,
+		lesson.DayNum,
+		jsonData,
+	).Scan(&result); err != nil {
+		return 0, err
+	}
+	return result, nil
 }
 
 func formScheduleList(lessons []model.Lesson, margin int) []model.Lesson {

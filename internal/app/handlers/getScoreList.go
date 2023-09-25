@@ -14,23 +14,23 @@ func NewScoreListHandler(store sqlstore.StoreInterface) func(w http.ResponseWrit
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
 		scoreInfo, err := store.Verification().GetPersonInfoScore(uIdI)
 		if err != nil {
 			log.Printf("Ошибка получения списка оценок, %v", err)
-			respond(w, r, http.StatusNotFound, err)
+			Respond(w, r, http.StatusNotFound, err)
 			return
 		}
 		scoreElementList, err := handler.GetScoresStruct(scoreInfo.Faculty, scoreInfo.Course, scoreInfo.GroupId, scoreInfo.Idcard, scoreInfo.Studentid)
 		resultString := handler.GetScoreList(scoreElementList)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, errUserNotFound)
+			ErrorHandler(w, r, http.StatusBadRequest, errUserNotFound)
 			w.Write([]byte(err.Error()))
 			return
 		}
-		respond(w, r, http.StatusOK, []byte(resultString))
+		Respond(w, r, http.StatusOK, []byte(resultString))
 
 	}
 }

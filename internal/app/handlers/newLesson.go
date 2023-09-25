@@ -1,15 +1,18 @@
 package handler
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log"
+	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 	"strconv"
 )
 
-func NewDeleteLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewCreateLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		params := r.URL.Query()
 		uId := params.Get("vk_user_id")
@@ -18,13 +21,19 @@ func NewDeleteLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
-		uniqString := params.Get("uniqstring")
-		lessonId := params.Get("lesson_id")
-		lessonIdI, err := strconv.Atoi(lessonId)
-		if err != nil || lessonId == "" || uniqString == "" {
+
+		body, err := io.ReadAll(r.Body)
+		if err != nil || body == nil {
 			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
 			return
 		}
+		var lesson model.LessonNew
+		err = json.Unmarshal(body, &lesson)
+		if err != nil {
+			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			return
+		}
+
 		user, err := store.User().Find(uIdI)
 
 		scoreInfo, err := store.Verification().GetPersonInfoScore(uIdI)
@@ -33,7 +42,7 @@ func NewDeleteLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			ErrorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не удалось пометить занятие как удаленное: %v", err)))
 			return
 		}
-		_, err = store.Schedule().MarkDeletedLesson(*user, lessonIdI, uniqString)
+		_, err = store.Schedule().NewLesson(*user, lesson)
 		if err != nil {
 			log.Printf("Не удалось пометить занятие как удаленное: %v", err)
 			ErrorHandler(w, r, http.StatusInternalServerError, errors.New(fmt.Sprintf("Не удалось пометить занятие как удаленное: %v", err)))

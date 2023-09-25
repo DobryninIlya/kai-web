@@ -13,13 +13,13 @@ func NewDeleteUserHandler(store sqlstore.StoreInterface) func(w http.ResponseWri
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
 		err = store.User().Delete(uIdI)
 		if err != nil {
 			log.Printf("Не удалось удалить запись пользователя: %v", err)
 		}
-		respond(w, r, http.StatusOK, nil)
+		Respond(w, r, http.StatusOK, nil)
 	}
 }

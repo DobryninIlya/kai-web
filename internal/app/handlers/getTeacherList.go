@@ -23,12 +23,12 @@ func NewTeacherHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
 		user, err := store.User().Find(uIdI)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, errUserNotFound)
+			ErrorHandler(w, r, http.StatusBadRequest, errUserNotFound)
 
 			return
 		}
@@ -37,6 +37,6 @@ func NewTeacherHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter
 		//	teachers = teachersNull
 		//}
 		data := tools.GetTeacherList(teachers)
-		respond(w, r, http.StatusOK, []byte(data))
+		Respond(w, r, http.StatusOK, []byte(data))
 	}
 }

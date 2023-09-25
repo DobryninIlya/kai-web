@@ -58,3 +58,11 @@ type DeletedLessonsMin struct {
 	LessonId   int    `json:"lesson_id,omitempty"`
 	Uniqstring string `json:"uniqstring"`
 }
+
+type LessonNew struct {
+	DayDate string `json:"day_date"`
+	DayNum  int    `json:"day_num"`
+	Time    string `json:"time"`
+	Name    string `json:"name"`
+	Type    string `json:"type"`
+}

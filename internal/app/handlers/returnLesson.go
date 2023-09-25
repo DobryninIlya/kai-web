@@ -15,14 +15,14 @@ func NewReturnLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
 		uniqString := params.Get("uniqstring")
 		lessonId := params.Get("lesson_id")
 		lessonIdI, err := strconv.Atoi(lessonId)
 		if err != nil || lessonId == "" || uniqString == "" {
-			errorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
 			return
 		}
 		user, err := store.User().Find(uIdI)
@@ -30,15 +30,15 @@ func NewReturnLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 		scoreInfo, err := store.Verification().GetPersonInfoScore(uIdI)
 		if err != nil || scoreInfo.GroupId == 0 {
 			log.Printf("Не удалось пометить занятие как удаленное: %v", err)
-			errorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
+			ErrorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
 			return
 		}
 		_, err = store.Schedule().ReturnDeletedLesson(*user, lessonIdI, uniqString)
 		if err != nil {
 			log.Printf("Не вернуть занятие в расписание: %v", err)
-			errorHandler(w, r, http.StatusInternalServerError, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
+			ErrorHandler(w, r, http.StatusInternalServerError, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
 			return
 		}
-		respond(w, r, http.StatusOK, nil)
+		Respond(w, r, http.StatusOK, nil)
 	}
 }

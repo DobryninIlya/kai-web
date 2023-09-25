@@ -13,11 +13,19 @@ var (
 	errCantCreate   = errors.New("cant create this")
 )
 
-func errorHandler(w http.ResponseWriter, r *http.Request, code int, err error) {
-	respond(w, r, code, map[string]string{"error": err.Error()})
+func RespondAPI(w http.ResponseWriter, r *http.Request, code int, err error) {
+	Respond(w, r, code, map[string]string{"result": err.Error()})
 }
 
-func respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
+func ErrorAPI(w http.ResponseWriter, r *http.Request, code int, err error) {
+	Respond(w, r, code, map[string]string{"result": err.Error()})
+}
+
+func ErrorHandler(w http.ResponseWriter, r *http.Request, code int, err error) {
+	Respond(w, r, code, map[string]string{"error": err.Error()})
+}
+
+func Respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
 	w.WriteHeader(code)
 	if data != nil {
 		byteData, ok := data.([]byte)

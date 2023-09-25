@@ -1,7 +1,8 @@
-package handler
+package api_handler
 
 import (
 	"github.com/go-chi/chi"
+	h "main/internal/app/handlers"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tools"
 	"net/http"
@@ -16,7 +17,7 @@ func NewLessonsHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter
 		margin := params.Get("margin")
 		marginI, err := strconv.Atoi(margin)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			h.ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
 		if err != nil || uIdI < 0 {

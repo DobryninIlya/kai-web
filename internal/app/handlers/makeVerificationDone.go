@@ -16,23 +16,23 @@ func NewVerificationDoneTemplate(store sqlstore.StoreInterface) func(w http.Resp
 		idStr := params.Get("vk_user_id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
 		body, err := io.ReadAll(r.Body)
 		if err != nil || body == nil {
-			errorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
 		var ver model.VerificationParams
 		err = json.Unmarshal(body, &ver)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
 			return
 		}
 		groupId, _ := store.Schedule().GetIdByGroup(ver.Groupname)
 		if groupId == 0 {
-			errorHandler(w, r, http.StatusNotFound, errUserNotFound)
+			ErrorHandler(w, r, http.StatusNotFound, errUserNotFound)
 			return
 		}
 		u := &model.User{
@@ -44,16 +44,16 @@ func NewVerificationDoneTemplate(store sqlstore.StoreInterface) func(w http.Resp
 
 		_, err = tools.GetScores(ver.Faculty, ver.Course, ver.Group, ver.ID, ver.Student)
 		if err != nil { // Если данные БРС получены, можно сохранять в базе
-			errorHandler(w, r, http.StatusNotFound, err)
+			ErrorHandler(w, r, http.StatusNotFound, err)
 			return
 		}
 
 		err = store.User().MakeVerification(&ver, u)
 		if err != nil {
-			errorHandler(w, r, http.StatusBadRequest, err)
+			ErrorHandler(w, r, http.StatusBadRequest, err)
 			return
 		}
-		respond(w, r, http.StatusCreated, nil)
+		Respond(w, r, http.StatusCreated, nil)
 
 	}
 }

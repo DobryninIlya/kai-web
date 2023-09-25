@@ -11,10 +11,10 @@ func NewGroupsHandler() func(w http.ResponseWriter, r *http.Request) {
 		pFac := params.Get("p_fac")
 		pKurs := params.Get("p_kurs")
 		if pFac == "" || pKurs == "" {
-			errorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
 			return
 		}
 		result := tools.GetGroupListBRS(pFac, pKurs)
-		respond(w, r, http.StatusOK, result)
+		Respond(w, r, http.StatusOK, result)
 	}
 }
