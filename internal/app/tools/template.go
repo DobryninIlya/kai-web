@@ -197,7 +197,7 @@ func GetDocumentationPage() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	html := blackfriday.MarkdownOptions([]byte(result), blackfriday.LatexRenderer(1))
+	html := blackfriday.MarkdownCommon([]byte(result))
 	return html, nil
 }
 
