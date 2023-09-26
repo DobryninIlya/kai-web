@@ -19,7 +19,7 @@ import (
 var chetn int
 var reservedDict = []string{"чет", "неч", "чет/неч", "неч/чет"}
 
-// UserRepository ...
+// ScheduleRepository ...
 type ScheduleRepository struct {
 	store *Store
 }

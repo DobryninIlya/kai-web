@@ -16,6 +16,7 @@ require (
 	github.com/andybalholm/cascadia v1.3.1 // indirect
 	github.com/konsorten/go-windows-terminal-sequences v1.0.2 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
+	github.com/russross/blackfriday v1.6.0 // indirect
 	github.com/stretchr/testify v1.8.4 // indirect
 	golang.org/x/net v0.10.0 // indirect
 	golang.org/x/sys v0.8.0 // indirect

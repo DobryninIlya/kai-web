@@ -3,6 +3,7 @@ package tools
 import (
 	"bufio"
 	"fmt"
+	"github.com/russross/blackfriday"
 	"log"
 	"main/internal/app/database"
 	"main/internal/app/model"
@@ -167,6 +168,39 @@ func GetMainTeachersTemplate() (string, error) {
 	}
 	return strings.Join(data, "\n"), nil
 }
+
+func GetDocumentationPageTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "documentation.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetDocumentationPageMarkdown() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "markdown", "main.md"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetDocumentationPage() ([]byte, error) {
+	template, err := GetDocumentationPageTemplate()
+	if err != nil {
+		return nil, err
+	}
+	md, err := GetDocumentationPageMarkdown()
+	result := fmt.Sprintf(template, md)
+	if err != nil {
+		return nil, err
+	}
+	html := blackfriday.MarkdownOptions([]byte(result), blackfriday.LatexRenderer(1))
+	return html, nil
+}
+
 func GetTeachersTemplate() (string, error) {
 	data, err := readFile(filepath.Join("internal", "app", path, "teachers.html"))
 	if err != nil {

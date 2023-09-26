@@ -66,6 +66,7 @@ func (a *App) configureRouter() {
 			r.Get("/{group}", api.NewIdByGroupHandler(a.store)) // ID группы по ее номеру
 		})
 		//r.Get("/", api.NewLessonsHandler(a.store))
+		r.Get("/doc", api.NewDocumentationPageHandler()) // ID группы по ее номеру
 	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)
