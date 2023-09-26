@@ -197,7 +197,13 @@ func GetDocumentationPage() ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	html := blackfriday.MarkdownCommon([]byte(result))
+	//html := blackfriday.MarkdownCommon([]byte(result))
+	htmlFlags := blackfriday.HTML_USE_XHTML | blackfriday.HTML_USE_SMARTYPANTS
+	renderer := blackfriday.HtmlRenderer(htmlFlags, "", "")
+	extensions := blackfriday.EXTENSION_NO_INTRA_EMPHASIS | blackfriday.EXTENSION_TABLES | blackfriday.EXTENSION_FENCED_CODE
+	html := blackfriday.MarkdownOptions([]byte(result), renderer, blackfriday.Options{
+		Extensions: extensions,
+	})
 	return html, nil
 }
 
