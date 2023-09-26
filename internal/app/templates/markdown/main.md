@@ -27,9 +27,9 @@
 
 # **Секция /schedule**
 
-### 1.  GET **/api/schedule/*{groupid}*** 
+### 1.  GET **/api/schedule/_{groupid}_** 
 Получает сохраненное расписание группы полностью без каких либо искажений.
-Формат ответа структуры, которая потом маршалится в json:
+Формат ответа структуры Schedule, которая потом маршалится в json:
 ```go
 	type Schedule struct {  
 		Day3 []Lesson `json:"3,omitempty"`  
