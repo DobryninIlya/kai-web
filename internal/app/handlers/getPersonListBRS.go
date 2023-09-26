@@ -12,7 +12,7 @@ func NewPersonHandler() func(w http.ResponseWriter, r *http.Request) {
 		pKurs := params.Get("p_kurs")
 		pGroup := params.Get("p_group")
 		if pFac == "" || pKurs == "" {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 		result := tools.GetPersonListBRS(pFac, pKurs, pGroup)

@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 	handler "main/internal/app/handlers"
+	api "main/internal/app/handlers/api"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 	"os"
@@ -55,6 +56,17 @@ func newApp(store sqlstore.StoreInterface, bindAddr string) *App {
 
 func (a *App) configureRouter() {
 	a.router.Use(a.logRequest)
+	a.router.Route("/api", func(r chi.Router) {
+		r.Route("/schedule", func(r chi.Router) {
+			r.Get("/{groupid}", api.NewScheduleHandler(a.store))          // Расписание полностью
+			r.Get("/{groupid}/by_margin", api.NewLessonsHandler(a.store)) // На день с отступом margin от текущего дня
+			r.Get("/{groupid}/teachers", api.NewTeachersHandler(a.store)) // На день с отступом margin от текущего дня
+		})
+		r.Route("/groups", func(r chi.Router) {
+			r.Get("/{group}", api.NewIdByGroupHandler(a.store)) // ID группы по ее номеру
+		})
+		//r.Get("/", api.NewLessonsHandler(a.store))
+	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)
 		r.Get("/", handler.New(a.store))

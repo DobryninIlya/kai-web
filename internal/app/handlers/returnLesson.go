@@ -15,14 +15,14 @@ func NewReturnLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 		uniqString := params.Get("uniqstring")
 		lessonId := params.Get("lesson_id")
 		lessonIdI, err := strconv.Atoi(lessonId)
 		if err != nil || lessonId == "" || uniqString == "" {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
 		user, err := store.User().Find(uIdI)

@@ -16,16 +16,16 @@ func NewLessonsHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter
 		margin := params.Get("margin")
 		marginI, err := strconv.Atoi(margin)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 		if err != nil || uIdI < 0 {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 		user, err := store.User().Find(uIdI)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errUserNotFound)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrUserNotFound)
 			return
 		}
 		lessons, _ := store.Schedule().GetCurrentDaySchedule(user.Group, marginI)

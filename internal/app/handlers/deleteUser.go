@@ -13,7 +13,7 @@ func NewDeleteUserHandler(store sqlstore.StoreInterface) func(w http.ResponseWri
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 		err = store.User().Delete(uIdI)

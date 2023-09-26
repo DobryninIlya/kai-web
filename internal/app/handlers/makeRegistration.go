@@ -15,12 +15,12 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 		var res model.RegistrationData
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
 		err = json.Unmarshal(body, &res)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
 		var groupId int
@@ -31,15 +31,15 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			groupId, err = store.Schedule().GetIdByGroup(groupReal)
 			if err != nil {
 				log.Printf(err.Error())
-				ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+				ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 				return
 			}
 			if groupId == 0 {
-				ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+				ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 				return
 			}
 		} else if groupReal == 0 {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		} else { // В таком случае ожидаем стринговый айди
 			login = res.Identificator
@@ -59,7 +59,7 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			return
 		} else {
 			log.Printf("error when user create: %v", err)
-			ErrorHandler(w, r, http.StatusBadRequest, errCantCreate)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrCantCreated)
 		}
 
 	}

@@ -7,18 +7,19 @@ import (
 )
 
 var (
-	errBadID        = errors.New("missing or incorrect id")
-	errUserNotFound = errors.New("user not found")
-	errBadPayload   = errors.New("payload is incorrect")
-	errCantCreate   = errors.New("cant create this")
+	ErrBadID        = errors.New("missing or incorrect id")
+	ErrUserNotFound = errors.New("user not found")
+	ErrBadPayload   = errors.New("payload is incorrect")
+	ErrCantCreated  = errors.New("cant create this")
+	ErrInternal     = errors.New("internal server error")
 )
 
-func RespondAPI(w http.ResponseWriter, r *http.Request, code int, err error) {
-	Respond(w, r, code, map[string]string{"result": err.Error()})
+func RespondAPI(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
+	Respond(w, r, code, map[string]interface{}{"result": data})
 }
 
-func ErrorAPI(w http.ResponseWriter, r *http.Request, code int, err error) {
-	Respond(w, r, code, map[string]string{"result": err.Error()})
+func ErrorHandlerAPI(w http.ResponseWriter, r *http.Request, code int, err error) {
+	Respond(w, r, code, map[string]string{"error": err.Error()})
 }
 
 func ErrorHandler(w http.ResponseWriter, r *http.Request, code int, err error) {

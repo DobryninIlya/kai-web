@@ -14,7 +14,7 @@ func NewScoreListHandler(store sqlstore.StoreInterface) func(w http.ResponseWrit
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 		scoreInfo, err := store.Verification().GetPersonInfoScore(uIdI)
@@ -26,7 +26,7 @@ func NewScoreListHandler(store sqlstore.StoreInterface) func(w http.ResponseWrit
 		scoreElementList, err := handler.GetScoresStruct(scoreInfo.Faculty, scoreInfo.Course, scoreInfo.GroupId, scoreInfo.Idcard, scoreInfo.Studentid)
 		resultString := handler.GetScoreList(scoreElementList)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errUserNotFound)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrUserNotFound)
 			w.Write([]byte(err.Error()))
 			return
 		}

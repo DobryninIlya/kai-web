@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-func NewLessonsHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewScheduleHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		groupId := chi.URLParam(r, "groupid")
 		groupIdI, err := strconv.Atoi(groupId)
@@ -16,21 +16,11 @@ func NewLessonsHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		params := r.URL.Query()
-		margin := params.Get("margin")
-		marginI := 0
-		if margin != "" {
-			marginI, err = strconv.Atoi(margin)
-		}
-		if err != nil {
-			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
-			return
-		}
 		if err != nil || groupIdI <= 0 {
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		lessons, _ := store.Schedule().GetCurrentDaySchedule(groupIdI, marginI)
+		lessons, _ := store.Schedule().GetScheduleByGroup(groupIdI)
 		h.RespondAPI(w, r, http.StatusOK, lessons)
 	}
 }

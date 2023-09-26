@@ -18,19 +18,19 @@ func NewCreateLessonHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 
 		body, err := io.ReadAll(r.Body)
 		if err != nil || body == nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
 		var lesson model.LessonNew
 		err = json.Unmarshal(body, &lesson)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
 

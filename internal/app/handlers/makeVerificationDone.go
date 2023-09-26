@@ -16,23 +16,23 @@ func NewVerificationDoneTemplate(store sqlstore.StoreInterface) func(w http.Resp
 		idStr := params.Get("vk_user_id")
 		id, err := strconv.Atoi(idStr)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 		body, err := io.ReadAll(r.Body)
 		if err != nil || body == nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadID)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 			return
 		}
 		var ver model.VerificationParams
 		err = json.Unmarshal(body, &ver)
 		if err != nil {
-			ErrorHandler(w, r, http.StatusBadRequest, errBadPayload)
+			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
 		groupId, _ := store.Schedule().GetIdByGroup(ver.Groupname)
 		if groupId == 0 {
-			ErrorHandler(w, r, http.StatusNotFound, errUserNotFound)
+			ErrorHandler(w, r, http.StatusNotFound, ErrUserNotFound)
 			return
 		}
 		u := &model.User{
