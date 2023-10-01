@@ -31,7 +31,7 @@
 Получает сохраненное расписание группы полностью без каких либо искажений.
 Формат ответа структуры Schedule, которая потом маршалится в json:
 ```go
-	type Schedule struct {  
+	type Schedule struct {
 		Day3 []Lesson `json:"3,omitempty"`  
 		Day2 []Lesson `json:"2,omitempty"`  
 		Day1 []Lesson `json:"1,omitempty"`  
@@ -63,4 +63,27 @@
 Отступ задается с помощью параметра *?margin={int}*
 В случае отсутствия параметра margin в запросе, отступ приравнивается к 0.
 
-В ответ приходит список из [Lesson](#L39) 
+В ответ приходит список из Lesson
+
+### 3. GET **/api/get_token** 
+Регистрирует нового API клиента и возвращает его токен.
+Принимаемый payload:
+```json
+{
+    "device_id": "adbcdef123", // unique constraint len=16
+    "device_tag": "SM-1234" // len=16
+}
+```
+При успешном ответе возвращается:
+```json
+{
+	"result": {
+		"token":"301437403bdf09fa95d14f568375178b59c3aff51dad0a97241a4bc1ed4cce33"
+	}
+}
+```
+#### Длина токена: 64
+
+Ошибки:
+
+ **unique constraint failed for one of the field** - *поле device id уже имеется в базе данных*

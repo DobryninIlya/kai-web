@@ -178,8 +178,8 @@ func GetDocumentationPageTemplate() (string, error) {
 	return strings.Join(data, "\n"), nil
 }
 
-func GetDocumentationPageMarkdown() (string, error) {
-	data, err := readFile(filepath.Join("internal", "app", path, "markdown", "main.md"))
+func GetDocumentationPageMarkdown(adress string) (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "markdown", adress+".md"))
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -187,12 +187,12 @@ func GetDocumentationPageMarkdown() (string, error) {
 	return strings.Join(data, "\n"), nil
 }
 
-func GetDocumentationPage() ([]byte, error) {
+func GetDocumentationPage(adress string) ([]byte, error) {
 	template, err := GetDocumentationPageTemplate()
 	if err != nil {
 		return nil, err
 	}
-	md, err := GetDocumentationPageMarkdown()
+	md, err := GetDocumentationPageMarkdown(adress)
 	result := fmt.Sprintf(template, md)
 	if err != nil {
 		return nil, err

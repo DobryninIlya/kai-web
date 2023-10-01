@@ -4,4 +4,5 @@ type StoreInterface interface {
 	User() *UserRepository
 	Schedule() *ScheduleRepository
 	Verification() *VerificationRepository
+	API() *ApiRepository
 }

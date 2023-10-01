@@ -56,6 +56,7 @@ func newApp(store sqlstore.StoreInterface, bindAddr string) *App {
 
 func (a *App) configureRouter() {
 	a.router.Use(a.logRequest)
+	//a.router.Use(imageStatusCodeHandler)
 	a.router.Route("/api", func(r chi.Router) {
 		r.Route("/schedule", func(r chi.Router) {
 			r.Get("/{groupid}", api.NewScheduleHandler(a.store))          // Расписание полностью
@@ -66,7 +67,9 @@ func (a *App) configureRouter() {
 			r.Get("/{group}", api.NewIdByGroupHandler(a.store)) // ID группы по ее номеру
 		})
 		//r.Get("/", api.NewLessonsHandler(a.store))
-		r.Get("/doc", api.NewDocumentationPageHandler()) // ID группы по ее номеру
+		r.Get("/doc", api.NewDocumentationPageHandler())             // Главная страница документации
+		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler()) // Страница документации
+		r.Get("/get_token", api.NewRegistrationHandler(a.store))     // ID группы по ее номеру
 	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)
@@ -102,6 +105,19 @@ func (a *App) configureRouter() {
 func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.router.ServeHTTP(w, r)
 }
+
+//func imageStatusCodeHandler(next http.Handler) http.Handler {
+//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+//		rec := &responseWriter{w, http.StatusOK}
+//
+//		next.ServeHTTP(rec, r)
+//		if rec.code >= 400 && rec.code < 500 {
+//			fmt.Sprintf("<div><img src=\"https://http.cat/%d\"></div>", rec.code)
+//			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+//			w.WriteHeader(rec.code)
+//		}
+//	})
+//}
 
 func cssHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

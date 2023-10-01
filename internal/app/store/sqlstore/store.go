@@ -10,6 +10,7 @@ type Store struct {
 	userRepository         *UserRepository
 	scheduleRepository     *ScheduleRepository
 	verificationRepository *VerificationRepository
+	apiRepository          *ApiRepository
 }
 
 // New ...
@@ -54,4 +55,16 @@ func (s *Store) Verification() *VerificationRepository {
 	}
 
 	return s.verificationRepository
+}
+
+func (s *Store) API() *ApiRepository {
+	if s.apiRepository != nil {
+		return s.apiRepository
+	}
+
+	s.apiRepository = &ApiRepository{
+		store: s,
+	}
+
+	return s.apiRepository
 }

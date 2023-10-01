@@ -30,7 +30,6 @@ func NewIdByGroupHandler(store sqlstore.StoreInterface) func(w http.ResponseWrit
 			return
 		}
 		result := answer{GroupId: groupID}
-		//data, _ := json.Marshal(result)
 		h.RespondAPI(w, r, http.StatusOK, result)
 	}
 }

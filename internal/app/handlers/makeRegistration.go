@@ -51,7 +51,7 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			GroupReal: groupReal,
 			Role:      int8(res.Role) + 1,
 			Login:     login,
-			Name:      "[имя не задано]",
+			Name:      "|имя не задано|",
 		}
 		//if val, err := service.MakeRegistration(res); val {
 		if err := store.User().Create(u); err == nil {
