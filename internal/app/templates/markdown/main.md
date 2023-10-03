@@ -1,6 +1,8 @@
 
 # Документация к API КапиПары
 ---
+##### [Аворизация по токену](doc/autorization)
+---
 ## *Основной* адрес вызова API:
 
 > schedule-bot.kai.ru/api
@@ -39,6 +41,7 @@
 		Day5 []Lesson `json:"5,omitempty"`  
 		Day4 []Lesson `json:"4,omitempty"`  
 	}
+
 	type Lesson struct {  
 		PrepodNameEnc string `json:"prepodNameEnc"`  
 		DayDate string `json:"dayDate"`  
@@ -65,6 +68,10 @@
 
 В ответ приходит список из Lesson
 
+---
+
+# **Секция /get_token**
+
 ### 3. GET **/api/get_token** 
 Регистрирует нового API клиента и возвращает его токен.
 Принимаемый payload:
@@ -87,3 +94,5 @@
 Ошибки:
 
  **unique constraint failed for one of the field** - *поле device id уже имеется в базе данных*
+
+[Аворизация по токену](doc/autorization)

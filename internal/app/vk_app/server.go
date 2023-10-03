@@ -59,11 +59,13 @@ func (a *App) configureRouter() {
 	//a.router.Use(imageStatusCodeHandler)
 	a.router.Route("/api", func(r chi.Router) {
 		r.Route("/schedule", func(r chi.Router) {
+			r.Use(a.authorizationByToken)
 			r.Get("/{groupid}", api.NewScheduleHandler(a.store))          // Расписание полностью
 			r.Get("/{groupid}/by_margin", api.NewLessonsHandler(a.store)) // На день с отступом margin от текущего дня
 			r.Get("/{groupid}/teachers", api.NewTeachersHandler(a.store)) // На день с отступом margin от текущего дня
 		})
 		r.Route("/groups", func(r chi.Router) {
+			r.Use(a.authorizationByToken)
 			r.Get("/{group}", api.NewIdByGroupHandler(a.store)) // ID группы по ее номеру
 		})
 		//r.Get("/", api.NewLessonsHandler(a.store))
@@ -104,6 +106,18 @@ func (a *App) configureRouter() {
 
 func (a *App) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	a.router.ServeHTTP(w, r)
+}
+
+func (a *App) authorizationByToken(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		url := r.URL.Query()
+		_, err, code := a.store.API().CheckToken(url.Get("token"))
+		if err != nil {
+			handler.ErrorHandlerAPI(w, r, code, err)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 //func imageStatusCodeHandler(next http.Handler) http.Handler {

@@ -4,10 +4,12 @@ import (
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"log"
 	"main/internal/app/model"
 	_ "main/internal/app/store"
+	"net/http"
 )
 
 // ApiRepository реализует работу API с хранилищем базы данных
@@ -48,4 +50,15 @@ func (r ApiRepository) RegistrationToken(client *model.ApiClient) (string, error
 		newToken,
 	).Scan(&client.Id)
 	return newToken, err
+}
+
+func (r ApiRepository) CheckToken(tokenStr string) (int, error, int) {
+	var id int
+	err := r.store.db.QueryRow("SELECT id FROM public.api_tokens WHERE token=$1",
+		tokenStr,
+	).Scan(&id)
+	if err != nil || id == 0 {
+		return 0, errors.New("bad token"), http.StatusForbidden
+	}
+	return id, nil, 200
 }
