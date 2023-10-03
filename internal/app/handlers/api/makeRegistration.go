@@ -39,6 +39,14 @@ func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadPayload)
 			return
 		}
+		if len(res.DeviceTag) > 16 || len(res.DeviceId) > 16 {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка создания токена. Длина deviceTag или deviceId превышена : %v",
+				path,
+				h.ErrLongData.Error(),
+			)
+		}
 		token, err := store.API().RegistrationToken(&res)
 		if err != nil {
 			log.Logf(

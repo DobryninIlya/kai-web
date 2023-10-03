@@ -14,6 +14,7 @@ var (
 	ErrCantCreated      = errors.New("cant create this")
 	ErrInternal         = errors.New("internal server error")
 	ErrUniqueConstraint = errors.New("unique constraint failed for one of the field")
+	ErrLongData         = errors.New("the length of one of parameters is too much")
 )
 
 func RespondAPI(w http.ResponseWriter, r *http.Request, code int, data interface{}) {

@@ -93,6 +93,7 @@
 
 Ошибки:
 
- **unique constraint failed for one of the field** - *поле device id уже имеется в базе данных*
+ **unique constraint failed for one of the field** - *поле device_id уже имеется в базе данных*
+ **the length of one of parameters is too much** - *поле device_id или device_tag превышает допустимую длину*
 
 [Аворизация по токену](doc/autorization)
