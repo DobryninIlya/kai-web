@@ -2,14 +2,16 @@ package api_handler
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/sirupsen/logrus"
 	h "main/internal/app/handlers"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 	"strconv"
 )
 
-func NewTeachersHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewTeachersHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		const path = "handlers.getteachers.NewTeachersHandler"
 		groupId := chi.URLParam(r, "groupid")
 		groupIdI, err := strconv.Atoi(groupId)
 		if err != nil || groupId == "" {
@@ -20,7 +22,15 @@ func NewTeachersHandler(store sqlstore.StoreInterface) func(w http.ResponseWrite
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		teachers := store.Schedule().GetTeacherListStruct(groupIdI)
+		teachers, err := store.Schedule().GetTeacherListStruct(groupIdI)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения списка структур преподавателей: %v",
+				path,
+				err.Error(),
+			)
+		}
 		h.RespondAPI(w, r, http.StatusOK, teachers)
 	}
 }

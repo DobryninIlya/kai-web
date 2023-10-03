@@ -60,44 +60,42 @@ func (a *App) configureRouter() {
 	a.router.Route("/api", func(r chi.Router) {
 		r.Route("/schedule", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
-			r.Get("/{groupid}", api.NewScheduleHandler(a.store))          // Расписание полностью
-			r.Get("/{groupid}/by_margin", api.NewLessonsHandler(a.store)) // На день с отступом margin от текущего дня
-			r.Get("/{groupid}/teachers", api.NewTeachersHandler(a.store)) // На день с отступом margin от текущего дня
+			r.Get("/{groupid}", api.NewScheduleHandler(a.store, a.logger))          // Расписание полностью
+			r.Get("/{groupid}/by_margin", api.NewLessonsHandler(a.store, a.logger)) // На день с отступом margin от текущего дня
+			r.Get("/{groupid}/teachers", api.NewTeachersHandler(a.store, a.logger)) // На день с отступом margin от текущего дня
 		})
 		r.Route("/groups", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
-			r.Get("/{group}", api.NewIdByGroupHandler(a.store)) // ID группы по ее номеру
+			r.Get("/{group}", api.NewIdByGroupHandler(a.store, a.logger)) // ID группы по ее номеру
 		})
-		//r.Get("/", api.NewLessonsHandler(a.store))
-		r.Get("/doc", api.NewDocumentationPageHandler())             // Главная страница документации
-		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler()) // Страница документации
-		r.Get("/get_token", api.NewRegistrationHandler(a.store))     // ID группы по ее номеру
+		//r.Get("/", api.NewLessonsHandler(a.store, a.logger))
+		r.Get("/doc", api.NewDocumentationPageHandler())                   // Главная страница документации
+		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())       // Страница документации
+		r.Get("/get_token", api.NewRegistrationHandler(a.store, a.logger)) // ID группы по ее номеру
 	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)
-		r.Get("/", handler.New(a.store))
-		r.Post("/registration", handler.NewRegistrationHandler(a.store))
-		r.Get("/delete_user", handler.NewDeleteUserHandler(a.store))
+		r.Get("/", handler.New(a.store, a.logger))
+		r.Post("/registration", handler.NewRegistrationHandler(a.store, a.logger))
+		r.Get("/delete_user", handler.NewDeleteUserHandler(a.store, a.logger))
 		r.Get("/verification", handler.NewVerificationTemplate())
-		r.Post("/verification/done", handler.NewVerificationDoneTemplate(a.store))
-		r.Get("/get_lesson/{uId}", handler.NewLessonsHandler(a.store))
-		r.Get("/exam", handler.NewExamHandler(a.store))
-		r.Get("/teacher", handler.NewTeacherHandler(a.store))
-		r.Get("/scoretable", handler.NewScoreListHandler(a.store))
-		r.Post("/delete_lesson", handler.NewDeleteLessonHandler(a.store))
-		r.Post("/return_lesson", handler.NewReturnLessonHandler(a.store))
+		r.Post("/verification/done", handler.NewVerificationDoneTemplate(a.store, a.logger))
+		r.Get("/get_lesson/{uId}", handler.NewLessonsHandler(a.store, a.logger))
+		r.Get("/exam", handler.NewExamHandler(a.store, a.logger))
+		r.Get("/teacher", handler.NewTeacherHandler(a.store, a.logger))
+		r.Get("/scoretable", handler.NewScoreListHandler(a.store, a.logger))
+		r.Post("/delete_lesson", handler.NewDeleteLessonHandler(a.store, a.logger))
+		r.Post("/return_lesson", handler.NewReturnLessonHandler(a.store, a.logger))
 		r.Get("/stylesheet", handler.NewStyleSheetHandler())
 		//
 		r.Route("/attestation", func(r chi.Router) {
-			r.Get("/get_groups", handler.NewGroupsHandler())
-			r.Get("/get_person", handler.NewPersonHandler())
-			r.Get("/get_fac", handler.NewFacHandler())
-			r.Get("/get_score", handler.NewScoreHandler())
+			r.Get("/get_groups", handler.NewGroupsHandler(a.logger))
+			r.Get("/get_person", handler.NewPersonHandler(a.logger))
+			r.Get("/get_fac", handler.NewFacHandler(a.logger))
+			r.Get("/get_score", handler.NewScoreHandler(a.logger))
 		})
 
 	})
-	//a.router.Post("/brs.php", tools.NewExamHandler(a.store))
-	//a.router.Handle("/static/css/*", http.StripPrefix("/static/css/", http.FileServer(http.Dir(filepath.Join("internal", "templates", "css")))))
 	a.router.Handle("/static/css/*", http.StripPrefix("/static/css/", cssHandler(http.FileServer(http.Dir(filepath.Join("internal", "app", "templates", "css"))))))
 	a.router.Handle("/static/js/*", http.StripPrefix("/static/js/", http.FileServer(http.Dir(filepath.Join("internal", "app", "templates", "js")))))
 	a.router.Handle("/static/img/*", http.StripPrefix("/static/img/", http.FileServer(http.Dir(filepath.Join("internal", "app", "templates", "img")))))

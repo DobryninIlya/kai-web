@@ -1,13 +1,23 @@
 package handler
 
 import (
+	"github.com/sirupsen/logrus"
 	"main/internal/app/tools"
 	"net/http"
 )
 
-func NewFacHandler() func(w http.ResponseWriter, r *http.Request) {
+func NewFacHandler(log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		result := tools.GetFacultiesListBRS()
+		const path = "handlers.getFadcListBRS.NewFacHandler"
+		result, err := tools.GetFacultiesListBRS()
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения списка факультетов для БРС: %v",
+				path,
+				err.Error(),
+			)
+		}
 		Respond(w, r, http.StatusOK, result)
 	}
 }

@@ -216,14 +216,17 @@ func GetTeachersTemplate() (string, error) {
 	return strings.Join(data, "\n"), nil
 }
 
-func GetTeacherList(prepodList []model.Prepod) string {
+func GetTeacherList(prepodList []model.Prepod) (string, error) {
 	mainTemplate, err := GetMainTeachersTemplate()
+	if err != nil {
+		return "", err
+	}
 	nullTemplate, err := GetNullTemplate()
 	if err != nil {
-		log.Printf("Ошибка teachers template %v", err)
+		return "", err
 	}
 	if len(prepodList) == 0 {
-		return fmt.Sprintf(mainTemplate, nullTemplate)
+		return fmt.Sprintf(mainTemplate, nullTemplate), nil
 	}
 	teacherDiv, err := GetTeachersTemplate()
 	if err != nil {
@@ -249,7 +252,7 @@ func GetTeacherList(prepodList []model.Prepod) string {
 		}
 		result += fmt.Sprintf(teacherDiv, lessonTypes, prepod.Name, prepod.Lesson)
 	}
-	return fmt.Sprintf(mainTemplate, result)
+	return fmt.Sprintf(mainTemplate, result), nil
 
 }
 
@@ -271,10 +274,13 @@ func GetScoreTemplate() (string, error) {
 	return strings.Join(data, "\n"), nil
 }
 
-func GetScoreList(scoreList []ScoreElement) string {
+func GetScoreList(scoreList []ScoreElement) (string, error) {
 	scoreTemplate, err := GetScoreMainTemplate()
-	if scoreList == nil || err != nil {
-		return scoreTemplate
+	if err != nil {
+		return "", err
+	}
+	if scoreList == nil {
+		return scoreTemplate, nil
 	}
 	scoreAllString := ""
 	scoreElementTemplate, _ := GetScoreTemplate()
@@ -285,7 +291,7 @@ func GetScoreList(scoreList []ScoreElement) string {
 			elem.AdditionalScore, elem.Final,
 		) + "\n"
 	}
-	return fmt.Sprintf(scoreTemplate, scoreAllString)
+	return fmt.Sprintf(scoreTemplate, scoreAllString), nil
 }
 
 func GetExamList(examElems []model.Exam) string {

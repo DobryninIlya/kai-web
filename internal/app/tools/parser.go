@@ -34,17 +34,17 @@ func init() {
 }
 
 // GetGroupListBRS BRS - Бально рейтинговая система
-func GetGroupListBRS(faculty, course string) []byte {
+func GetGroupListBRS(faculty, course string) ([]byte, error) {
 	data := fmt.Sprintf("?p_fac=%v&p_kurs=%v", faculty, course)
 	resp, err := http.Get(oldKaiURL + data)
 	if err != nil {
-		log.Printf("Ошибка парсинга: %v", err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	doc, err := goquery.NewDocumentFromReader(resp.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	resultArray := make(map[string]string)
 	doc.Find("select[name=\"p_group\"] option").Each(func(i int, s *goquery.Selection) {
@@ -58,12 +58,12 @@ func GetGroupListBRS(faculty, course string) []byte {
 	result.Result = resultArray
 	res, err := json.Marshal(result)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return res
+	return res, nil
 }
 
-func GetPersonListBRS(faculty, course, group string) []byte {
+func GetPersonListBRS(faculty, course, group string) ([]byte, error) {
 	data := fmt.Sprintf("?p_fac=%v&p_kurs=%v&p_group=%v", faculty, course, group)
 	req, err := http.NewRequest("GET", oldKaiURL+data, nil)
 	req.Header.Set("Accept-Language", "ru-RU")
@@ -73,7 +73,7 @@ func GetPersonListBRS(faculty, course, group string) []byte {
 	resp, err := http.DefaultClient.Do(req)
 	//resp, err := http.Get(oldKaiURL + data)
 	if err != nil {
-		log.Printf("Ошибка парсинга: %v", err)
+		return nil, err
 	}
 	defer resp.Body.Close()
 
@@ -85,7 +85,7 @@ func GetPersonListBRS(faculty, course, group string) []byte {
 
 	doc, err := goquery.NewDocumentFromReader(bufReader)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	resultArray := make(map[string]string)
 	doc.Find("select[name=\"p_stud\"] option").Each(func(i int, s *goquery.Selection) {
@@ -99,23 +99,23 @@ func GetPersonListBRS(faculty, course, group string) []byte {
 	result.Result = resultArray
 	res, err := json.Marshal(result)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return res
+	return res, nil
 }
 
 type facResultAnswer struct {
 	Result map[int]string `json:"result"`
 }
 
-func GetFacultiesListBRS() []byte {
+func GetFacultiesListBRS() ([]byte, error) {
 	var result facResultAnswer
 	result.Result = faculties
 	res, err := json.Marshal(result)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return res
+	return res, nil
 }
 
 type ScoreElement struct {

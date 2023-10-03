@@ -1,13 +1,15 @@
 package handler
 
 import (
+	"github.com/sirupsen/logrus"
 	"main/internal/app/tools"
 	"net/http"
 	"strconv"
 )
 
-func NewScoreHandler() func(w http.ResponseWriter, r *http.Request) {
+func NewScoreHandler(log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		const path = "handlers.getScoreBRS.NewScoreHandler"
 		params := r.URL.Query()
 		pFac, err := strconv.Atoi(params.Get("p_fac"))
 		if err != nil {
@@ -33,8 +35,13 @@ func NewScoreHandler() func(w http.ResponseWriter, r *http.Request) {
 		}
 		result, err := tools.GetScores(pFac, pKurs, pGroup, pZach, pStud)
 		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения БРС: %v",
+				path,
+				err.Error(),
+			)
 			ErrorHandler(w, r, http.StatusBadRequest, ErrUserNotFound)
-			w.Write([]byte(err.Error()))
 			return
 		}
 		Respond(w, r, http.StatusOK, result)

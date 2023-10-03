@@ -2,24 +2,37 @@ package handler
 
 import (
 	"encoding/json"
+	"github.com/sirupsen/logrus"
 	"io"
-	"log"
 	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 	"strconv"
 )
 
-func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		const path = "handlers.makeRegistration.NewRegistrationHandler"
 		var res model.RegistrationData
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получение user: %v",
+				path,
+				err.Error(),
+			)
 			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
 		err = json.Unmarshal(body, &res)
 		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка анмаршалинга body: %v",
+				path,
+				err.Error(),
+			)
 			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
@@ -30,7 +43,12 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			login = ""
 			groupId, err = store.Schedule().GetIdByGroup(groupReal)
 			if err != nil {
-				log.Printf(err.Error())
+				log.Logf(
+					logrus.ErrorLevel,
+					"%s : Ошибка получения расписания : %v",
+					path,
+					err.Error(),
+				)
 				ErrorHandler(w, r, http.StatusBadRequest, ErrBadID)
 				return
 			}
@@ -58,7 +76,12 @@ func NewRegistrationHandler(store sqlstore.StoreInterface) func(w http.ResponseW
 			Respond(w, r, http.StatusOK, []byte("{\"status\": \"ok\"}"))
 			return
 		} else {
-			log.Printf("error when user create: %v", err)
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка создания user: %v",
+				path,
+				err.Error(),
+			)
 			ErrorHandler(w, r, http.StatusBadRequest, ErrCantCreated)
 		}
 

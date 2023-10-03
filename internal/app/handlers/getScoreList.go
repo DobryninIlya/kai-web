@@ -1,15 +1,16 @@
 package handler
 
 import (
-	"log"
+	"github.com/sirupsen/logrus"
 	"main/internal/app/store/sqlstore"
 	handler "main/internal/app/tools"
 	"net/http"
 	"strconv"
 )
 
-func NewScoreListHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewScoreListHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		const path = "handlers.getScoreList.NewScoreListHandler"
 		params := r.URL.Query()
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
@@ -19,16 +20,34 @@ func NewScoreListHandler(store sqlstore.StoreInterface) func(w http.ResponseWrit
 		}
 		scoreInfo, err := store.Verification().GetPersonInfoScore(uIdI)
 		if err != nil {
-			log.Printf("Ошибка получения списка оценок, %v", err)
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения списка оценок: %v",
+				path,
+				err.Error(),
+			)
 			Respond(w, r, http.StatusNotFound, err)
 			return
 		}
 		scoreElementList, err := handler.GetScoresStruct(scoreInfo.Faculty, scoreInfo.Course, scoreInfo.GroupId, scoreInfo.Idcard, scoreInfo.Studentid)
-		resultString := handler.GetScoreList(scoreElementList)
 		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения списка структур БРС : %v",
+				path,
+				err.Error(),
+			)
 			ErrorHandler(w, r, http.StatusBadRequest, ErrUserNotFound)
-			w.Write([]byte(err.Error()))
 			return
+		}
+		resultString, err := handler.GetScoreList(scoreElementList)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения списка оценок : %v",
+				path,
+				err.Error(),
+			)
 		}
 		Respond(w, r, http.StatusOK, []byte(resultString))
 

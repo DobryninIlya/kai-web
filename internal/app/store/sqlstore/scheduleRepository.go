@@ -37,8 +37,8 @@ func (r ScheduleRepository) GetIdByGroup(id int) (int, error) {
 	if err := r.store.db.QueryRow(
 		"SELECT shedule FROM saved_timetable WHERE groupp=$1",
 		1,
-	).Scan(&result); err != nil {
-		if err == sql.ErrNoRows {
+	).Scan(&result); err != nil || len(result) == 0 {
+		if err == sql.ErrNoRows || len(result) == 0 {
 			return 0, store.ErrRecordNotFound
 		}
 
@@ -51,8 +51,7 @@ func (r ScheduleRepository) GetIdByGroup(id int) (int, error) {
 			return group.Id, nil
 		}
 	}
-
-	return 0, nil
+	return 0, errors.New("Расписание не найдено для группы: " + strconv.Itoa(id))
 }
 
 func (r ScheduleRepository) MarkDeletedLesson(user model.User, lessonId int, uniqString string) (int, error) {
@@ -216,11 +215,14 @@ func isContainsInDict(date string) bool {
 	return false
 }
 
-func (r *ScheduleRepository) GetCurrentDaySchedule(groupId int, margin int) ([]model.Lesson, time.Time) {
+func (r *ScheduleRepository) GetCurrentDaySchedule(groupId int, margin int) ([]model.Lesson, time.Time, error) {
 	day := time.Now().AddDate(0, 0, margin)
 	dayNum := day.Weekday()
 
-	groupSchedule, _ := r.GetScheduleByGroup(groupId)
+	groupSchedule, err := r.GetScheduleByGroup(groupId)
+	if err != nil {
+		return nil, time.Time{}, err
+	}
 	lessons := make([]model.Lesson, 0, 4)
 	switch {
 	case dayNum == 1:
@@ -239,7 +241,7 @@ func (r *ScheduleRepository) GetCurrentDaySchedule(groupId int, margin int) ([]m
 		lessons = []model.Lesson{}
 	}
 
-	return formScheduleList(lessons, margin), day
+	return formScheduleList(lessons, margin), day, nil
 }
 
 func GetScheduleStruct(body []byte) model.Schedule {
@@ -267,8 +269,11 @@ func (r *ScheduleRepository) GetScheduleByGroup(group int) (model.Schedule, erro
 	return scheduleStruct, nil
 }
 
-func (r *ScheduleRepository) GetTeacherListStruct(groupId int) []model.Prepod {
-	sched, _ := r.GetScheduleByGroup(groupId)
+func (r *ScheduleRepository) GetTeacherListStruct(groupId int) ([]model.Prepod, error) {
+	sched, err := r.GetScheduleByGroup(groupId)
+	if err != nil {
+		return nil, err
+	}
 	prepodList := make([]model.Prepod, 0)
 	v := reflect.ValueOf(sched)
 	for i := 0; i < v.NumField(); i++ { // перебираем все поля структуры
@@ -307,6 +312,6 @@ func (r *ScheduleRepository) GetTeacherListStruct(groupId int) []model.Prepod {
 		}
 	}
 
-	return prepodList
+	return prepodList, nil
 
 }

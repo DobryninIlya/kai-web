@@ -2,6 +2,7 @@ package api_handler
 
 import (
 	"github.com/go-chi/chi"
+	"github.com/sirupsen/logrus"
 	h "main/internal/app/handlers"
 	"main/internal/app/store/sqlstore"
 	"net/http"
@@ -12,8 +13,9 @@ type answer struct {
 	GroupId int `json:"group_id"`
 }
 
-func NewIdByGroupHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewIdByGroupHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		const path = "handlers.api.getIdByGroup.NewIdByGroupHandler"
 		group := chi.URLParam(r, "group")
 		groupI, err := strconv.Atoi(group)
 		if err != nil || group == "" {
@@ -24,9 +26,15 @@ func NewIdByGroupHandler(store sqlstore.StoreInterface) func(w http.ResponseWrit
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		groupID, error := store.Schedule().GetIdByGroup(groupI)
-		if error != nil {
-			h.ErrorHandlerAPI(w, r, http.StatusNotImplemented, h.ErrInternal)
+		groupID, err := store.Schedule().GetIdByGroup(groupI)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения расписания: %v",
+				path,
+				err.Error(),
+			)
+			h.ErrorHandlerAPI(w, r, http.StatusNotFound, h.ErrRecordNotFound)
 			return
 		}
 		result := answer{GroupId: groupID}

@@ -11,18 +11,18 @@ import (
 
 const examUrl = "https://kai.ru/raspisanie?p_p_id=pubStudentSchedule_WAR_publicStudentSchedule10&p_p_lifecycle=2&p_p_resource_id=examSchedule&groupId="
 
-func GetExamListStruct(groupId int) []model.Exam {
+func GetExamListStruct(groupId int) ([]model.Exam, error) {
 	resp, err := http.Get(examUrl + strconv.Itoa(groupId))
 	if err != nil {
-		log.Printf("Ошибка зпроса расписания экзаменов в database: %v", err.Error())
+		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	examStruct, err := GetExamStruct(body)
 	if err != nil {
-		return nil
+		return nil, err
 	}
-	return examStruct
+	return examStruct, nil
 
 }
 func GetExamStruct(body []byte) ([]model.Exam, error) {

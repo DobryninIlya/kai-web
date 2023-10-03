@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/sirupsen/logrus"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tools"
 	"net/http"
@@ -17,8 +18,9 @@ import (
 //	}
 //}
 
-func NewTeacherHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewTeacherHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
+		const path = "handlers.getTeachersList.NewTeacherHandler"
 		params := r.URL.Query()
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
@@ -28,15 +30,33 @@ func NewTeacherHandler(store sqlstore.StoreInterface) func(w http.ResponseWriter
 		}
 		user, err := store.User().Find(uIdI)
 		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения расписания на конкретный день: %v",
+				path,
+				err.Error(),
+			)
 			ErrorHandler(w, r, http.StatusBadRequest, ErrUserNotFound)
-
 			return
 		}
-		teachers := store.Schedule().GetTeacherListStruct(user.Group)
-		//if len(teachers) == 0 {
-		//	teachers = teachersNull
-		//}
-		data := tools.GetTeacherList(teachers)
+		teachers, err := store.Schedule().GetTeacherListStruct(user.Group)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения списка преподавателей: %v",
+				path,
+				err.Error(),
+			)
+		}
+		data, err := tools.GetTeacherList(teachers)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения списка преподавателей : %v",
+				path,
+				err.Error(),
+			)
+		}
 		Respond(w, r, http.StatusOK, []byte(data))
 	}
 }
