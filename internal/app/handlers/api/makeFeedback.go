@@ -59,7 +59,6 @@ func NewFeedbackHandler(store sqlstore.StoreInterface, log *logrus.Logger, api *
 			)
 		}
 		message := fmt.Sprintf(messageTemplate, tokenInfo.DeviceId, tokenInfo.DeviceTag, res.Version, res.Text)
-		message = "проверка меткости"
 		sendResult := api.SendMessageTG(log, peer, message, "", 592)
 		if !sendResult {
 			log.Logf(
