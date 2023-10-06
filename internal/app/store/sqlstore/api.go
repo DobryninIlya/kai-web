@@ -62,3 +62,20 @@ func (r ApiRepository) CheckToken(tokenStr string) (int, error, int) {
 	}
 	return id, nil, 200
 }
+
+// GetTokenInfo получает информацию о владельце токена
+func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {
+	var res model.ApiClient
+	err := r.store.db.QueryRow("SELECT id, device_id, device_tag, create_date FROM public.api_tokens WHERE token=$1",
+		tokenStr,
+	).Scan(
+		&res.Id,
+		&res.DeviceId,
+		&res.DeviceTag,
+		&res.CreateDate,
+	)
+	if err != nil || res.Id == 0 {
+		return model.ApiClient{}, errors.New("bad token")
+	}
+	return res, nil
+}

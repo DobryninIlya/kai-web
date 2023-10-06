@@ -6,6 +6,7 @@ import (
 	handler "main/internal/app/handlers"
 	api "main/internal/app/handlers/api"
 	"main/internal/app/store/sqlstore"
+	"main/internal/app/tg_api"
 	"net/http"
 	"os"
 	"os/signal"
@@ -21,6 +22,7 @@ type App struct {
 	done   chan os.Signal
 	server *http.Server
 	store  sqlstore.StoreInterface
+	tgApi  *tg_api.APItg
 	logger *logrus.Logger
 }
 
@@ -36,6 +38,7 @@ func newApp(store sqlstore.StoreInterface, bindAddr string) *App {
 		server: server,
 		store:  store,
 		logger: logrus.New(),
+		tgApi:  tg_api.NewAPItg(),
 	}
 	a.configureRouter()
 	signal.Notify(a.done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -69,6 +72,10 @@ func (a *App) configureRouter() {
 			r.Get("/{group}", api.NewIdByGroupHandler(a.store, a.logger)) // ID группы по ее номеру
 		})
 		//r.Get("/", api.NewLessonsHandler(a.store, a.logger))
+		r.Route("/feedback", func(r chi.Router) {
+			r.Use(a.authorizationByToken)
+			r.Post("/", api.NewFeedbackHandler(a.store, a.logger, a.tgApi)) // ID группы по ее номеру
+		}) // Главная страница документации
 		r.Get("/doc", api.NewDocumentationPageHandler())                   // Главная страница документации
 		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())       // Страница документации
 		r.Get("/get_token", api.NewRegistrationHandler(a.store, a.logger)) // ID группы по ее номеру

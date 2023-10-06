@@ -94,6 +94,21 @@
 Ошибки:
 
  **unique constraint failed for one of the field** - *поле device_id уже имеется в базе данных*
+
  **the length of one of parameters is too much** - *поле device_id или device_tag превышает допустимую длину*
 
 [Аворизация по токену](doc/autorization)
+
+# **Секция /feedback**
+
+### 3. POST **/api/feedback/** 
+Обрабатывает фидбек от пользователя и отправляет его в соответствующий телеграм-чат
+
+Принимаемый payload:
+
+```json
+{
+    "version": "alpha-0.1", // Версия приложения
+    "text": "the best app" // len=16
+}
+```
