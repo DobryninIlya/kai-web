@@ -1,6 +1,7 @@
 package sqlstore
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
 	"errors"
@@ -245,6 +246,10 @@ func (r *ScheduleRepository) GetCurrentDaySchedule(groupId int, margin int) ([]m
 }
 
 func GetScheduleStruct(body []byte) model.Schedule {
+	re := regexp.MustCompile("\\s+")
+	s := string(bytes.TrimSpace(body))
+	s = re.ReplaceAllString(s, " ")
+	body = []byte(s)
 	var shed model.Schedule
 	err := json.Unmarshal(body, &shed)
 	if err != nil {

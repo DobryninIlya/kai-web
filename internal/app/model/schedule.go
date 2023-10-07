@@ -12,21 +12,21 @@ type ScheduleSaved struct {
 }
 
 type Lesson struct {
-	PrepodNameEnc  string `json:"prepodNameEnc"`
-	DayDate        string `json:"dayDate"`
-	AudNum         string `json:"audNum"`
-	DisciplName    string `json:"disciplName"`
-	BuildNum       string `json:"buildNum"`
-	OrgUnitName    string `json:"orgUnitName"`
-	DayTime        string `json:"dayTime"`
-	DayNum         string `json:"dayNum"`
-	Potok          string `json:"potok"`
-	PrepodName     string `json:"prepodName"`
-	DisciplNum     string `json:"disciplNum"`
-	OrgUnitId      string `json:"orgUnitId"`
-	PrepodLogin    string `json:"prepodLogin"`
-	DisciplType    string `json:"disciplType"`
-	DisciplNameEnc string `json:"disciplNameEnc"`
+	//PrepodNameEnc string `json:"prepodNameEnc"`
+	DayDate     string `json:"dayDate"`
+	AudNum      string `json:"audNum"`
+	DisciplName string `json:"disciplName"`
+	BuildNum    string `json:"buildNum"`
+	OrgUnitName string `json:"orgUnitName"`
+	DayTime     string `json:"dayTime"`
+	DayNum      string `json:"dayNum"`
+	Potok       string `json:"potok"`
+	PrepodName  string `json:"prepodName"`
+	DisciplNum  string `json:"disciplNum"`
+	OrgUnitId   string `json:"orgUnitId"`
+	PrepodLogin string `json:"prepodLogin"`
+	DisciplType string `json:"disciplType"`
+	//DisciplNameEnc string `json:"disciplNameEnc"`
 }
 
 type Schedule struct {

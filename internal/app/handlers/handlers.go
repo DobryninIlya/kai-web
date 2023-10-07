@@ -34,7 +34,9 @@ func Respond(w http.ResponseWriter, r *http.Request, code int, data interface{})
 	if data != nil {
 		byteData, ok := data.([]byte)
 		if !ok {
-			json.NewEncoder(w).Encode(data)
+			enc := json.NewEncoder(w)
+			enc.SetIndent("", "  ")
+			enc.Encode(data)
 			return
 		}
 		w.Write(byteData)
