@@ -5,7 +5,7 @@
 ---
 ## *Основной* адрес вызова API:
 
-> schedule-bot.kai.ru/api
+> ### _schedule-bot.kai.ru/api_
 
 
 Успешный ответ:
@@ -27,7 +27,7 @@
 
 ---
 
-# **Секция /schedule**
+# **Секция /schedule** _(с авторизацией)_
 
 ### 1.  GET **/api/schedule/_{groupid}_** 
 Получает сохраненное расписание группы полностью без каких либо искажений.
@@ -60,7 +60,7 @@
 		DisciplNameEnc string `json:"disciplNameEnc"`  
 	}
 ```
-### 2. GET **/api/schedule/_{groupid}_/by_margin** 
+### 2. GET **/api/schedule/_{groupid}_/by_margin**  
 Получает расписание на конкретный день с соответствующим отступом.
 
 Отступ задается с помощью параметра *?margin={int}*
@@ -70,9 +70,9 @@
 
 ---
 
-# **Секция /get_token**
+# **Секция /token** 
 
-### 3. GET **/api/get_token** 
+### 3. GET **/api/token** 
 Регистрирует нового API клиента и возвращает его токен.
 Принимаемый payload:
 ```json
@@ -99,9 +99,27 @@
 
 [Аворизация по токену](doc/autorization)
 
-# **Секция /feedback**
+### 4. GET **/api/token/whoiam** _(с авторизацией)_
+Возвращает известную информацию о владельце токена
+```json
+{
+	"result":
+	{
+		"device_id":"adbcdef123456   ",
+		"device_tag":"SM-1234         ",
+		"create_date":
+		{
+			"Time":"2023-10-06T00:00:00Z",
+			"Status":2,
+			"InfinityModifier":0
+		}
+	}
+}
+```
 
-### 3. POST **/api/feedback/** 
+# **Секция /feedback** _(с авторизацией)_
+
+### 5. POST **/api/feedback/** 
 Обрабатывает фидбек от пользователя и отправляет его в соответствующий телеграм-чат
 
 Принимаемый payload:

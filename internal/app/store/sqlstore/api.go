@@ -52,15 +52,15 @@ func (r ApiRepository) RegistrationToken(client *model.ApiClient) (string, error
 	return newToken, err
 }
 
-func (r ApiRepository) CheckToken(tokenStr string) (int, error, int) {
-	var id int
-	err := r.store.db.QueryRow("SELECT id FROM public.api_tokens WHERE token=$1",
+func (r ApiRepository) CheckToken(tokenStr string) (model.ApiClient, error, int) {
+	var client model.ApiClient
+	err := r.store.db.QueryRow("SELECT device_id, device_tag, create_date FROM public.api_tokens WHERE token=$1",
 		tokenStr,
-	).Scan(&id)
-	if err != nil || id == 0 {
-		return 0, errors.New("bad token"), http.StatusForbidden
+	).Scan(&client.DeviceId, &client.DeviceTag, &client.CreateDate)
+	if err != nil || len(client.DeviceId) == 0 {
+		return model.ApiClient{}, errors.New("bad token"), http.StatusForbidden
 	}
-	return id, nil, 200
+	return client, nil, 200
 }
 
 // GetTokenInfo получает информацию о владельце токена

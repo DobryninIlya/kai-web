@@ -76,9 +76,10 @@ func (a *App) configureRouter() {
 			r.Use(a.authorizationByToken)
 			r.Post("/", api.NewFeedbackHandler(a.store, a.logger, a.tgApi)) // ID группы по ее номеру
 		}) // Главная страница документации
-		r.Get("/doc", api.NewDocumentationPageHandler())                   // Главная страница документации
-		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())       // Страница документации
-		r.Get("/get_token", api.NewRegistrationHandler(a.store, a.logger)) // ID группы по ее номеру
+		r.Get("/doc", api.NewDocumentationPageHandler())                // Главная страница документации
+		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())    // Страница документации
+		r.Get("/token", api.NewRegistrationHandler(a.store, a.logger))  // ID группы по ее номеру
+		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger)) // ID группы по ее номеру
 	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)
