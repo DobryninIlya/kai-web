@@ -3,7 +3,8 @@ package api_handler
 import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
-	h "main/internal/app/handlers"
+	h "main/internal/app/handlers/web_app"
+	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 	"strconv"
@@ -47,6 +48,11 @@ func NewScheduleHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(
 				err.Error(),
 			)
 		}
-		h.RespondAPI(w, r, http.StatusOK, lessons)
+		result := struct {
+			Lessons model.Schedule `json:"schedule"`
+		}{
+			lessons,
+		}
+		h.RespondAPI(w, r, http.StatusOK, result)
 	}
 }

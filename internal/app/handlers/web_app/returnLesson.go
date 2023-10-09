@@ -1,4 +1,4 @@
-package handler
+package web_app
 
 import (
 	"errors"
@@ -9,9 +9,9 @@ import (
 	"strconv"
 )
 
-func NewDeleteLessonHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
+func NewReturnLessonHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.deleteLesson.NewDeleteLessonHandler"
+		const path = "handlers.returnLesson.NewReturnLessonHandler"
 		params := r.URL.Query()
 		uId := params.Get("vk_user_id")
 		uIdI, err := strconv.Atoi(uId)
@@ -30,33 +30,31 @@ func NewDeleteLessonHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,
-				"%s : Ошибка получения user : %v",
+				"%s : Ошибка получения user: %v",
 				path,
 				err.Error(),
 			)
 		}
 		scoreInfo, err := store.Verification().GetPersonInfoScore(uIdI)
 		if err != nil || scoreInfo.GroupId == 0 {
-			if err != nil {
-				log.Logf(
-					logrus.ErrorLevel,
-					"%s : Ошибка получения данных верификации: %v",
-					path,
-					err.Error(),
-				)
-			}
-			ErrorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не удалось пометить занятие как удаленное: %v", err)))
-			return
-		}
-		_, err = store.Schedule().MarkDeletedLesson(*user, lessonIdI, uniqString)
-		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,
-				"%s : Ошибка попытки пометить задание как удаленное : %v",
+				"%s : Ошибка получения верификационных данных : %v",
 				path,
 				err.Error(),
 			)
-			ErrorHandler(w, r, http.StatusInternalServerError, errors.New(fmt.Sprintf("Не удалось пометить занятие как удаленное: %v", err)))
+			ErrorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
+			return
+		}
+		_, err = store.Schedule().ReturnDeletedLesson(*user, lessonIdI, uniqString)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка возврата занятия в расписание : %v",
+				path,
+				err.Error(),
+			)
+			ErrorHandler(w, r, http.StatusInternalServerError, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
 			return
 		}
 		Respond(w, r, http.StatusOK, nil)

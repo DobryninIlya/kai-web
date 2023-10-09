@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"github.com/sirupsen/logrus"
 	"io"
-	h "main/internal/app/handlers"
+	h "main/internal/app/handlers/web_app"
 	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"net/http"

@@ -1,4 +1,4 @@
-package handler
+package web_app
 
 import (
 	"main/internal/app/tools"

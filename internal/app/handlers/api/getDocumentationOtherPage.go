@@ -2,7 +2,7 @@ package api_handler
 
 import (
 	"github.com/go-chi/chi"
-	h "main/internal/app/handlers"
+	h "main/internal/app/handlers/web_app"
 	"main/internal/app/tools"
 	"net/http"
 )

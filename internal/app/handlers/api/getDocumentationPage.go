@@ -1,7 +1,7 @@
 package api_handler
 
 import (
-	h "main/internal/app/handlers"
+	h "main/internal/app/handlers/web_app"
 	"main/internal/app/tools"
 	"net/http"
 )

@@ -2,7 +2,7 @@ package api_handler
 
 import (
 	"github.com/sirupsen/logrus"
-	h "main/internal/app/handlers"
+	h "main/internal/app/handlers/web_app"
 	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"net/http"

@@ -16,20 +16,20 @@ import (
 
 const oldKaiURL = "https://old.kai.ru/info/students/brs.php"
 
-type groupResultAnswer struct {
+type GroupResultAnswer struct {
 	Result map[string]string `json:"result"`
 }
 
-var faculties map[int]string
+var Faculties map[int]string
 
 func init() {
-	faculties = make(map[int]string, 6)
-	faculties[1] = "ИАНТЭ"
-	faculties[2] = "ФМФ"
-	faculties[3] = "ИАЭП"
-	faculties[4] = "ИКТЗИ"
-	faculties[5] = "ИРЭТ"
-	faculties[28] = "ВШПИТ и ИИэП"
+	Faculties = make(map[int]string, 6)
+	Faculties[1] = "ИАНТЭ"
+	Faculties[2] = "ФМФ"
+	Faculties[3] = "ИАЭП"
+	Faculties[4] = "ИКТЗИ"
+	Faculties[5] = "ИРЭТ"
+	Faculties[28] = "ВШПИТ и ИИэП"
 
 }
 
@@ -54,7 +54,7 @@ func GetGroupListBRS(faculty, course string) ([]byte, error) {
 		}
 		resultArray[s.Text()] = value
 	})
-	var result groupResultAnswer
+	var result GroupResultAnswer
 	result.Result = resultArray
 	res, err := json.Marshal(result)
 	if err != nil {
@@ -95,7 +95,7 @@ func GetPersonListBRS(faculty, course, group string) ([]byte, error) {
 		}
 		resultArray[value] = s.Text()
 	})
-	var result groupResultAnswer
+	var result GroupResultAnswer
 	result.Result = resultArray
 	res, err := json.Marshal(result)
 	if err != nil {
@@ -110,7 +110,7 @@ type facResultAnswer struct {
 
 func GetFacultiesListBRS() ([]byte, error) {
 	var result facResultAnswer
-	result.Result = faculties
+	result.Result = Faculties
 	res, err := json.Marshal(result)
 	if err != nil {
 		return nil, err

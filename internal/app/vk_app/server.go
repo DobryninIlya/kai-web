@@ -3,8 +3,8 @@ package vk_app
 import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
-	handler "main/internal/app/handlers"
 	api "main/internal/app/handlers/api"
+	"main/internal/app/handlers/web_app"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tg_api"
 	"net/http"
@@ -75,7 +75,14 @@ func (a *App) configureRouter() {
 		r.Route("/feedback", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
 			r.Post("/", api.NewFeedbackHandler(a.store, a.logger, a.tgApi)) // ID группы по ее номеру
-		}) // Главная страница документации
+		})
+		r.Route("/attestation", func(r chi.Router) {
+			r.Use(a.authorizationByToken)
+			r.Get("/", api.NewScoreHandler(a.logger))             // ID группы по ее номеру
+			r.Get("/faculties", api.NewFacHandler(a.logger))      // ID группы по ее номеру
+			r.Get("/groups", api.NewGroupsHandler(a.logger))      // ID группы по ее номеру
+			r.Get("/patronymics", api.NewPersonHandler(a.logger)) // ID группы по ее номеру
+		})
 		r.Get("/doc", api.NewDocumentationPageHandler())                // Главная страница документации
 		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())    // Страница документации
 		r.Get("/token", api.NewRegistrationHandler(a.store, a.logger))  // ID группы по ее номеру
@@ -83,24 +90,24 @@ func (a *App) configureRouter() {
 	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)
-		r.Get("/", handler.New(a.store, a.logger))
-		r.Post("/registration", handler.NewRegistrationHandler(a.store, a.logger))
-		r.Get("/delete_user", handler.NewDeleteUserHandler(a.store, a.logger))
-		r.Get("/verification", handler.NewVerificationTemplate())
-		r.Post("/verification/done", handler.NewVerificationDoneTemplate(a.store, a.logger))
-		r.Get("/get_lesson/{uId}", handler.NewLessonsHandler(a.store, a.logger))
-		r.Get("/exam", handler.NewExamHandler(a.store, a.logger))
-		r.Get("/teacher", handler.NewTeacherHandler(a.store, a.logger))
-		r.Get("/scoretable", handler.NewScoreListHandler(a.store, a.logger))
-		r.Post("/delete_lesson", handler.NewDeleteLessonHandler(a.store, a.logger))
-		r.Post("/return_lesson", handler.NewReturnLessonHandler(a.store, a.logger))
-		r.Get("/stylesheet", handler.NewStyleSheetHandler())
+		r.Get("/", web_app.New(a.store, a.logger))
+		r.Post("/registration", web_app.NewRegistrationHandler(a.store, a.logger))
+		r.Get("/delete_user", web_app.NewDeleteUserHandler(a.store, a.logger))
+		r.Get("/verification", web_app.NewVerificationTemplate())
+		r.Post("/verification/done", web_app.NewVerificationDoneTemplate(a.store, a.logger))
+		r.Get("/get_lesson/{uId}", web_app.NewLessonsHandler(a.store, a.logger))
+		r.Get("/exam", web_app.NewExamHandler(a.store, a.logger))
+		r.Get("/teacher", web_app.NewTeacherHandler(a.store, a.logger))
+		r.Get("/scoretable", web_app.NewScoreListHandler(a.store, a.logger))
+		r.Post("/delete_lesson", web_app.NewDeleteLessonHandler(a.store, a.logger))
+		r.Post("/return_lesson", web_app.NewReturnLessonHandler(a.store, a.logger))
+		r.Get("/stylesheet", web_app.NewStyleSheetHandler())
 		//
 		r.Route("/attestation", func(r chi.Router) {
-			r.Get("/get_groups", handler.NewGroupsHandler(a.logger))
-			r.Get("/get_person", handler.NewPersonHandler(a.logger))
-			r.Get("/get_fac", handler.NewFacHandler(a.logger))
-			r.Get("/get_score", handler.NewScoreHandler(a.logger))
+			r.Get("/get_groups", web_app.NewGroupsHandler(a.logger))
+			r.Get("/get_person", web_app.NewPersonHandler(a.logger))
+			r.Get("/get_fac", web_app.NewFacHandler(a.logger))
+			r.Get("/get_score", web_app.NewScoreHandler(a.logger))
 		})
 
 	})
@@ -119,7 +126,7 @@ func (a *App) authorizationByToken(next http.Handler) http.Handler {
 		url := r.URL.Query()
 		_, err, code := a.store.API().CheckToken(url.Get("token"))
 		if err != nil {
-			handler.ErrorHandlerAPI(w, r, code, err)
+			web_app.ErrorHandlerAPI(w, r, code, err)
 			return
 		}
 		next.ServeHTTP(w, r)
@@ -181,7 +188,7 @@ func (a *App) checkSign(h http.Handler) http.Handler {
 		logger := a.logger.WithFields(logrus.Fields{
 			"remote_addr": r.RemoteAddr,
 		})
-		ok := handler.VerifyLaunchParams(r.RequestURI, secretKey)
+		ok := web_app.VerifyLaunchParams(r.RequestURI, secretKey)
 		if ok != nil {
 			logger.Log(
 				logrus.WarnLevel,

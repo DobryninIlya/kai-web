@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
-	h "main/internal/app/handlers"
+	h "main/internal/app/handlers/web_app"
 	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tg_api"
@@ -25,7 +25,7 @@ _%v_
 
 func NewFeedbackHandler(store sqlstore.StoreInterface, log *logrus.Logger, api *tg_api.APItg) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.getteachers.NewFeedbackHandler"
+		const path = "handlers.api.makeFeedback.NewFeedbackHandler"
 		var res model.FeedbackClient
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -69,6 +69,11 @@ func NewFeedbackHandler(store sqlstore.StoreInterface, log *logrus.Logger, api *
 				sendResult,
 			)
 		}
-		h.RespondAPI(w, r, http.StatusOK, sendResult)
+		result := struct {
+			Success bool `json:"success"`
+		}{
+			sendResult,
+		}
+		h.RespondAPI(w, r, http.StatusOK, result)
 	}
 }

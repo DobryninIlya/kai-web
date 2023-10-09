@@ -3,15 +3,11 @@ package api_handler
 import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
-	h "main/internal/app/handlers"
+	h "main/internal/app/handlers/web_app"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 	"strconv"
 )
-
-type answer struct {
-	GroupId int `json:"group_id"`
-}
 
 func NewIdByGroupHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +33,11 @@ func NewIdByGroupHandler(store sqlstore.StoreInterface, log *logrus.Logger) func
 			h.ErrorHandlerAPI(w, r, http.StatusNotFound, h.ErrRecordNotFound)
 			return
 		}
-		result := answer{GroupId: groupID}
+		result := struct {
+			GroupID int `json:"group_id"`
+		}{
+			GroupID: groupID,
+		}
 		h.RespondAPI(w, r, http.StatusOK, result)
 	}
 }

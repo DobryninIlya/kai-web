@@ -3,7 +3,8 @@ package api_handler
 import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
-	h "main/internal/app/handlers"
+	h "main/internal/app/handlers/web_app"
+	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 	"strconv"
@@ -11,7 +12,7 @@ import (
 
 func NewLessonsHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.getLesson.NewLessonHandler"
+		const path = "handlers.api.getLesson.NewLessonHandler"
 		groupId := chi.URLParam(r, "groupid")
 		groupIdI, err := strconv.Atoi(groupId)
 		if err != nil || groupId == "" {
@@ -45,6 +46,11 @@ func NewLessonsHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w
 				err.Error(),
 			)
 		}
-		h.RespondAPI(w, r, http.StatusOK, lessons)
+		result := struct {
+			Schedule []model.Lesson `json:"schedule"`
+		}{
+			lessons,
+		}
+		h.RespondAPI(w, r, http.StatusOK, result)
 	}
 }
