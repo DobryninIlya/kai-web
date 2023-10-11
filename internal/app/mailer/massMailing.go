@@ -20,6 +20,7 @@ type Mailing struct {
 	storage   *sqlstore.MailingRepository
 	log       *logrus.Logger
 	vkLocker  sync.Locker
+	vkChan    chan []int64
 	tgLocker  sync.Locker
 }
 
@@ -32,6 +33,7 @@ func NewMailing(storage sqlstore.StoreInterface, log *logrus.Logger) *Mailing {
 		tgLocker:  &sync.Mutex{},
 		log:       log,
 		vk:        vk_api.NewAPIvk(),
+		vkChan:    make(chan []int64, 10),
 		tg:        tg_api.NewAPItg(),
 	}
 }
@@ -46,42 +48,36 @@ func (m *Mailing) GetVkClients() ([]int64, error) {
 	return m.vkClients, nil
 }
 
-func (m *Mailing) SendMailVK(message string, buttons string) int {
-	//buttons = url.QueryEscape(buttons)
-	if len(m.vkClients) == 0 {
-		m.log.Printf("Попытка отправить сообщение пустому списку оповещения")
-		return 0
-	}
+func (m *Mailing) loadRecipients() {
 	offset := 100
-	recipients := make(chan []int64, 10)
-
-	recipientsLen := len(m.vkClients)
-	m.log.Logf(
-		logrus.InfoLevel,
-		"Начинаем отправку сообщений всем пользователям из списка. Всего %v пользователей",
-		recipientsLen,
-	)
 	for i := 0; i < len(m.vkClients); i += offset { // Заполняем канал срезами по 100 пользователей для отправки
-		currentOffsetUsers := make([]int64, 10)
+		currentOffsetUsers := make([]int64, 100)
 		leftOffset := i
 		if leftOffset+offset > len(m.vkClients) {
 			currentOffsetUsers = m.vkClients[leftOffset:]
 		} else {
 			currentOffsetUsers = m.vkClients[leftOffset : leftOffset+offset]
 		}
-		recipients <- currentOffsetUsers
+		m.vkChan <- currentOffsetUsers
 	}
-	close(recipients)
+	close(m.vkChan)
+}
+
+func (m *Mailing) SendMailVK(message string, buttons string) int {
+	if len(m.vkClients) == 0 {
+		m.log.Printf("Попытка отправить сообщение пустому списку оповещения")
+		return 0
+	}
+	go m.loadRecipients()
+
 	m.log.Logf(
 		logrus.InfoLevel,
-		"Подготовка получателей завершена. Всего: %v пользователей",
-		recipientsLen,
+		"Подготовка получателей начата. Всего: %v пользователей",
+		len(m.vkClients),
 	)
-	//wg := &sync.WaitGroup{}
 	for i := 0; i < goroutines; i++ { // Создаем горутины и отправляем сообщения в них методом отправки по 100 пользователей
-		//wg.Add(1)
 		go func() {
-			for recipient := range recipients {
+			for recipient := range m.vkChan {
 				m.vkLocker.Lock()
 				var j int
 				var result bool
@@ -115,8 +111,7 @@ func (m *Mailing) SendMailVK(message string, buttons string) int {
 				time.Sleep(time.Second / vkAPIQueryLimit)
 				m.vkLocker.Unlock()
 			}
-			//wg.Done()
 		}()
 	}
-	return recipientsLen
+	return len(m.vkClients)
 }
