@@ -72,14 +72,20 @@ func (m *Mailing) SendMailVK(message string, buttons string) int {
 		recipients <- currentOffsetUsers
 	}
 	close(recipients)
-	wg := &sync.WaitGroup{}
+	m.log.Logf(
+		logrus.InfoLevel,
+		"Подготовка получателей завершена. Всего: %v пользователей",
+		recipientsLen,
+	)
+	//wg := &sync.WaitGroup{}
 	for i := 0; i < goroutines; i++ { // Создаем горутины и отправляем сообщения в них методом отправки по 100 пользователей
-		wg.Add(1)
+		//wg.Add(1)
 		go func() {
 			for recipient := range recipients {
 				m.vkLocker.Lock()
 				var j int
-				for result := m.vk.SendMessageVKids(m.log, recipient, message, buttons); !result; {
+				var result bool
+				for result = m.vk.SendMessageVKids(m.log, recipient, message, buttons); !result; {
 					j++
 					time.Sleep(time.Second * 10)
 					m.log.Logf(
@@ -98,12 +104,19 @@ func (m *Mailing) SendMailVK(message string, buttons string) int {
 						break
 					}
 				}
+				if result {
+					m.log.Logf(
+						logrus.InfoLevel,
+						"Сообщение отправлено в %v",
+						recipient,
+					)
+				}
+
 				time.Sleep(time.Second / vkAPIQueryLimit)
 				m.vkLocker.Unlock()
 			}
-			wg.Done()
+			//wg.Done()
 		}()
 	}
-	wg.Wait()
 	return recipientsLen
 }
