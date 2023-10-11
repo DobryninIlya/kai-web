@@ -42,7 +42,7 @@ func (r APIvk) SendMessageVKids(log *logrus.Logger, uId []int64, message string,
 		ids,
 		r.vkToken,
 		url.QueryEscape(message),
-		url.QueryEscape(buttons),
+		buttons,
 	)
 	url := fmt.Sprintf(r.vkTemplate, vkSendMethod, params)
 	resp, err := http.Get(url)

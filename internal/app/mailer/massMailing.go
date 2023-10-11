@@ -46,18 +46,20 @@ func (m *Mailing) GetVkClients() ([]int64, error) {
 	return m.vkClients, nil
 }
 
-func (m *Mailing) SendMailVK(message string, buttons string) {
+func (m *Mailing) SendMailVK(message string, buttons string) int {
+	//buttons = url.QueryEscape(buttons)
 	if len(m.vkClients) == 0 {
 		m.log.Printf("Попытка отправить сообщение пустому списку оповещения")
-		return
+		return 0
 	}
 	offset := 100
 	recipients := make(chan []int64, 10)
-	defer close(recipients)
+
+	recipientsLen := len(m.vkClients)
 	m.log.Logf(
 		logrus.InfoLevel,
 		"Начинаем отправку сообщений всем пользователям из списка. Всего %v пользователей",
-		len(m.vkClients),
+		recipientsLen,
 	)
 	for i := 0; i < len(m.vkClients); i += offset { // Заполняем канал срезами по 100 пользователей для отправки
 		currentOffsetUsers := make([]int64, 10)
@@ -69,18 +71,39 @@ func (m *Mailing) SendMailVK(message string, buttons string) {
 		}
 		recipients <- currentOffsetUsers
 	}
-
+	close(recipients)
+	wg := &sync.WaitGroup{}
 	for i := 0; i < goroutines; i++ { // Создаем горутины и отправляем сообщения в них методом отправки по 100 пользователей
+		wg.Add(1)
 		go func() {
-			for {
-				select {
-				case recipient := <-recipients:
-					m.vkLocker.Lock()
-					m.vk.SendMessageVKids(m.log, recipient, message, buttons)
-					time.Sleep(time.Second / vkAPIQueryLimit)
-					m.vkLocker.Unlock()
+			for recipient := range recipients {
+				m.vkLocker.Lock()
+				var j int
+				for result := m.vk.SendMessageVKids(m.log, recipient, message, buttons); !result; {
+					j++
+					time.Sleep(time.Second * 10)
+					m.log.Logf(
+						logrus.WarnLevel,
+						"Результат отправки сообщения не получен. Ожидаем: %v сек. Попытка: %v",
+						10,
+						j,
+					)
+					result = m.vk.SendMessageVKids(m.log, recipient, message, buttons)
+					if j >= 5 {
+						m.log.Logf(
+							logrus.WarnLevel,
+							"Результат отправки сообщения не получен. Попытка: %v. Провал",
+							j,
+						)
+						break
+					}
 				}
+				time.Sleep(time.Second / vkAPIQueryLimit)
+				m.vkLocker.Unlock()
 			}
+			wg.Done()
 		}()
 	}
+	wg.Wait()
+	return recipientsLen
 }

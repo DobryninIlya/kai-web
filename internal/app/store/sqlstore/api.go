@@ -10,6 +10,7 @@ import (
 	"main/internal/app/model"
 	_ "main/internal/app/store"
 	"net/http"
+	"os"
 )
 
 // ApiRepository реализует работу API с хранилищем базы данных
@@ -63,13 +64,13 @@ func (r ApiRepository) CheckToken(tokenStr string) (model.ApiClient, error, int)
 	return client, nil, 200
 }
 
-//func (r ApiRepository) CheckSecret(secret string) (model.ApiClient, error, int) {
-//	var client model.ApiClient
-//	if err != nil || len(client.DeviceId) == 0 {
-//		return model.ApiClient{}, errors.New("bad token"), http.StatusForbidden
-//	}
-//	return client, nil, 200
-//}
+func (r ApiRepository) CheckSecret(secret string) (bool, error, int) {
+	osSecret := os.Getenv("WEB_KAI_SECRET")
+	if len(osSecret) == 0 || secret != osSecret {
+		return false, errors.New("bad secret"), http.StatusForbidden
+	}
+	return true, nil, 200
+}
 
 // GetTokenInfo получает информацию о владельце токена
 func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {

@@ -3,9 +3,9 @@ package vk_app
 import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
-	mailer "main/internal/app"
 	api "main/internal/app/handlers/api"
 	"main/internal/app/handlers/web_app"
+	"main/internal/app/mailer"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tg_api"
 	"net/http"
@@ -58,7 +58,8 @@ func (a *App) configureRouter() {
 	a.router.Route("/api", func(r chi.Router) {
 		r.Route("/private", func(r chi.Router) {
 			r.Route("/sendMessage", func(r chi.Router) {
-				//r.Get("/vk", api.NewSendMessageHandler(a.store, a.logger, a.tgApi, a.mailer)) // Отправка сообщения в ВК
+				r.Use(a.authorizationBySecretPhrase)
+				r.Get("/vk", api.NewSendMailVKHandler(a.store, a.logger, a.mailer)) // Отправка сообщения в ВК
 			})
 		})
 		r.Get("/week", api.NewWeekParityHandler(a.weekParity)) // Текущая четность недели
@@ -137,7 +138,7 @@ func (a *App) authorizationByToken(next http.Handler) http.Handler {
 func (a *App) authorizationBySecretPhrase(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := r.URL.Query()
-		_, err, code := a.store.API().CheckToken(url.Get("secret"))
+		_, err, code := a.store.API().CheckSecret(url.Get("secret"))
 		if err != nil {
 			web_app.ErrorHandlerAPI(w, r, code, err)
 			return
