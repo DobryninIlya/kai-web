@@ -61,12 +61,12 @@ func (a *App) configureRouter() {
 				//r.Get("/vk", api.NewSendMessageHandler(a.store, a.logger, a.tgApi, a.mailer)) // Отправка сообщения в ВК
 			})
 		})
+		r.Get("/week", api.NewWeekParityHandler(a.weekParity)) // Текущая четность недели
 		r.Route("/schedule", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
 			r.Get("/{groupid}", api.NewScheduleHandler(a.store, a.logger))                        // Расписание полностью
 			r.Get("/{groupid}/by_margin", api.NewLessonsHandler(a.store, a.logger, a.weekParity)) // На день с отступом margin от текущего дня
 			r.Get("/{groupid}/teachers", api.NewTeachersHandler(a.store, a.logger))               // Список преподавателей
-			r.Get("/week", api.NewWeekParityHandler(a.weekParity))                                // Текущая четность недели
 		})
 		r.Route("/groups", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
