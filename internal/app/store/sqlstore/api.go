@@ -63,6 +63,14 @@ func (r ApiRepository) CheckToken(tokenStr string) (model.ApiClient, error, int)
 	return client, nil, 200
 }
 
+//func (r ApiRepository) CheckSecret(secret string) (model.ApiClient, error, int) {
+//	var client model.ApiClient
+//	if err != nil || len(client.DeviceId) == 0 {
+//		return model.ApiClient{}, errors.New("bad token"), http.StatusForbidden
+//	}
+//	return client, nil, 200
+//}
+
 // GetTokenInfo получает информацию о владельце токена
 func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {
 	var res model.ApiClient

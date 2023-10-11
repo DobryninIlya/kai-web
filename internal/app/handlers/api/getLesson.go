@@ -10,7 +10,7 @@ import (
 	"strconv"
 )
 
-func NewLessonsHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
+func NewLessonsHandler(store sqlstore.StoreInterface, log *logrus.Logger, weekParity int) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const path = "handlers.api.getLesson.NewLessonHandler"
 		groupId := chi.URLParam(r, "groupid")
@@ -37,7 +37,7 @@ func NewLessonsHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		lessons, _, err := store.Schedule().GetCurrentDaySchedule(groupIdI, marginI)
+		lessons, _, err := store.Schedule().GetCurrentDaySchedule(groupIdI, marginI, weekParity)
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,

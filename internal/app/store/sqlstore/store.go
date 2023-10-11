@@ -11,6 +11,7 @@ type Store struct {
 	scheduleRepository     *ScheduleRepository
 	verificationRepository *VerificationRepository
 	apiRepository          *ApiRepository
+	mailingRepository      *MailingRepository
 }
 
 // New ...
@@ -67,4 +68,16 @@ func (s *Store) API() *ApiRepository {
 	}
 
 	return s.apiRepository
+}
+
+func (s *Store) Mail() *MailingRepository {
+	if s.mailingRepository != nil {
+		return s.mailingRepository
+	}
+
+	s.mailingRepository = &MailingRepository{
+		store: s,
+	}
+
+	return s.mailingRepository
 }

@@ -3,6 +3,7 @@ package vk_app
 import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
+	mailer "main/internal/app"
 	api "main/internal/app/handlers/api"
 	"main/internal/app/handlers/web_app"
 	"main/internal/app/store/sqlstore"
@@ -18,54 +19,54 @@ import (
 var secretKey = os.Getenv("SECRET_KEY")
 
 type App struct {
-	router *chi.Mux
-	done   chan os.Signal
-	server *http.Server
-	store  sqlstore.StoreInterface
-	tgApi  *tg_api.APItg
-	logger *logrus.Logger
+	router     *chi.Mux
+	done       chan os.Signal
+	server     *http.Server
+	store      sqlstore.StoreInterface
+	tgApi      *tg_api.APItg
+	logger     *logrus.Logger
+	mailer     *mailer.Mailing
+	weekParity int
 }
 
-func newApp(store sqlstore.StoreInterface, bindAddr string) *App {
+func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int) *App {
 	router := chi.NewRouter()
 	server := &http.Server{
 		Addr:    bindAddr,
 		Handler: router,
 	}
+	logger := logrus.New()
 	a := &App{
-		router: router,
-		done:   make(chan os.Signal, 1),
-		server: server,
-		store:  store,
-		logger: logrus.New(),
-		tgApi:  tg_api.NewAPItg(),
+		router:     router,
+		done:       make(chan os.Signal, 1),
+		server:     server,
+		store:      store,
+		logger:     logger,
+		tgApi:      tg_api.NewAPItg(),
+		mailer:     mailer.NewMailing(store, logger),
+		weekParity: weekParity,
 	}
+
 	a.configureRouter()
 	signal.Notify(a.done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	return a
 }
 
-//func (a *App) run() {
-//	a.configureRouter()
-//	go func() {
-//		log.Println("Starting worker")
-//		log.Fatal(http.ListenAndServe(":8282", a.router))
-//		//log.Fatal(a.server.ListenAndServeTLS("", ""))
-//
-//	}()
-//	<-a.done
-//	log.Println("Exiting")
-//}
-
 func (a *App) configureRouter() {
 	a.router.Use(a.logRequest)
 	//a.router.Use(imageStatusCodeHandler)
 	a.router.Route("/api", func(r chi.Router) {
+		r.Route("/private", func(r chi.Router) {
+			r.Route("/sendMessage", func(r chi.Router) {
+				//r.Get("/vk", api.NewSendMessageHandler(a.store, a.logger, a.tgApi, a.mailer)) // Отправка сообщения в ВК
+			})
+		})
 		r.Route("/schedule", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
-			r.Get("/{groupid}", api.NewScheduleHandler(a.store, a.logger))          // Расписание полностью
-			r.Get("/{groupid}/by_margin", api.NewLessonsHandler(a.store, a.logger)) // На день с отступом margin от текущего дня
-			r.Get("/{groupid}/teachers", api.NewTeachersHandler(a.store, a.logger)) // На день с отступом margin от текущего дня
+			r.Get("/{groupid}", api.NewScheduleHandler(a.store, a.logger))                        // Расписание полностью
+			r.Get("/{groupid}/by_margin", api.NewLessonsHandler(a.store, a.logger, a.weekParity)) // На день с отступом margin от текущего дня
+			r.Get("/{groupid}/teachers", api.NewTeachersHandler(a.store, a.logger))               // Список преподавателей
+			r.Get("/week", api.NewWeekParityHandler(a.weekParity))                                // Текущая четность недели
 		})
 		r.Route("/groups", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
@@ -78,10 +79,10 @@ func (a *App) configureRouter() {
 		})
 		r.Route("/attestation", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
-			r.Get("/", api.NewScoreHandler(a.logger))             // ID группы по ее номеру
-			r.Get("/faculties", api.NewFacHandler(a.logger))      // ID группы по ее номеру
-			r.Get("/groups", api.NewGroupsHandler(a.logger))      // ID группы по ее номеру
-			r.Get("/patronymics", api.NewPersonHandler(a.logger)) // ID группы по ее номеру
+			r.Get("/", api.NewScoreHandler(a.logger))        // Список оценок БРС
+			r.Get("/faculties", api.NewFacHandler(a.logger)) // Список факультетов
+			r.Get("/groups", api.NewGroupsHandler(a.logger)) // Список групп
+			r.Get("/person", api.NewPersonHandler(a.logger)) // Список фио
 		})
 		r.Get("/doc", api.NewDocumentationPageHandler())                // Главная страница документации
 		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())    // Страница документации
@@ -95,7 +96,7 @@ func (a *App) configureRouter() {
 		r.Get("/delete_user", web_app.NewDeleteUserHandler(a.store, a.logger))
 		r.Get("/verification", web_app.NewVerificationTemplate())
 		r.Post("/verification/done", web_app.NewVerificationDoneTemplate(a.store, a.logger))
-		r.Get("/get_lesson/{uId}", web_app.NewLessonsHandler(a.store, a.logger))
+		r.Get("/get_lesson/{uId}", web_app.NewLessonsHandler(a.store, a.logger, a.weekParity))
 		r.Get("/exam", web_app.NewExamHandler(a.store, a.logger))
 		r.Get("/teacher", web_app.NewTeacherHandler(a.store, a.logger))
 		r.Get("/scoretable", web_app.NewScoreListHandler(a.store, a.logger))
@@ -125,6 +126,18 @@ func (a *App) authorizationByToken(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		url := r.URL.Query()
 		_, err, code := a.store.API().CheckToken(url.Get("token"))
+		if err != nil {
+			web_app.ErrorHandlerAPI(w, r, code, err)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (a *App) authorizationBySecretPhrase(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		url := r.URL.Query()
+		_, err, code := a.store.API().CheckToken(url.Get("secret"))
 		if err != nil {
 			web_app.ErrorHandlerAPI(w, r, code, err)
 			return

@@ -5,4 +5,5 @@ type StoreInterface interface {
 	Schedule() *ScheduleRepository
 	Verification() *VerificationRepository
 	API() *ApiRepository
+	Mail() *MailingRepository
 }

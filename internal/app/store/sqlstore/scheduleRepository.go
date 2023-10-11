@@ -17,7 +17,6 @@ import (
 	"time"
 )
 
-var chetn int
 var reservedDict = []string{"чет", "неч", "чет/неч", "неч/чет"}
 
 // ScheduleRepository ...
@@ -122,10 +121,10 @@ func (r ScheduleRepository) NewLesson(user model.User, lesson model.LessonNew) (
 	return result, nil
 }
 
-func formScheduleList(lessons []model.Lesson, margin int) []model.Lesson {
+func formScheduleList(lessons []model.Lesson, margin int, weekParity int) []model.Lesson {
 	_, week := time.Now().AddDate(0, 0, margin).ISOWeek()
 	result := make([]model.Lesson, 0)
-	isEven := (week%2 + chetn) == 0
+	isEven := (week%2 + weekParity) == 0 // Булевый параметр четности недели.
 	for _, lesson := range lessons {
 		date := strings.TrimSpace(lesson.DayDate)
 		date = strings.ToLower(date)
@@ -136,21 +135,21 @@ func formScheduleList(lessons []model.Lesson, margin int) []model.Lesson {
 		if re.MatchString(lesson.AudNum) {
 			lesson.AudNum = ""
 		}
-		if date == "чет" && isEven {
+		if date == "чет" && isEven { // Если дата чет и неделя четная - добавляем в список
 			result = append(result, lesson)
-		} else if date == "неч" && !isEven {
+		} else if date == "неч" && !isEven { // Если дата неч и неделя нечетная - добавляем в список
 			result = append(result, lesson)
-		} else if (date == "чет/неч" && isEven) || (date == "неч/чет" && !isEven) {
-			lesson.DayDate = "[1 гр.]"
+		} else if (date == "чет/неч" && isEven) || (date == "неч/чет" && !isEven) { // Если дата чет/неч и неделя четная - добавляем в список 1 группу
+			lesson.DayDate = "[1 гр.]" // Если дата неч/чет и неделя нечетная - добавляем в список 1 группу
 			result = append(result, lesson)
-		} else if (date == "неч/чет" && isEven) || (date == "чет/неч" && !isEven) {
-			lesson.DayDate = "[2 гр.]"
+		} else if (date == "неч/чет" && isEven) || (date == "чет/неч" && !isEven) { // Если дата неч/чет и неделя четная - добавляем в список 2 группу
+			lesson.DayDate = "[2 гр.]" // Если дата чет/неч и неделя нечетная - добавляем в список 2 группу
 			result = append(result, lesson)
-		} else if ex1, ex2 := isContainDate(date, margin); ex1+ex2 != "" {
-			lesson.DayDate = getSubgroupForDate(date, ex1, ex2)
+		} else if ex1, ex2 := isContainDate(date, margin); ex1+ex2 != "" { // Проверяем содержится ли дата в строке и хотя бы одна из дат совпадает с текущей (включая отступ)
+			lesson.DayDate = getSubgroupForDate(date, ex1, ex2) // Если содержится - добавляем в список необходимую подгруппу
 			result = append(result, lesson)
-		} else if !isContainsInDict(date) {
-			result = append(result, lesson)
+		} else if !isContainsInDict(date) { // Проверяем содержится ли дата в словаре зарезервированных слов (чет, нечет, чет/неч, неч/чет)
+			result = append(result, lesson) // Если не содержится - добавляем в список
 		}
 	}
 	return result
@@ -216,7 +215,7 @@ func isContainsInDict(date string) bool {
 	return false
 }
 
-func (r *ScheduleRepository) GetCurrentDaySchedule(groupId int, margin int) ([]model.Lesson, time.Time, error) {
+func (r ScheduleRepository) GetCurrentDaySchedule(groupId int, margin int, weekParity int) ([]model.Lesson, time.Time, error) {
 	day := time.Now().AddDate(0, 0, margin)
 	dayNum := day.Weekday()
 
@@ -242,7 +241,7 @@ func (r *ScheduleRepository) GetCurrentDaySchedule(groupId int, margin int) ([]m
 		lessons = []model.Lesson{}
 	}
 
-	return formScheduleList(lessons, margin), day, nil
+	return formScheduleList(lessons, margin, weekParity), day, nil
 }
 
 func GetScheduleStruct(body []byte) model.Schedule {
@@ -258,7 +257,7 @@ func GetScheduleStruct(body []byte) model.Schedule {
 	return shed
 }
 
-func (r *ScheduleRepository) GetScheduleByGroup(group int) (model.Schedule, error) {
+func (r ScheduleRepository) GetScheduleByGroup(group int) (model.Schedule, error) {
 	var result string
 	if err := r.store.db.QueryRow(
 		"SELECT shedule FROM saved_timetable WHERE groupp = $1",
@@ -274,7 +273,7 @@ func (r *ScheduleRepository) GetScheduleByGroup(group int) (model.Schedule, erro
 	return scheduleStruct, nil
 }
 
-func (r *ScheduleRepository) GetTeacherListStruct(groupId int) ([]model.Prepod, error) {
+func (r ScheduleRepository) GetTeacherListStruct(groupId int) ([]model.Prepod, error) {
 	sched, err := r.GetScheduleByGroup(groupId)
 	if err != nil {
 		return nil, err

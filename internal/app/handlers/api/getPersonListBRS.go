@@ -31,7 +31,7 @@ func NewPersonHandler(log *logrus.Logger) func(w http.ResponseWriter, r *http.Re
 		var result tools.GroupResultAnswer
 		json.Unmarshal(resultList, &result)
 		h.RespondAPI(w, r, http.StatusOK, struct {
-			Groups map[string]string `json:"patronymics"`
+			Groups map[string]string `json:"persons"`
 		}{result.Result})
 	}
 }

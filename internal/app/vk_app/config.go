@@ -3,7 +3,7 @@ package vk_app
 type Config struct {
 	BindAddr    string `toml:"bind_addr"`
 	DatabaseURL string `toml:"database_url"`
-	Chetnost    string `toml:"chetnost"`
+	Chetnost    int    `toml:"chetnost"`
 }
 
 // NewConfig ...
