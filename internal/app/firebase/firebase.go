@@ -26,8 +26,8 @@ func (r FirebaseAPI) createFirebaseAuthClient(path, projectId string) (*auth.Cli
 	return client, nil
 }
 
-func (r FirebaseAPI) GetFirebaseUser(uid string) (*auth.UserRecord, error) {
-	user, err := r.Client.GetUser(context.Background(), uid)
+func (r FirebaseAPI) GetFirebaseUser(ctx context.Context, uid string) (*auth.UserRecord, error) {
+	user, err := r.Client.GetUser(ctx, uid)
 	if err != nil {
 		return nil, err
 	}

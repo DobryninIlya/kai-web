@@ -1,6 +1,7 @@
 package vk_app
 
 import (
+	"context"
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 	"main/internal/app/firebase"
@@ -28,6 +29,7 @@ type App struct {
 	logger      *logrus.Logger
 	mailer      *mailer.Mailing
 	firebaseAPI *firebase.FirebaseAPI
+	ctx         context.Context
 	weekParity  int
 }
 
@@ -48,6 +50,7 @@ func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, fire
 		mailer:      mailer.NewMailing(store, logger),
 		weekParity:  weekParity,
 		firebaseAPI: firebaseAPI,
+		ctx:         context.Background(),
 	}
 
 	a.configureRouter()
@@ -88,10 +91,10 @@ func (a *App) configureRouter() {
 			r.Get("/groups", api.NewGroupsHandler(a.logger)) // Список групп
 			r.Get("/person", api.NewPersonHandler(a.logger)) // Список фио
 		})
-		r.Get("/doc", api.NewDocumentationPageHandler())                              // Главная страница документации
-		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                  // Страница документации
-		r.Get("/token", api.NewRegistrationHandler(a.store, a.logger, a.firebaseAPI)) // ID группы по ее номеру
-		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger))               // Информация из токена
+		r.Get("/doc", api.NewDocumentationPageHandler())                                     // Главная страница документации
+		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                         // Страница документации
+		r.Get("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // ID группы по ее номеру
+		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger))                      // Информация из токена
 	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)

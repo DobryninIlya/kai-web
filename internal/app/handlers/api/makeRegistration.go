@@ -1,6 +1,7 @@
 package api_handler
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/sirupsen/logrus"
@@ -13,7 +14,7 @@ import (
 	"strings"
 )
 
-func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger, fbAPI *firebase.FirebaseAPI) func(w http.ResponseWriter, r *http.Request) {
+func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, log *logrus.Logger, fbAPI *firebase.FirebaseAPI) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const path = "handlers.api.makeRegistration.NewRegistrationHandler"
 		var res model.ApiClient
@@ -49,7 +50,7 @@ func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger, f
 				h.ErrLongData.Error(),
 			)
 		}
-		token, err := store.API().RegistrationToken(&res, fbAPI)
+		token, err := store.API().RegistrationToken(ctx, &res, fbAPI)
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,

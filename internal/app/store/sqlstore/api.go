@@ -1,6 +1,7 @@
 package sqlstore
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/sha256"
 	"encoding/base64"
@@ -11,6 +12,7 @@ import (
 	"main/internal/app/model"
 	"net/http"
 	"os"
+	"time"
 )
 
 // ApiRepository реализует работу API с хранилищем базы данных
@@ -43,14 +45,15 @@ func (r ApiRepository) generateToken() token {
 }
 
 // RegistrationToken регистрирует нового апи-клиента и возвращает уникальный токен
-func (r ApiRepository) RegistrationToken(client *model.ApiClient, firebase *firebase.FirebaseAPI) (string, error) {
-	fbUser, err := firebase.GetFirebaseUser(client.UID)
+func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiClient, firebase *firebase.FirebaseAPI) (string, error) {
+	ctx, _ = context.WithDeadline(ctx, time.Now().Add(5*time.Second))
+	fbUser, err := firebase.GetFirebaseUser(ctx, client.UID)
 	// TODO: Добавить сохранение данных пользователя в базу данных из возвращаемой выше функции
-	if len(fbUser.UID) == 0 {
-		return "", errors.New("bad uid")
-	}
 	if err != nil || len(fbUser.UID) == 0 {
 		return "", err
+	}
+	if len(fbUser.UID) == 0 {
+		return "", errors.New("bad uid")
 	}
 	newToken := string(r.generateToken())
 	err = r.store.db.QueryRow("INSERT INTO public.api_clients(uid, device_tag, token) VALUES ($1, $2, $3) RETURNING uid",
