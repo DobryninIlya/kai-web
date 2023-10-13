@@ -83,6 +83,7 @@
 }
 ```
 uid - идентификатор пользователя от Firebase
+
 device_tag - тэг устройства от производителя
 
 При успешном ответе возвращается:
@@ -99,7 +100,7 @@ device_tag - тэг устройства от производителя
 
  **unique constraint failed for one of the field** - *поле uid уже имеется в базе данных*
 
- **the length of one of parameters is too much** - *поле device_id или device_tag превышает допустимую длину*
+ **the length of one of parameters is too much** - *поле uid или device_tag превышает допустимую длину*
 
  **user not found** - *ошибка получения данных от Firebase: данные о пользователе не найдены*
 
@@ -111,7 +112,7 @@ device_tag - тэг устройства от производителя
 {
 	"result":
 	{
-		"device_id":"adbcdef123456   ",
+		"uid":"dsadasdasdasdasdasds",
 		"device_tag":"SM-1234         ",
 		"create_date":
 		{
