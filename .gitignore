@@ -3,6 +3,6 @@ web-kai.html
 .openssl
 .web
 .toml
-#configs/vk_app.toml
-#configs/serviceAccountKey.json
+configs/vk_app.toml
+configs/serviceAccountKey.json
 .toml
