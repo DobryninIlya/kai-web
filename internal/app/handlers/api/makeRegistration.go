@@ -2,8 +2,10 @@ package api_handler
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/sirupsen/logrus"
 	"io"
+	"main/internal/app/firebase"
 	h "main/internal/app/handlers/web_app"
 	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
@@ -11,7 +13,7 @@ import (
 	"strings"
 )
 
-func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
+func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger, fbAPI *firebase.FirebaseAPI) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const path = "handlers.api.makeRegistration.NewRegistrationHandler"
 		var res model.ApiClient
@@ -27,7 +29,7 @@ func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 			return
 		}
 		err = json.Unmarshal(body, &res)
-		if err != nil || res.DeviceTag == "" || res.DeviceId == "" {
+		if err != nil || res.DeviceTag == "" || res.UID == "" {
 			if err != nil {
 				log.Logf(
 					logrus.ErrorLevel,
@@ -39,7 +41,7 @@ func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadPayload)
 			return
 		}
-		if len(res.DeviceTag) > 16 || len(res.DeviceId) > 16 {
+		if len(res.DeviceTag) > 16 || len(res.UID) > 35 {
 			log.Logf(
 				logrus.ErrorLevel,
 				"%s : Ошибка создания токена. Длина deviceTag или deviceId превышена : %v",
@@ -47,7 +49,7 @@ func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 				h.ErrLongData.Error(),
 			)
 		}
-		token, err := store.API().RegistrationToken(&res)
+		token, err := store.API().RegistrationToken(&res, fbAPI)
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,
@@ -55,6 +57,10 @@ func NewRegistrationHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 				path,
 				err.Error(),
 			)
+			if err == h.ErrUserNotFound {
+				h.ErrorHandlerAPI(w, r, http.StatusNotFound, errors.New("пользователь не найден. Проверьте UID"))
+				return
+			}
 			if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") {
 				h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)
 				return

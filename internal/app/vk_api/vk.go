@@ -25,6 +25,7 @@ func NewAPIvk() *APIvk {
 	}
 }
 
+
 // SendMessageVKids отправляет сообщение всем пользователям из списка
 func (r APIvk) SendMessageVKids(log *logrus.Logger, uId []int64, message string, buttons string) bool {
 	if len(uId) == 0 {

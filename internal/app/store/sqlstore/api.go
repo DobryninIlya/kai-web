@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"main/internal/app/firebase"
 	"main/internal/app/model"
-	_ "main/internal/app/store"
 	"net/http"
 	"os"
 )
@@ -43,22 +43,30 @@ func (r ApiRepository) generateToken() token {
 }
 
 // RegistrationToken регистрирует нового апи-клиента и возвращает уникальный токен
-func (r ApiRepository) RegistrationToken(client *model.ApiClient) (string, error) {
+func (r ApiRepository) RegistrationToken(client *model.ApiClient, firebase *firebase.FirebaseAPI) (string, error) {
+	fbUser, err := firebase.GetFirebaseUser(client.UID)
+	// TODO: Добавить сохранение данных пользователя в базу данных из возвращаемой выше функции
+	if len(fbUser.UID) == 0 {
+		return "", errors.New("bad uid")
+	}
+	if err != nil || len(fbUser.UID) == 0 {
+		return "", err
+	}
 	newToken := string(r.generateToken())
-	err := r.store.db.QueryRow("INSERT INTO public.api_tokens(device_id, device_tag, token) VALUES ($1, $2, $3) RETURNING id",
-		client.DeviceId,
+	err = r.store.db.QueryRow("INSERT INTO public.api_clients(uid, device_tag, token) VALUES ($1, $2, $3) RETURNING uid",
+		client.UID,
 		client.DeviceTag,
 		newToken,
-	).Scan(&client.Id)
+	).Scan(&client.UID)
 	return newToken, err
 }
 
 func (r ApiRepository) CheckToken(tokenStr string) (model.ApiClient, error, int) {
 	var client model.ApiClient
-	err := r.store.db.QueryRow("SELECT device_id, device_tag, create_date FROM public.api_tokens WHERE token=$1",
+	err := r.store.db.QueryRow("SELECT token, device_tag, create_date FROM public.api_clients WHERE token=$1",
 		tokenStr,
-	).Scan(&client.DeviceId, &client.DeviceTag, &client.CreateDate)
-	if err != nil || len(client.DeviceId) == 0 {
+	).Scan(&client.UID, &client.DeviceTag, &client.CreateDate)
+	if err != nil || len(client.Token) == 0 || client.Token != tokenStr {
 		return model.ApiClient{}, errors.New("bad token"), http.StatusForbidden
 	}
 	return client, nil, 200
@@ -75,15 +83,14 @@ func (r ApiRepository) CheckSecret(secret string) (bool, error, int) {
 // GetTokenInfo получает информацию о владельце токена
 func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {
 	var res model.ApiClient
-	err := r.store.db.QueryRow("SELECT id, device_id, device_tag, create_date FROM public.api_tokens WHERE token=$1",
+	err := r.store.db.QueryRow("SELECT uid, device_tag, create_date FROM public.api_clients WHERE token=$1",
 		tokenStr,
 	).Scan(
-		&res.Id,
-		&res.DeviceId,
+		&res.UID,
 		&res.DeviceTag,
 		&res.CreateDate,
 	)
-	if err != nil || res.Id == 0 {
+	if err != nil || len(res.UID) == 0 {
 		return model.ApiClient{}, errors.New("bad token")
 	}
 	return res, nil

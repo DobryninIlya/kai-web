@@ -3,6 +3,8 @@ package vk_app
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
+	"log"
+	"main/internal/app/firebase"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 )
@@ -19,8 +21,11 @@ func Start(config *Config) error {
 
 	defer db.Close()
 	store := sqlstore.New(db)
-	srv := newApp(&store, config.BindAddr, config.Chetnost)
-
+	firebaseAPI, err := firebase.NewFirebaseAPI(config.FirebaseServiceAccountKeyPath, config.FirebaseProjectID)
+	if err != nil {
+		log.Fatalf("Ошибка инициализации Firebase API: %v. Проверьте, находится ли serviceAccountKey.json в папке configs.", err.Error())
+	}
+	srv := newApp(&store, config.BindAddr, config.Chetnost, firebaseAPI)
 	return http.ListenAndServe(config.BindAddr, srv)
 }
 

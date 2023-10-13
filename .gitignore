@@ -4,4 +4,5 @@ web-kai.html
 .web
 .toml
 configs/vk_app.toml
+configs/serviceAccountKey.json
 .toml

@@ -58,7 +58,7 @@ func NewFeedbackHandler(store sqlstore.StoreInterface, log *logrus.Logger, api *
 				err.Error(),
 			)
 		}
-		message := fmt.Sprintf(messageTemplate, tokenInfo.DeviceId, tokenInfo.DeviceTag, res.Version, res.Text)
+		message := fmt.Sprintf(messageTemplate, tokenInfo.UID, tokenInfo.DeviceTag, res.Version, res.Text)
 		sendResult := api.SendMessageTG(log, peer, message, "", 592)
 		if !sendResult {
 			log.Logf(

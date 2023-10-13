@@ -3,6 +3,7 @@ package vk_app
 import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
+	"main/internal/app/firebase"
 	api "main/internal/app/handlers/api"
 	"main/internal/app/handlers/web_app"
 	"main/internal/app/mailer"
@@ -19,17 +20,18 @@ import (
 var secretKey = os.Getenv("SECRET_KEY")
 
 type App struct {
-	router     *chi.Mux
-	done       chan os.Signal
-	server     *http.Server
-	store      sqlstore.StoreInterface
-	tgApi      *tg_api.APItg
-	logger     *logrus.Logger
-	mailer     *mailer.Mailing
-	weekParity int
+	router      *chi.Mux
+	done        chan os.Signal
+	server      *http.Server
+	store       sqlstore.StoreInterface
+	tgApi       *tg_api.APItg
+	logger      *logrus.Logger
+	mailer      *mailer.Mailing
+	firebaseAPI *firebase.FirebaseAPI
+	weekParity  int
 }
 
-func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int) *App {
+func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI) *App {
 	router := chi.NewRouter()
 	server := &http.Server{
 		Addr:    bindAddr,
@@ -37,14 +39,15 @@ func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int) *App
 	}
 	logger := logrus.New()
 	a := &App{
-		router:     router,
-		done:       make(chan os.Signal, 1),
-		server:     server,
-		store:      store,
-		logger:     logger,
-		tgApi:      tg_api.NewAPItg(),
-		mailer:     mailer.NewMailing(store, logger),
-		weekParity: weekParity,
+		router:      router,
+		done:        make(chan os.Signal, 1),
+		server:      server,
+		store:       store,
+		logger:      logger,
+		tgApi:       tg_api.NewAPItg(),
+		mailer:      mailer.NewMailing(store, logger),
+		weekParity:  weekParity,
+		firebaseAPI: firebaseAPI,
 	}
 
 	a.configureRouter()
@@ -85,10 +88,10 @@ func (a *App) configureRouter() {
 			r.Get("/groups", api.NewGroupsHandler(a.logger)) // Список групп
 			r.Get("/person", api.NewPersonHandler(a.logger)) // Список фио
 		})
-		r.Get("/doc", api.NewDocumentationPageHandler())                // Главная страница документации
-		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())    // Страница документации
-		r.Get("/token", api.NewRegistrationHandler(a.store, a.logger))  // ID группы по ее номеру
-		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger)) // ID группы по ее номеру
+		r.Get("/doc", api.NewDocumentationPageHandler())                              // Главная страница документации
+		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                  // Страница документации
+		r.Get("/token", api.NewRegistrationHandler(a.store, a.logger, a.firebaseAPI)) // ID группы по ее номеру
+		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger))               // Информация из токена
 	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)
