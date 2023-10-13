@@ -1,0 +1,5 @@
+database_url = "host=localhost user=botkai password=passwordfjdk dbname=botdb sslmode=disable"
+bind_addr = ":8282"
+chetnost = 0
+firebase_project_id="capypara-e3d2c"
+firebase_service_account_key_path = "configs/serviceAccountKey.json"
