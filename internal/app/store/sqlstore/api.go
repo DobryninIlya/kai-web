@@ -66,7 +66,7 @@ func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiC
 
 func (r ApiRepository) CheckToken(tokenStr string) (model.ApiClient, error, int) {
 	var client model.ApiClient
-	err := r.store.db.QueryRow("SELECT token, device_tag, create_date FROM public.api_clients WHERE token=$1",
+	err := r.store.db.QueryRow("SELECT uid, device_tag, create_date FROM public.api_clients WHERE token=$1",
 		tokenStr,
 	).Scan(&client.UID, &client.DeviceTag, &client.CreateDate)
 	if err != nil || len(client.Token) == 0 || client.Token != tokenStr {
