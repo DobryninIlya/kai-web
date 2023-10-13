@@ -78,10 +78,13 @@
 Принимаемый payload:
 ```json
 {
-    "device_id": "adbcdef123", // unique constraint len=16
+    "uid": "adbcdef123", // unique constraint max-len=35
     "device_tag": "SM-1234" // len=16
 }
 ```
+uid - идентификатор пользователя от Firebase
+device_tag - тэг устройства от производителя
+
 При успешном ответе возвращается:
 ```json
 {
@@ -94,9 +97,11 @@
 
 Ошибки:
 
- **unique constraint failed for one of the field** - *поле device_id уже имеется в базе данных*
+ **unique constraint failed for one of the field** - *поле uid уже имеется в базе данных*
 
  **the length of one of parameters is too much** - *поле device_id или device_tag превышает допустимую длину*
+
+ **user not found** - *ошибка получения данных от Firebase: данные о пользователе не найдены*
 
 [Аворизация по токену](doc/autorization)
 
