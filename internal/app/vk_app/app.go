@@ -16,6 +16,7 @@ type APIServer struct {
 func Start(config *Config) error {
 	db, err := newDB(config.DatabaseURL)
 	if err != nil {
+		log.Printf("Ошибка инициализации базы данных: %v", config.DatabaseURL)
 		return err
 	}
 
