@@ -69,7 +69,7 @@ func (r ApiRepository) CheckToken(tokenStr string) (model.ApiClient, error, int)
 	err := r.store.db.QueryRow("SELECT uid, device_tag, create_date FROM public.api_clients WHERE token=$1",
 		tokenStr,
 	).Scan(&client.UID, &client.DeviceTag, &client.CreateDate)
-	if err != nil || len(client.Token) == 0 || client.Token != tokenStr {
+	if err != nil || len(client.UID) == 0 {
 		return model.ApiClient{}, errors.New("bad token"), http.StatusForbidden
 	}
 	return client, nil, 200

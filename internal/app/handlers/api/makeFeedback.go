@@ -15,11 +15,11 @@ import (
 const (
 	peer            = -1001907805430
 	messageTemplate = `*Сообщение*:
-*device_id*=%v
-*device_tage*=%v
-*ver.* #%v
-*text:*
-_%v_
+device_id=%v
+device_tage=%v
+ver. #%v
+text:
+%v
 `
 )
 
@@ -63,9 +63,8 @@ func NewFeedbackHandler(store sqlstore.StoreInterface, log *logrus.Logger, api *
 		if !sendResult {
 			log.Logf(
 				logrus.ErrorLevel,
-				"%s : Ошибка отправления обратной связи в телеграм-чат: %v, $v",
+				"%s : Ошибка отправления обратной связи в телеграм-чат: %v",
 				path,
-				err.Error(),
 				sendResult,
 			)
 		}
