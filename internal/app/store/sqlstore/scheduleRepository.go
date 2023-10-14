@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"main/internal/app/database"
+	"main/internal/app/formatter"
 	"main/internal/app/model"
 	"main/internal/app/store"
 	_ "main/internal/app/store"
@@ -292,7 +292,7 @@ func (r ScheduleRepository) GetTeacherListStruct(groupId int) ([]model.Prepod, e
 					added := false
 					for k, prepod := range prepodList {
 						if prepod.Name == lesson.PrepodName && prepod.Lesson == lesson.DisciplName {
-							if !database.CheckInSlice(prepod.LessonType, lesson.DisciplType) {
+							if !formatter.CheckInSlice(prepod.LessonType, lesson.DisciplType) {
 								prepod.LessonType = append(prepod.LessonType, lesson.DisciplType)
 								prepodList[k] = prepod
 							}

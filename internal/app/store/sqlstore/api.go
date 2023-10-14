@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/rand"
 	"crypto/sha256"
+	"database/sql"
 	"encoding/base64"
 	"errors"
 	"fmt"
@@ -97,4 +98,62 @@ func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {
 		return model.ApiClient{}, errors.New("bad token")
 	}
 	return res, nil
+}
+
+func (r ApiRepository) GetNewsById(id int) (model.News, error) {
+	var news model.News
+	err := r.store.db.QueryRow("SELECT header, description, body, date, preview_url FROM public.news WHERE id=$1",
+		id,
+	).Scan(
+		&news.Header,
+		&news.Description,
+		&news.Body,
+		&news.Date,
+		&news.PreviewURL,
+	)
+	return news, err
+}
+
+func (r ApiRepository) MakeNews(news model.News) (int, error) {
+	var id int
+	err := r.store.db.QueryRow("INSERT INTO public.news (header, description, body, preview_url) VALUES ($1, $2, $3) RETURNING id",
+		news.Header,
+		news.Description,
+		news.Body,
+		news.PreviewURL,
+	).Scan(
+		&id,
+	)
+	return id, err
+}
+
+func (r ApiRepository) GetNewsPreviews(count, offset int) ([]model.News, error) {
+	rows, err := r.store.db.Query("SELECT header, description, date, preview_url, tag FROM public.news ORDER BY id DESC LIMIT $1 OFFSET $2",
+		count,
+		offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	result := make([]model.News, 0)
+	for rows.Next() {
+		var news model.News
+		var previewUrl, tag sql.NullString
+		err := rows.Scan(&news.Header, &news.Description, &news.Date, &previewUrl, &tag)
+		if previewUrl.Valid {
+			news.PreviewURL = previewUrl.String
+		} else {
+			news.PreviewURL = ""
+		}
+		if tag.Valid {
+			news.Tag = tag.String
+		} else {
+			news.Tag = ""
+		}
+		if err != nil {
+			return nil, err
+		}
+		result = append(result, news)
+	}
+	return result, err
 }

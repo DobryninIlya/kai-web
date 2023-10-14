@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/russross/blackfriday"
 	"log"
-	"main/internal/app/database"
+	"main/internal/app/formatter"
 	"main/internal/app/model"
 	"os"
 	"path/filepath"
@@ -15,6 +15,15 @@ import (
 )
 
 const path = "templates"
+
+func GetNewsTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "news.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
 
 func GetMainTemplate() (string, error) {
 	data, err := readFile(filepath.Join("internal", "app", path, "main.html"))
@@ -94,6 +103,16 @@ func getLesson(data []interface{}) string {
 	return result
 }
 
+func GetNewsPage(news model.News) ([]byte, error) {
+	tmp, err := GetNewsTemplate()
+	if err != nil {
+		return nil, err
+	}
+	result := fmt.Sprintf(tmp, news.Date.Time.Format("02.01.2006"), news.Header, news.Body)
+	return []byte(result), nil
+
+}
+
 func GetMainView() []byte {
 	tmp, _ := GetMainTemplate()
 	return []byte(tmp)
@@ -111,7 +130,7 @@ func GetLessonList(lessons []model.Lesson, deleted []model.DeletedLessonsMin) st
 	for _, lesson := range lessons {
 		lessonTypeDiv := "<p class=\"lesson_type\" style=\"background-color: #%v\">%v</p>"
 		lessonDate := strings.TrimSpace(lesson.DayDate)
-		room := database.GetRoom(lesson.AudNum)
+		room := formatter.GetRoom(lesson.AudNum)
 		lesson.BuildNum = strings.TrimSpace(lesson.BuildNum)
 		if len(lesson.BuildNum) < 3 {
 			room = lesson.BuildNum + "зд. " + room
@@ -147,15 +166,15 @@ func GetLessonList(lessons []model.Lesson, deleted []model.DeletedLessonsMin) st
 		uniqstring := lessonType + "_" + strings.TrimSpace(lesson.DayTime) + "_" + strings.TrimSpace(lesson.DayDate)
 		allLessonData += getLesson([]interface{}{
 			style,
-			lesson.DayTime, room, lessonTypeDiv, nameStyle, database.GetShortenLessonName(lessonName), lessonDate,
-			database.GetShortenLessonName(lessonName), lessonName, lesson.PrepodName, fmt.Sprintf("%v здание, %v ауд.", lesson.BuildNum, lesson.AudNum),
+			lesson.DayTime, room, lessonTypeDiv, nameStyle, formatter.GetShortenLessonName(lessonName), lessonDate,
+			formatter.GetShortenLessonName(lessonName), lessonName, lesson.PrepodName, fmt.Sprintf("%v здание, %v ауд.", lesson.BuildNum, lesson.AudNum),
 			lesson.DayDate, lesson.DayTime, lessonTypeDiv, lesson.DisciplNum, uniqstring, removerStyle, returnerStyle,
 		})
 		nameStyle = ""
 
 	}
 	if len(lessons) == 0 {
-		return database.GetNullDaySchedule()
+		return formatter.GetNullDaySchedule()
 	}
 	return allLessonData
 }
@@ -307,7 +326,7 @@ func GetExamList(examElems []model.Exam) string {
 		return fmt.Sprintf(mainTemplate, examsAllString)
 	}
 	for _, exam := range examElems {
-		prepodName := database.GetShortenName(exam.PrepodName)
+		prepodName := formatter.GetShortenName(exam.PrepodName)
 		examsAllString += fmt.Sprintf(examElementTemplate, exam.ExamDate, exam.ExamTime, exam.DisciplName, prepodName, exam.AudNum, exam.BuildNum) + "\n"
 	}
 	return fmt.Sprintf(mainTemplate, examsAllString)

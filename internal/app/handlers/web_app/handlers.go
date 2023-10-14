@@ -11,6 +11,7 @@ var (
 	ErrUserNotFound     = errors.New("user not found")
 	ErrRecordNotFound   = errors.New("record not found")
 	ErrBadPayload       = errors.New("payload is incorrect")
+	ErrIncorrectParams  = errors.New("url params is incorrect")
 	ErrCantCreated      = errors.New("cant create this")
 	ErrInternal         = errors.New("internal server error")
 	ErrUniqueConstraint = errors.New("unique constraint failed for one of the field")

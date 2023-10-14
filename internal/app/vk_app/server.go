@@ -91,6 +91,11 @@ func (a *App) configureRouter() {
 			r.Get("/groups", api.NewGroupsHandler(a.logger)) // Список групп
 			r.Get("/person", api.NewPersonHandler(a.logger)) // Список фио
 		})
+		r.Route("/news", func(r chi.Router) {
+			r.Post("/", api.NewMakeNewsHandler(a.store, a.logger))
+			r.Get("/{newsId}", api.NewNewsHandler(a.store, a.logger))
+			r.Get("/previews", api.NewNewsPreviewsHandler(a.store, a.logger))
+		})
 		r.Get("/doc", api.NewDocumentationPageHandler())                                     // Главная страница документации
 		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                         // Страница документации
 		r.Get("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // ID группы по ее номеру

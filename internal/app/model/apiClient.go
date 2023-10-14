@@ -1,6 +1,8 @@
 package model
 
-import "github.com/jackc/pgx/pgtype"
+import (
+	"github.com/jackc/pgx/pgtype"
+)
 
 type ApiClient struct {
 	UID        string      `json:"uid,omitempty"`
