@@ -116,11 +116,12 @@ func (r ApiRepository) GetNewsById(id int) (model.News, error) {
 
 func (r ApiRepository) MakeNews(news model.News) (int, error) {
 	var id int
-	err := r.store.db.QueryRow("INSERT INTO public.news (header, description, body, preview_url) VALUES ($1, $2, $3) RETURNING id",
+	err := r.store.db.QueryRow("INSERT INTO public.news (header, description, body, preview_url, tag) VALUES ($1, $2, $3, $4, $5) RETURNING id",
 		news.Header,
 		news.Description,
 		news.Body,
 		news.PreviewURL,
+		news.Tag,
 	).Scan(
 		&id,
 	)

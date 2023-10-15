@@ -82,7 +82,7 @@ func (a *App) configureRouter() {
 		//r.Get("/", api.NewLessonsHandler(a.store, a.logger))
 		r.Route("/feedback", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
-			r.Post("/", api.NewFeedbackHandler(a.store, a.logger, a.tgApi)) // ID группы по ее номеру
+			r.Post("/", api.NewFeedbackHandler(a.store, a.logger, a.tgApi)) // Отправка отзыва в чат
 		})
 		r.Route("/attestation", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
@@ -95,10 +95,11 @@ func (a *App) configureRouter() {
 			r.Post("/", api.NewMakeNewsHandler(a.store, a.logger))
 			r.Get("/{newsId}", api.NewNewsHandler(a.store, a.logger))
 			r.Get("/previews", api.NewNewsPreviewsHandler(a.store, a.logger))
+			r.Get("/create", api.NewNewsCreateFormHandler(a.store, a.logger))
 		})
 		r.Get("/doc", api.NewDocumentationPageHandler())                                     // Главная страница документации
 		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                         // Страница документации
-		r.Get("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // ID группы по ее номеру
+		r.Get("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // Получение токена
 		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger))                      // Информация из токена
 		r.Get("/echo", api.NewEchoHandler())                                                 // Эхо  метод для теста
 	})

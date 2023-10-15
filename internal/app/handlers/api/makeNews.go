@@ -37,6 +37,15 @@ func NewMakeNewsHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(
 			return
 		}
 		id, err := store.API().MakeNews(res)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка создания новости: %v",
+				path,
+				err.Error(),
+			)
+			h.ErrorHandlerAPI(w, r, http.StatusOK, err)
+		}
 		h.RespondAPI(w, r, http.StatusOK, struct {
 			Id int `json:"id"`
 		}{

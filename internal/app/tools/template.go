@@ -16,6 +16,15 @@ import (
 
 const path = "templates"
 
+func GetNewsCreateTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "news_create.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
 func GetNewsTemplate() (string, error) {
 	data, err := readFile(filepath.Join("internal", "app", path, "news.html"))
 	if err != nil {
@@ -101,6 +110,15 @@ func getLesson(data []interface{}) string {
 	tmp, _ := GetLessonTemplate()
 	result := fmt.Sprintf(tmp, data...)
 	return result
+}
+
+func GetNewsCreatePage() ([]byte, error) {
+	tmp, err := GetNewsCreateTemplate()
+	if err != nil {
+		return nil, err
+	}
+	return []byte(tmp), nil
+
 }
 
 func GetNewsPage(news model.News) ([]byte, error) {
