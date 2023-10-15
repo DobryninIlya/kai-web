@@ -96,11 +96,13 @@ func (a *App) configureRouter() {
 			r.Get("/{newsId}", api.NewNewsHandler(a.store, a.logger))
 			r.Get("/previews", api.NewNewsPreviewsHandler(a.store, a.logger))
 			r.Get("/create", api.NewNewsCreateFormHandler(a.store, a.logger))
+			r.Get("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger))
 		})
 		r.Get("/doc", api.NewDocumentationPageHandler())                                     // Главная страница документации
 		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                         // Страница документации
 		r.Get("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // Получение токена
 		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger))                      // Информация из токена
+		r.Get("/confirmation_code/{code}", api.NewSetCodeHandler(&a.store))                  // Установка токена верификации до перезагрузки
 		r.Get("/echo", api.NewEchoHandler())                                                 // Эхо  метод для теста
 	})
 	a.router.Route("/web", func(r chi.Router) {

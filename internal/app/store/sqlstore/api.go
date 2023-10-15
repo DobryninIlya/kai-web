@@ -18,7 +18,8 @@ import (
 
 // ApiRepository реализует работу API с хранилищем базы данных
 type ApiRepository struct {
-	store *Store
+	store            *Store
+	ConfirmationCode string
 }
 
 const tokenLength = 32
@@ -157,4 +158,14 @@ func (r ApiRepository) GetNewsPreviews(count, offset int) ([]model.News, error) 
 		result = append(result, news)
 	}
 	return result, err
+}
+
+func (r ApiRepository) AddAuthor(groupId int) bool {
+	err := r.store.db.QueryRow("INSERT INTO public.news_authors (id, name) VALUES ($1, 'Неизвестный')",
+		groupId,
+	)
+	if err != nil {
+		return false
+	}
+	return true
 }
