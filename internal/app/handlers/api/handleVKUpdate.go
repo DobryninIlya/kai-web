@@ -37,9 +37,13 @@ func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger)
 			return
 		}
 		if upd.Type == "confirmation" {
-			store.API().AddAuthor(upd.GroupID)
+			result := store.API().AddAuthor(upd.GroupID)
 			w.Write([]byte(store.API().ConfirmationCode))
-			w.WriteHeader(http.StatusOK)
+			if result {
+				w.WriteHeader(http.StatusOK)
+				return
+			}
+			w.WriteHeader(http.StatusInternalServerError)
 			return
 		} else if upd.Type == "wall.post" {
 			return
