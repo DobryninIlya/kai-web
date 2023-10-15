@@ -96,6 +96,7 @@ func (a *App) configureRouter() {
 			r.Get("/{newsId}", api.NewNewsHandler(a.store, a.logger))
 			r.Get("/previews", api.NewNewsPreviewsHandler(a.store, a.logger))
 			r.Get("/create", api.NewNewsCreateFormHandler(a.store, a.logger))
+			r.Post("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger))
 			r.Get("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger))
 		})
 		r.Get("/doc", api.NewDocumentationPageHandler())                                     // Главная страница документации
