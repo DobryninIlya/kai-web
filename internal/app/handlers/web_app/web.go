@@ -18,16 +18,10 @@ func New(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.Response
 			w.WriteHeader(http.StatusBadRequest)
 		}
 
-		if user, err := store.User().Find(id); err == nil && user != nil {
+		if user, _ := store.User().Find(id); err == nil && user != nil {
 			data := tools.GetMainView()
 			w.WriteHeader(http.StatusOK)
 			w.Write(data)
-			log.Logf(
-				logrus.ErrorLevel,
-				"%s : Ошибка получение user: %v",
-				path,
-				err,
-			)
 			return
 		} else {
 			if err != nil {
