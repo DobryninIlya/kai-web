@@ -14,6 +14,7 @@ func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger)
 	return func(w http.ResponseWriter, r *http.Request) {
 		const path = "handlers.api.makeRegistration.NewHandleVKUpdateHandler"
 		var upd model.VKUpdate
+		w.Write([]byte("ok"))
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			log.Logf(
