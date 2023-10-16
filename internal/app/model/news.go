@@ -10,4 +10,5 @@ type News struct {
 	Date        pgtype.Date `json:"date,omitempty"`
 	Tag         string      `json:"tag,omitempty"`
 	PreviewURL  string      `json:"preview_url,omitempty"`
+	Author      int         `json:"author"`
 }

@@ -126,7 +126,7 @@ func GetNewsPage(news model.News) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	result := fmt.Sprintf(tmp, news.Date.Time.Format("02.01.2006"), news.Header, news.Body)
+	result := fmt.Sprintf(tmp, news.Date.Time.Format("02.01.2006"), news.Header, news.PreviewURL, news.Body)
 	return []byte(result), nil
 
 }

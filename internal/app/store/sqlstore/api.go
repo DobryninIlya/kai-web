@@ -8,12 +8,20 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"log"
 	"main/internal/app/firebase"
+	"main/internal/app/formatter"
 	"main/internal/app/model"
 	"net/http"
 	"os"
+	"strings"
 	"time"
+)
+
+var (
+	ErrBadNews  = errors.New("новость не подходит для публикации")
+	ErrBadPhoto = errors.New("новость не подходит для публикации, не содержит фото")
 )
 
 // ApiRepository реализует работу API с хранилищем базы данных
@@ -22,7 +30,11 @@ type ApiRepository struct {
 	ConfirmationCode string
 }
 
-const tokenLength = 32
+const (
+	tokenLength   = 32
+	maxTagLength  = 25
+	minTextLength = 100
+)
 
 type token string
 
@@ -168,4 +180,60 @@ func (r ApiRepository) AddAuthor(groupId int) bool {
 		return false
 	}
 	return true
+}
+
+func (r ApiRepository) ParseNews(update model.VKUpdate, log *logrus.Logger) error {
+	const path = "internal.app.store.sqlstore.api.ParseNews"
+	var news model.News
+	// Не создаем новость, если некорректный айди, текст меньше 100 символов, ни одной картинки, тип публикации не "post"
+	// пост помечен как рекламный
+	if update.Object.FromId == 0 || len(update.Object.Text) < minTextLength || len(update.Object.Attachments) == 0 ||
+		update.Object.PostType != "post" || update.Object.MarkedAsAds != 0 {
+		return ErrBadNews
+	}
+	body := update.Object.Text
+	err := formatter.ValidateText(body)
+	if err != nil {
+		log.Logf(
+			logrus.WarnLevel,
+			"%v : Ошибка валидации новости: %v",
+			path,
+			err,
+		)
+		return ErrBadNews
+	}
+	header, err := formatter.GetHeader(body)
+	if err != nil {
+		return err
+	}
+
+	news.Header = header
+	images := formatter.GetImages(update.Object.Attachments)
+	news.Body = strings.ReplaceAll(body, "\n", "<br><br>") + images
+	news.Tag = formatter.GetTagsInText(body)
+	if len(news.Tag) > maxTagLength {
+		news.Tag = ""
+	}
+	description, err := formatter.GetDescription(body, header)
+	news.Description = description
+	if err != nil {
+		return err
+	}
+	if len(update.Object.Attachments) == 0 {
+		return ErrBadPhoto
+	}
+	// Получаем ссылку на картинку, первую в подборке с самым большим (последним) размером
+	news.PreviewURL = update.Object.Attachments[0].Photo.Sizes[len(update.Object.Attachments[0].Photo.Sizes)-1].Url
+	news.Author = update.Object.FromId
+	id, err := r.MakeNews(news)
+	if err != nil {
+		return err
+	}
+	log.Logf(
+		logrus.WarnLevel,
+		"%v : Новость успешно сохранена в базе. ID : %v",
+		path,
+		id,
+	)
+	return nil
 }

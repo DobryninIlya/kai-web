@@ -45,7 +45,16 @@ func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger)
 			}
 			w.WriteHeader(http.StatusInternalServerError)
 			return
-		} else if upd.Type == "wall.post" {
+		} else if upd.Type == "wall_post_new" {
+			if err := store.API().ParseNews(upd, log); err != nil {
+				log.Logf(
+					logrus.WarnLevel,
+					"%v : Новость не сохранена %v",
+					path,
+					err,
+				)
+				return
+			}
 			return
 		}
 	}
