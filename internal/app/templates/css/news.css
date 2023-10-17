@@ -1,7 +1,6 @@
 .news {
     max-width: 350px;
     margin: 0 auto;
-    padding: 20px;
 }
 
 .news_previews {
@@ -45,6 +44,7 @@
     overflow: hidden; /* для очистки float */
     display: flex;
     align-items: center;
+    margin-bottom: 10px;
 
 }
 
@@ -53,13 +53,9 @@
     float: left;
 }
 
-.date {
-    margin-left: auto;
-}
-
 .header_text {
     position: relative;
-    text-align: center;
+    text-align: left;
     width: auto;
     height: auto;
     display: block;
@@ -73,21 +69,24 @@
     line-height: 20px; /* 125% */
     letter-spacing: 0.1px;
 
-    margin-top: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .date {
     position: relative;
-    text-align: right;
+    margin-left: 25px;
     width: auto;
     height: auto;
     display: block;
+    color: #818C99;
+    font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto;
+    font-size: 11px;
     font-style: normal;
-    font-weight: 200;
-    font-size: 13px;
-    line-height: 14px;
+    font-weight: 400;
+    line-height: 16px; /* 133.333% */
+    letter-spacing: 0.2px;
+
 }
 
 .author {
@@ -99,6 +98,8 @@
     font-weight: 400;
     line-height: 16px; /* 133.333% */
     letter-spacing: 0.2px;
+
+
 }
 
 .news_body {
@@ -142,9 +143,9 @@ img {
     max-height: 230px;
     /*width: auto;*/
     height: auto;
-    border-radius: 20px;
+    border-radius: 10px;
     display: block;
-    margin: 20px auto;
+    margin: 10px auto;
     /*background-image: url('path/to/image.jpg');*/
     background-size: cover;
     background-position: center center;
@@ -167,5 +168,31 @@ img {
 
     border-radius: 8px;
     background: #EBECEE;
-    margin: 5px 20px 0px 20px;
+
+    /*margin-bottom: 25px;*/
+    margin-bottom: 5px;
+}
+
+.news_preview {
+    color: #818C99;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto-Light;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px; /* 133.333% */
+    letter-spacing: 0.2px;
+    margin-bottom: 10px;
+}
+
+.hashtag {
+    color: #4A4A4A;
+    font-feature-settings: 'clig' off, 'liga' off;
+    font-family: Roboto;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 16px; /* 133.333% */
+    letter-spacing: 0.2px;
+    margin-bottom: 15px;
 }

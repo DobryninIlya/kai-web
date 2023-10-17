@@ -145,7 +145,7 @@ func GetNewsPreviewsPage(news []model.News) ([]byte, error) {
 	}
 	var result string
 	for _, n := range news {
-		result += fmt.Sprintf(tmpNewsPreview, n.PreviewURL, n.Author, n.AuthorName, n.Date.Time.Format("02.01.2006"), n.Header, n.Description, n.Id)
+		result += fmt.Sprintf(tmpNewsPreview, n.PreviewURL, n.Author, n.AuthorName, n.Date.Time.Format("02.01.2006"), n.Header, n.Description, n.Tag, n.Id)
 
 	}
 	result = fmt.Sprintf(tmp, result)

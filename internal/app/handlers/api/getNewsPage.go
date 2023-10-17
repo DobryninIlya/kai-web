@@ -15,7 +15,10 @@ func NewNewsPageHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(
 		url := r.URL.Query()
 		countS := url.Get("count")
 		count, err := strconv.Atoi(countS)
-		if err != nil {
+		if countS == "" {
+			count = 20
+		}
+		if err != nil && countS != "" {
 			log.Logf(
 				logrus.ErrorLevel,
 				"%s : Ошибка получения newsId: %v",
@@ -41,7 +44,7 @@ func NewNewsPageHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(
 			return
 		}
 		if count == 0 {
-			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrIncorrectParams)
+			count = 20
 		}
 		news, err := store.API().GetNewsPreviews(count, offset)
 		page, err := tools.GetNewsPreviewsPage(news)
