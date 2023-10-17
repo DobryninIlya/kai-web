@@ -10,7 +10,7 @@ import (
 
 func NewNewsCreateFormHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.api.makeRegistration.NewNewsCreateFormHandler"
+		const path = "handlers.api.getNewsCreateForm.NewNewsCreateFormHandler"
 		page, err := tools.GetNewsCreatePage()
 		if err != nil {
 			log.Logf(

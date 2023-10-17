@@ -1,11 +1,5 @@
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Новости</title>
-    <link rel="stylesheet" href="/static/css/news.css">
-</head>
 <div class="news">
+    <img class="preview_img_list" src="%v">
     <div class="header_container">
         <div class="author">
             <div class="author_badge"><img class="author_logo" src="/static/img/author_logo_%v.png"> %v</div>
@@ -14,14 +8,12 @@
             %v
         </div>
     </div>
-
     <div class="header_text">
         %v
     </div>
-    <img class="preview_img" src="%v">
-    <hr>
     <div class="news_body">
         %v
     </div>
+    <div class="open_news_button" onclick="window.location.href='%v'">Читать</div>
+    <hr>
 </div>
-</html>

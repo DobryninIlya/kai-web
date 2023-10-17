@@ -11,4 +11,5 @@ type News struct {
 	Tag         string      `json:"tag,omitempty"`
 	PreviewURL  string      `json:"preview_url,omitempty"`
 	Author      int         `json:"author"`
+	AuthorName  string      `json:"author"`
 }

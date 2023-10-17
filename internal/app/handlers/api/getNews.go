@@ -12,7 +12,7 @@ import (
 
 func NewNewsHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.api.makeRegistration.NewNewsHandler"
+		const path = "handlers.api.getNews.NewNewsHandler"
 		newsIdS := chi.URLParam(r, "newsId")
 		newsId, err := strconv.Atoi(newsIdS)
 		if err != nil {

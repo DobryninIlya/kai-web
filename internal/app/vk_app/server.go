@@ -93,6 +93,7 @@ func (a *App) configureRouter() {
 		})
 		r.Route("/news", func(r chi.Router) {
 			r.Post("/", api.NewMakeNewsHandler(a.store, a.logger))
+			r.Get("/", api.NewNewsPageHandler(a.store, a.logger))
 			r.Get("/{newsId}", api.NewNewsHandler(a.store, a.logger))
 			r.Get("/previews", api.NewNewsPreviewsHandler(a.store, a.logger))
 			r.Get("/create", api.NewNewsCreateFormHandler(a.store, a.logger))

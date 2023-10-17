@@ -3,15 +3,15 @@ package api_handler
 import (
 	"github.com/sirupsen/logrus"
 	h "main/internal/app/handlers/web_app"
-	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
+	"main/internal/app/tools"
 	"net/http"
 	"strconv"
 )
 
-func NewNewsPreviewsHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
+func NewNewsPageHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.api.getPreviews.NewNewsPreviewsHandler"
+		const path = "handlers.api.geNewsPage.NewNewsPageHandler"
 		url := r.URL.Query()
 		countS := url.Get("count")
 		count, err := strconv.Atoi(countS)
@@ -44,20 +44,17 @@ func NewNewsPreviewsHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrIncorrectParams)
 		}
 		news, err := store.API().GetNewsPreviews(count, offset)
+		page, err := tools.GetNewsPreviewsPage(news)
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,
-				"%s : Ошибка получения списка новостей превью: %v",
+				"%s : Ошибка отрисовки страницы: %v",
 				path,
 				err.Error(),
 			)
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, err)
 			return
 		}
-		h.RespondAPI(w, r, http.StatusOK, struct {
-			News []model.News `json:"news"`
-		}{
-			News: news,
-		})
+		h.Respond(w, r, http.StatusOK, page)
 	}
 }

@@ -25,6 +25,22 @@ func GetNewsCreateTemplate() (string, error) {
 	return strings.Join(data, "\n"), nil
 }
 
+func GetNewsPreviewsTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "news_previews.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+func GetNewsPreviewTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "news_preview.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
 func GetNewsTemplate() (string, error) {
 	data, err := readFile(filepath.Join("internal", "app", path, "news.html"))
 	if err != nil {
@@ -121,12 +137,28 @@ func GetNewsCreatePage() ([]byte, error) {
 
 }
 
+func GetNewsPreviewsPage(news []model.News) ([]byte, error) {
+	tmp, err := GetNewsPreviewsTemplate()
+	tmpNewsPreview, err := GetNewsPreviewTemplate()
+	if err != nil {
+		return nil, err
+	}
+	var result string
+	for _, n := range news {
+		result += fmt.Sprintf(tmpNewsPreview, n.PreviewURL, n.Author, n.AuthorName, n.Date.Time.Format("02.01.2006"), n.Header, n.Description, n.Id)
+
+	}
+	result = fmt.Sprintf(tmp, result)
+	return []byte(result), nil
+
+}
+
 func GetNewsPage(news model.News) ([]byte, error) {
 	tmp, err := GetNewsTemplate()
 	if err != nil {
 		return nil, err
 	}
-	result := fmt.Sprintf(tmp, news.Date.Time.Format("02.01.2006"), news.Header, news.PreviewURL, news.Body)
+	result := fmt.Sprintf(tmp, news.Author, news.AuthorName, news.Date.Time.Format("02.01.2006"), news.Header, news.PreviewURL, news.Body)
 	return []byte(result), nil
 
 }

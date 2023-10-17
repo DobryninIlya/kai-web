@@ -115,7 +115,8 @@ func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {
 
 func (r ApiRepository) GetNewsById(id int) (model.News, error) {
 	var news model.News
-	err := r.store.db.QueryRow("SELECT header, description, body, date, preview_url FROM public.news WHERE id=$1",
+	news.Id = id
+	err := r.store.db.QueryRow("SELECT n.header, n.description, n.body, n.date, n.preview_url, a.name FROM public.news AS n LEFT JOIN public.news_authors AS a ON n.author = a.id WHERE n.id=$1",
 		id,
 	).Scan(
 		&news.Header,
@@ -123,18 +124,20 @@ func (r ApiRepository) GetNewsById(id int) (model.News, error) {
 		&news.Body,
 		&news.Date,
 		&news.PreviewURL,
+		&news.AuthorName,
 	)
 	return news, err
 }
 
 func (r ApiRepository) MakeNews(news model.News) (int, error) {
 	var id int
-	err := r.store.db.QueryRow("INSERT INTO public.news (header, description, body, preview_url, tag) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+	err := r.store.db.QueryRow("INSERT INTO public.news (header, description, body, preview_url, tag, author) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
 		news.Header,
 		news.Description,
 		news.Body,
 		news.PreviewURL,
 		news.Tag,
+		news.Author,
 	).Scan(
 		&id,
 	)
@@ -142,7 +145,7 @@ func (r ApiRepository) MakeNews(news model.News) (int, error) {
 }
 
 func (r ApiRepository) GetNewsPreviews(count, offset int) ([]model.News, error) {
-	rows, err := r.store.db.Query("SELECT header, description, date, preview_url, tag FROM public.news ORDER BY id DESC LIMIT $1 OFFSET $2",
+	rows, err := r.store.db.Query("SELECT n.id, n.header, n.description, n.date, n.preview_url, n.tag, a.name FROM public.news AS n LEFT JOIN public.news_authors AS a ON n.author = a.id ORDER BY id DESC LIMIT $1 OFFSET $2",
 		count,
 		offset,
 	)
@@ -153,7 +156,7 @@ func (r ApiRepository) GetNewsPreviews(count, offset int) ([]model.News, error) 
 	for rows.Next() {
 		var news model.News
 		var previewUrl, tag sql.NullString
-		err := rows.Scan(&news.Header, &news.Description, &news.Date, &previewUrl, &tag)
+		err := rows.Scan(&news.Id, &news.Header, &news.Description, &news.Date, &previewUrl, &tag, &news.AuthorName)
 		if previewUrl.Valid {
 			news.PreviewURL = previewUrl.String
 		} else {
@@ -219,7 +222,10 @@ func (r ApiRepository) ParseNews(update model.VKUpdate, log *logrus.Logger) erro
 	if err != nil {
 		return err
 	}
-	if len(update.Object.Attachments) == 0 {
+	if len(update.Object.Attachments) == 0 { // Если нет вложений
+		return ErrBadPhoto
+	}
+	if update.Object.Attachments[0].Type != "photo" { // Если первое вложение не фото
 		return ErrBadPhoto
 	}
 	// Получаем ссылку на картинку, первую в подборке с самым большим (последним) размером

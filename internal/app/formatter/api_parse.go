@@ -147,7 +147,12 @@ func GetDescription(body string, header string) (string, error) {
 		if len(block) < blockMaximumLength {
 			return block, nil
 		} else {
-			return truncateString(block, blockMaximumLength), nil
+			text := truncateString(block, blockMaximumLength)
+			end := strings.LastIndexAny(text, ".!?") // Обрезаем по последнему предложению
+			if end == -1 {
+				return text, nil
+			}
+			return truncateString(text, end+1), nil
 		}
 
 	}
