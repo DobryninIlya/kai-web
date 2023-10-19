@@ -127,6 +127,7 @@ func (a *App) configureRouter() {
 			r.Get("/get_person", web_app.NewPersonHandler(a.logger))
 			r.Get("/get_fac", web_app.NewFacHandler(a.logger))
 			r.Get("/get_score", web_app.NewScoreHandler(a.logger))
+
 		})
 
 	})
