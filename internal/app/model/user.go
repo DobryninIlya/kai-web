@@ -31,3 +31,11 @@ type RegistrationData struct {
 	Identificator string `json:"Identificator"`
 	VkId          int    `json:"vk_id"`
 }
+
+type MobileUser struct {
+	UID       string `json:"uid,omitempty"`
+	Name      string `json:"name"`
+	Faculty   string `json:"faculty"`
+	IDCard    int    `json:"id_card"`
+	Groupname string `json:"groupname"`
+}

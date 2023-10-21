@@ -39,6 +39,7 @@ func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger)
 		if upd.Type == "confirmation" {
 			result := store.API().AddAuthor(upd.Object.FromId)
 			w.Write([]byte(store.API().ConfirmationCode))
+
 			if result {
 				w.WriteHeader(http.StatusOK)
 				return

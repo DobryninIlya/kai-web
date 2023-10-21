@@ -5,7 +5,10 @@ type Config struct {
 	DatabaseURL                   string `toml:"database_url"`
 	Chetnost                      int    `toml:"chetnost"`
 	FirebaseProjectID             string `toml:"firebase_project_id"`
-	FirebaseServiceAccountKeyPath string `toml:"firebase_service_account_key_path""`
+	FirebaseServiceAccountKeyPath string `toml:"firebase_service_account_key_path"`
+	InfluxDBName                  string `toml:"influxdb_name"`
+	InfluxDBToken                 string `toml:"influxdb_token"`
+	InfluxDBURL                   string `toml:"influxdb_url"`
 }
 
 // NewConfig ...

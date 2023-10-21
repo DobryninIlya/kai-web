@@ -20,8 +20,11 @@ import (
 )
 
 var (
-	ErrBadNews  = errors.New("новость не подходит для публикации")
-	ErrBadPhoto = errors.New("новость не подходит для публикации, не содержит фото")
+	ErrBadNews                = errors.New("новость не подходит для публикации")
+	ErrBadPhoto               = errors.New("новость не подходит для публикации, не содержит фото")
+	ErrUserNotFound           = errors.New("user not found")
+	ErrUserNotFoundInFirebase = errors.New("user not found in firebase")
+	ErrBadMobileUserInfo      = errors.New("incorrect mobile user info")
 )
 
 // ApiRepository реализует работу API с хранилищем базы данных
@@ -60,14 +63,14 @@ func (r ApiRepository) generateToken() token {
 
 // RegistrationToken регистрирует нового апи-клиента и возвращает уникальный токен
 func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiClient, firebase *firebase.FirebaseAPI) (string, error) {
-	ctx, _ = context.WithDeadline(ctx, time.Now().Add(5*time.Second))
+	ctx, _ = context.WithDeadline(ctx, time.Now().Add(3*time.Second))
 	fbUser, err := firebase.GetFirebaseUser(ctx, client.UID)
 	// TODO: Добавить сохранение данных пользователя в базу данных из возвращаемой выше функции
 	if err != nil || len(fbUser.UID) == 0 {
-		return "", err
+		return "", ErrUserNotFoundInFirebase
 	}
 	if len(fbUser.UID) == 0 {
-		return "", errors.New("bad uid")
+		return "", ErrUserNotFound
 	}
 	newToken := string(r.generateToken())
 	err = r.store.db.QueryRow("INSERT INTO public.api_clients(uid, device_tag, token) VALUES ($1, $2, $3) RETURNING uid",
@@ -75,14 +78,58 @@ func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiC
 		client.DeviceTag,
 		newToken,
 	).Scan(&client.UID)
+	if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") {
+		err = r.store.db.QueryRow("SELECT token FROM public.api_clients WHERE uid=$1",
+			client.UID,
+		).Scan(&newToken)
+		if err != nil {
+			return "", err
+		}
+	}
+	if err = r.SaveMobileUserInfo(*client); err != nil {
+		return "", err
+	}
+
 	return newToken, err
+}
+
+func (r ApiRepository) SaveMobileUserInfo(user model.ApiClient) error {
+	//if len(user.UID) == 0 || len(user.Groupname) == 0 {
+	//	return ErrBadMobileUserInfo
+	//}
+	err := r.store.db.QueryRow("INSERT INTO public.mobile_users(uid, name, faculty, idcard, groupname) VALUES ($1, $2, $3, $4, $5) RETURNING uid",
+		user.UID,
+		user.Name,
+		user.Faculty,
+		user.IDCard,
+		user.Groupname,
+	).Scan(&user.UID)
+	if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") {
+		err = r.store.db.QueryRow("UPDATE public.mobile_users SET name=$1, faculty=$2, idcard=$3, groupname=$4 WHERE uid=$5 RETURNING uid",
+			user.Name,
+			user.Faculty,
+			user.IDCard,
+			user.Groupname,
+			user.UID,
+		).Scan(&user.UID)
+		if err != nil {
+			return nil
+		}
+	}
+	return nil
 }
 
 func (r ApiRepository) CheckToken(tokenStr string) (model.ApiClient, error, int) {
 	var client model.ApiClient
-	err := r.store.db.QueryRow("SELECT uid, device_tag, create_date FROM public.api_clients WHERE token=$1",
+	var name, groupname, faculty sql.NullString
+	var idcard sql.NullInt32
+	err := r.store.db.QueryRow("SELECT c.uid, c.device_tag, c.create_date, mu.name, mu.groupname, mu.idcard, mu.faculty FROM public.api_clients AS c LEFT JOIN public.mobile_users AS mu ON c.uid = mu.uid WHERE token=$1",
 		tokenStr,
-	).Scan(&client.UID, &client.DeviceTag, &client.CreateDate)
+	).Scan(&client.UID, &client.DeviceTag, &client.CreateDate, &name, &groupname, &idcard, &faculty)
+	client.Name = name.String
+	client.Groupname = groupname.String
+	client.Faculty = faculty.String
+	client.IDCard = int(idcard.Int32)
 	if err != nil || len(client.UID) == 0 {
 		return model.ApiClient{}, errors.New("bad token"), http.StatusForbidden
 	}
@@ -145,10 +192,11 @@ func (r ApiRepository) MakeNews(news model.News) (int, error) {
 }
 
 func (r ApiRepository) GetNewsPreviews(count, offset int) ([]model.News, error) {
-	rows, err := r.store.db.Query("SELECT n.id, n.header, n.description, n.date, n.preview_url, n.tag, a.name FROM public.news AS n LEFT JOIN public.news_authors AS a ON n.author = a.id ORDER BY id DESC LIMIT $1 OFFSET $2",
+	rows, err := r.store.db.Query("SELECT n.id, n.header, n.description, n.date, n.preview_url, n.tag, a.name FROM public.news AS n JOIN public.news_authors AS a ON n.author = a.id ORDER BY id DESC LIMIT $1 OFFSET $2",
 		count,
 		offset,
 	)
+
 	if err != nil {
 		return nil, err
 	}
@@ -180,6 +228,7 @@ func (r ApiRepository) AddAuthor(groupId int) bool {
 		groupId,
 	)
 	if err != nil {
+		log.Printf("Не удалось создать автора: %v", err)
 		return false
 	}
 	return true

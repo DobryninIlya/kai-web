@@ -58,7 +58,7 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 				path,
 				err.Error(),
 			)
-			if err == h.ErrUserNotFound {
+			if err == sqlstore.ErrUserNotFound {
 				h.ErrorHandlerAPI(w, r, http.StatusNotFound, errors.New("пользователь не найден. Проверьте UID"))
 				return
 			}

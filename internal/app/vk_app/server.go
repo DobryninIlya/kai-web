@@ -8,6 +8,7 @@ import (
 	api "main/internal/app/handlers/api"
 	"main/internal/app/handlers/web_app"
 	"main/internal/app/mailer"
+	"main/internal/app/store/influxdb"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tg_api"
 	"net/http"
@@ -31,15 +32,17 @@ type App struct {
 	firebaseAPI *firebase.FirebaseAPI
 	ctx         context.Context
 	weekParity  int
+	metrics     *influxdb.Metrics
 }
 
-func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI) *App {
+func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI, config Config) *App {
 	router := chi.NewRouter()
 	server := &http.Server{
 		Addr:    bindAddr,
 		Handler: router,
 	}
 	logger := logrus.New()
+	ctx := context.Background()
 	a := &App{
 		router:      router,
 		done:        make(chan os.Signal, 1),
@@ -50,7 +53,8 @@ func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, fire
 		mailer:      mailer.NewMailing(store, logger),
 		weekParity:  weekParity,
 		firebaseAPI: firebaseAPI,
-		ctx:         context.Background(),
+		metrics:     influxdb.NewMetrics(ctx, config.InfluxDBToken, config.InfluxDBURL, config.InfluxDBName, logger),
+		ctx:         ctx,
 	}
 
 	a.configureRouter()
@@ -60,6 +64,7 @@ func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, fire
 
 func (a *App) configureRouter() {
 	a.router.Use(a.logRequest)
+	//a.router.Use(a.APIMetricsMiddleware)
 	//a.router.Use(imageStatusCodeHandler)
 	a.router.Route("/api", func(r chi.Router) {
 		r.Route("/private", func(r chi.Router) {
@@ -100,6 +105,7 @@ func (a *App) configureRouter() {
 			r.Post("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger))
 			r.Get("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger))
 		})
+
 		r.Get("/doc", api.NewDocumentationPageHandler())                                     // Главная страница документации
 		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                         // Страница документации
 		r.Get("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // Получение токена
@@ -233,5 +239,15 @@ func (a *App) checkSign(h http.Handler) http.Handler {
 		h.ServeHTTP(rw, r)
 
 		return
+	})
+}
+
+func (a *App) APIMetricsMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Получаем имя вызываемого метода из URL
+		a.metrics.IncrementAPI("test")
+
+		// Вызываем следующий обработчик
+		next.ServeHTTP(w, r)
 	})
 }

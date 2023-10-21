@@ -1,0 +1,10 @@
+FROM influxdb:latest
+
+# Устанавливаем переменные окружения
+ENV INFLUXDB_DB=mydb \
+    INFLUXDB_ADMIN_ENABLED=true \
+    INFLUXDB_ADMIN_USER=admin \
+    INFLUXDB_ADMIN_PASSWORD=password
+
+# Копируем файл конфигурации
+COPY influxdb.conf /etc/influxdb/influxdb.conf

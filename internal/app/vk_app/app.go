@@ -25,7 +25,7 @@ func Start(config *Config) error {
 	if err != nil {
 		log.Fatalf("Ошибка инициализации Firebase API: %v. Проверьте, находится ли serviceAccountKey.json в папке configs.", err.Error())
 	}
-	srv := newApp(&store, config.BindAddr, config.Chetnost, firebaseAPI)
+	srv := newApp(&store, config.BindAddr, config.Chetnost, firebaseAPI, *config)
 	return http.ListenAndServe(config.BindAddr, srv)
 }
 

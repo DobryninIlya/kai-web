@@ -9,4 +9,5 @@ type ApiClient struct {
 	DeviceTag  string      `json:"device_tag,omitempty"`
 	Token      string      `json:"token,omitempty"`
 	CreateDate pgtype.Date `json:"create_date,omitempty"`
+	MobileUser
 }
