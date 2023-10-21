@@ -8,8 +8,9 @@ import (
 )
 
 const (
-	sentenceMinimumCapacity = 15
+	sentenceMinimumCapacity = 10
 	blockMaximumLength      = 200
+	paragraphMaximumLength  = 400
 )
 
 var (
@@ -53,7 +54,7 @@ func GetHeader(body string) (string, error) {
 				return header, nil
 			}
 		}
-		if i > 3 {
+		if i > 4 {
 			return "", ErrHeaderNotFound
 		}
 	}

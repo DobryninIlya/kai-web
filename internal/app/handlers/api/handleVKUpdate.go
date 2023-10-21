@@ -51,9 +51,11 @@ func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger)
 			if err := store.API().ParseNews(upd, log); err != nil {
 				log.Logf(
 					logrus.WarnLevel,
-					"%v : Новость не сохранена %v",
+					"%v : Новость не сохранена %v. Группа: vk.com/group%v. Текст: \n %v",
 					path,
 					err,
+					upd.GroupID,
+					upd.Object.Text,
 				)
 				return
 			}
