@@ -1,8 +1,0 @@
-database_url = "host=localhost user=botkai password=password dbname=botdb sslmode=disable options='--client_encoding=UTF8'"
-bind_addr = ":8282"
-chetnost = 0
-firebase_project_id="capypara-1"
-firebase_service_account_key_path = "configs/serviceAccountKey.json"
-influxdb_name = "sapypara"
-influxdb_url = "https://url.com"
-influxdb_token = "token=="
