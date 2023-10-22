@@ -1,8 +1,8 @@
-database_url = "host=localhost user=botkai password=passwordfjdk dbname=botdb sslmode=disable options='--client_encoding=UTF8'"
+database_url = "host=localhost user=botkai password=password dbname=botdb sslmode=disable options='--client_encoding=UTF8'"
 bind_addr = ":8282"
 chetnost = 0
-firebase_project_id="capypara-e3d2c"
+firebase_project_id="capypara-project"
 firebase_service_account_key_path = "configs/serviceAccountKey.json"
-influxdb_name = "sapypara"
-influxdb_url = "https://eu-central-1-1.aws.cloud2.influxdata.com"
-influxdb_token = "ocy9qeJOrP95JnXlgHm2A4f-11BICl9djHuzKPX-cG1iNW-517zJkzNWOCuaN4kWnZtzqDCasL3Fs_lGsHBY1Q=="
+influxdb_name = "capypara"
+influxdb_url = "influx_url"
+influxdb_token = "token=="
