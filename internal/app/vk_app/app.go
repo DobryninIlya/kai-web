@@ -3,8 +3,10 @@ package vk_app
 import (
 	"database/sql"
 	_ "github.com/lib/pq"
+	"github.com/sirupsen/logrus"
 	"log"
 	"main/internal/app/firebase"
+	"main/internal/app/migrations"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 )
@@ -21,6 +23,7 @@ func Start(config *Config) error {
 
 	defer db.Close()
 	store := sqlstore.New(db)
+	migrations.MakeMigrations(db, logrus.New())
 	firebaseAPI, err := firebase.NewFirebaseAPI(config.FirebaseServiceAccountKeyPath, config.FirebaseProjectID)
 	if err != nil {
 		log.Fatalf("Ошибка инициализации Firebase API: %v. Проверьте, находится ли serviceAccountKey.json в папке configs.", err.Error())
