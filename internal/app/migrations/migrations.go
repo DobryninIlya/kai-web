@@ -32,12 +32,13 @@ func MakeMigrations(db *sql.DB, log *logrus.Logger) {
 	options = append(options, goose.WithAllowMissing())
 	options = append(options, goose.WithNoVersioning())
 	if err := goose.Up(db, dirMigrations, options...); err != nil {
-		log.Fatal(
+		log.Logf(
 			logrus.WarnLevel,
 			"Ошибка миграций: %v",
 			path,
 			err,
 		)
+		return
 	}
 
 	log.Logf(
