@@ -54,7 +54,7 @@ func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger)
 					"%v : Новость не сохранена %v. Группа: vk.com/group%v. Текст: \n %v",
 					path,
 					err,
-					upd.GroupID,
+					upd.Object.FromId,
 					upd.Object.Text,
 				)
 				return
