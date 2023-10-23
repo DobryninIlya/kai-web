@@ -13,6 +13,7 @@ import (
 	"main/internal/app/firebase"
 	"main/internal/app/formatter"
 	"main/internal/app/model"
+	"main/internal/app/openai"
 	"net/http"
 	"os"
 	"strings"
@@ -234,7 +235,7 @@ func (r ApiRepository) AddAuthor(groupId int) bool {
 	return true
 }
 
-func (r ApiRepository) ParseNews(update model.VKUpdate, log *logrus.Logger) error {
+func (r ApiRepository) ParseNews(update model.VKUpdate, log *logrus.Logger, openai *openai.ChatGPT) error {
 	const path = "internal.app.store.sqlstore.api.ParseNews"
 	var news model.News
 	// Не создаем новость, если некорректный айди, текст меньше 100 символов, ни одной картинки, тип публикации не "post"
@@ -254,20 +255,22 @@ func (r ApiRepository) ParseNews(update model.VKUpdate, log *logrus.Logger) erro
 		)
 		return ErrBadNews
 	}
-	header, err := formatter.GetHeader(body)
+	newsParams, err := openai.GenerateAnswer(body)
+	// DEPRECATED
+	//header, err := formatter.GetHeader(body)
 	if err != nil {
 		return err
 	}
 
-	news.Header = header
+	news.Header = newsParams.Header
 	images := formatter.GetImages(update.Object.Attachments)
 	news.Body = strings.ReplaceAll(body, "\n", "<br><br>") + images
 	news.Tag = formatter.GetTagsInText(body)
 	if len(news.Tag) > maxTagLength {
 		news.Tag = ""
 	}
-	description, err := formatter.GetDescription(body, header)
-	news.Description = description
+	//description, err := formatter.GetDescription(body, header)
+	news.Description = newsParams.Description
 	if err != nil {
 		return err
 	}

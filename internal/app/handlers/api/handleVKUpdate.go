@@ -6,11 +6,12 @@ import (
 	"io"
 	h "main/internal/app/handlers/web_app"
 	"main/internal/app/model"
+	"main/internal/app/openai"
 	"main/internal/app/store/sqlstore"
 	"net/http"
 )
 
-func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
+func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger, openai *openai.ChatGPT) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const path = "handlers.api.makeRegistration.NewHandleVKUpdateHandler"
 		var upd model.VKUpdate
@@ -48,17 +49,19 @@ func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger)
 			return
 		} else if upd.Type == "wall_post_new" {
 			w.Write([]byte("ok"))
-			if err := store.API().ParseNews(upd, log); err != nil {
-				log.Logf(
-					logrus.WarnLevel,
-					"%v : Новость не сохранена %v. Группа: vk.com/group%v. Текст: \n %v",
-					path,
-					err,
-					upd.Object.FromId,
-					upd.Object.Text,
-				)
-				return
-			}
+			go func() {
+				if err := store.API().ParseNews(upd, log, openai); err != nil {
+					log.Logf(
+						logrus.WarnLevel,
+						"%v : Новость не сохранена %v. Группа: vk.com/group%v. Текст: \n %v",
+						path,
+						err,
+						upd.Object.FromId,
+						upd.Object.Text,
+					)
+					return
+				}
+			}()
 			return
 		}
 		w.Write([]byte("ok"))

@@ -8,6 +8,7 @@ import (
 	api "main/internal/app/handlers/api"
 	"main/internal/app/handlers/web_app"
 	"main/internal/app/mailer"
+	"main/internal/app/openai"
 	"main/internal/app/store/influxdb"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tg_api"
@@ -33,6 +34,7 @@ type App struct {
 	ctx         context.Context
 	weekParity  int
 	metrics     *influxdb.Metrics
+	openai      *openai.ChatGPT
 }
 
 func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI, config Config) *App {
@@ -55,8 +57,9 @@ func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, fire
 		firebaseAPI: firebaseAPI,
 		metrics:     influxdb.NewMetrics(ctx, config.InfluxDBToken, config.InfluxDBURL, config.InfluxDBName, logger),
 		ctx:         ctx,
+		openai:      openai.NewChatGPT(ctx, logger, "gpt-3.5-turbo", 0.7, "user"),
 	}
-
+	a.openai.WithPrompt(openai.NEWS_PROMPT)
 	a.configureRouter()
 	signal.Notify(a.done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	return a
@@ -102,8 +105,8 @@ func (a *App) configureRouter() {
 			r.Get("/{newsId}", api.NewNewsHandler(a.store, a.logger))
 			r.Get("/previews", api.NewNewsPreviewsHandler(a.store, a.logger))
 			r.Get("/create", api.NewNewsCreateFormHandler(a.store, a.logger))
-			r.Post("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger))
-			r.Get("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger))
+			r.Post("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger, a.openai))
+			r.Get("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger, a.openai))
 		})
 
 		r.Get("/doc", api.NewDocumentationPageHandler())                                     // Главная страница документации
