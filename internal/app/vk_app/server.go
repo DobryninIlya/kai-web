@@ -14,9 +14,7 @@ import (
 	"main/internal/app/tg_api"
 	"net/http"
 	"os"
-	"os/signal"
 	"path/filepath"
-	"syscall"
 	"time"
 )
 
@@ -24,7 +22,6 @@ var secretKey = os.Getenv("SECRET_KEY")
 
 type App struct {
 	router      *chi.Mux
-	done        chan os.Signal
 	server      *http.Server
 	store       sqlstore.StoreInterface
 	tgApi       *tg_api.APItg
@@ -37,17 +34,15 @@ type App struct {
 	openai      *openai.ChatGPT
 }
 
-func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI, config Config) *App {
+func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI, config Config) *App {
 	router := chi.NewRouter()
 	server := &http.Server{
 		Addr:    bindAddr,
 		Handler: router,
 	}
 	logger := logrus.New()
-	ctx := context.Background()
 	a := &App{
 		router:      router,
-		done:        make(chan os.Signal, 1),
 		server:      server,
 		store:       store,
 		logger:      logger,
@@ -61,8 +56,15 @@ func newApp(store sqlstore.StoreInterface, bindAddr string, weekParity int, fire
 	}
 	a.openai.WithPrompt(openai.NEWS_PROMPT)
 	a.configureRouter()
-	signal.Notify(a.done, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 	return a
+}
+
+func (a *App) Close() error {
+	err := a.server.Close()
+	if err != nil {
+		return err
+	}
+	return a.server.Close()
 }
 
 func (a *App) configureRouter() {

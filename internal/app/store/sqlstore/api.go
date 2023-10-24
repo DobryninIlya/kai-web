@@ -36,7 +36,7 @@ type ApiRepository struct {
 
 const (
 	tokenLength   = 32
-	maxTagLength  = 25
+	maxTagLength  = 30
 	minTextLength = 100
 )
 
@@ -255,22 +255,43 @@ func (r ApiRepository) ParseNews(update model.VKUpdate, log *logrus.Logger, open
 		)
 		return ErrBadNews
 	}
-	newsParams, err := openai.GenerateAnswer(body)
-	// DEPRECATED
-	//header, err := formatter.GetHeader(body)
-	if err != nil {
-		return err
-	}
+	newsParams, err := openai.GenerateAnswer(body, 5)
 
-	news.Header = newsParams.Header
+	if err != nil {
+		log.Logf(
+			logrus.WarnLevel,
+			"%v : Ошибка генерации новости: %v",
+			path,
+			err,
+		)
+	}
+	var header string
+	if newsParams.Header == "" {
+		if header, err = formatter.GetHeader(body); err != nil {
+			return err
+		} else {
+			news.Header = header
+		}
+	} else {
+		news.Header = newsParams.Header
+	}
 	images := formatter.GetImages(update.Object.Attachments)
 	news.Body = strings.ReplaceAll(body, "\n", "<br><br>") + images
 	news.Tag = formatter.GetTagsInText(body)
 	if len(news.Tag) > maxTagLength {
 		news.Tag = ""
 	}
-	//description, err := formatter.GetDescription(body, header)
-	news.Description = newsParams.Description
+
+	if newsParams.Description == "" {
+		if description, err := formatter.GetDescription(body, header); err != nil {
+			return err
+		} else {
+			news.Description = description
+		}
+	} else {
+		news.Description = newsParams.Description
+	}
+
 	if err != nil {
 		return err
 	}

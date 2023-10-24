@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"github.com/sirupsen/logrus"
 	"io"
 	"main/internal/app/model"
@@ -59,14 +60,16 @@ func (c *ChatGPT) getPayload(message string) ([]byte, error) {
 	return result, nil
 }
 
-func (c *ChatGPT) GenerateAnswer(message string) (model.ChatGPTNewsParams, error) {
-	ctx, closeCtx := context.WithTimeout(c.ctx, time.Second*10)
+func (c *ChatGPT) GenerateAnswer(message string, recursiveСounter int) (model.ChatGPTNewsParams, error) {
+	const path = "internal.app.openai.chatgpt.GenerateAnswer"
+	ctx, closeCtx := context.WithTimeout(c.ctx, time.Minute)
 	defer closeCtx()
 	payload, err := c.getPayload(message)
 	if err != nil {
 		c.log.Logf(
 			logrus.ErrorLevel,
-			"Error while generating payload: %s",
+			"%v : Error while generating payload: %s",
+			path,
 			err.Error(),
 		)
 		return model.ChatGPTNewsParams{}, err
@@ -75,18 +78,20 @@ func (c *ChatGPT) GenerateAnswer(message string) (model.ChatGPTNewsParams, error
 	if err != nil {
 		c.log.Logf(
 			logrus.ErrorLevel,
-			"Error while creating request: %s",
+			"%v : Error while creating request: %s",
+			path,
 			err.Error(),
 		)
 		return model.ChatGPTNewsParams{}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
-	client := &http.Client{Timeout: time.Second * 15}
+	client := &http.Client{Timeout: time.Minute}
 	resp, err := client.Do(req)
 	if err != nil {
 		c.log.Logf(
 			logrus.ErrorLevel,
-			"Error while sending request: %s",
+			"%v : Error while sending request: %s",
+			path,
 			err.Error(),
 		)
 		return model.ChatGPTNewsParams{}, err
@@ -98,9 +103,24 @@ func (c *ChatGPT) GenerateAnswer(message string) (model.ChatGPTNewsParams, error
 	if err != nil {
 		c.log.Logf(
 			logrus.ErrorLevel,
-			"Error while reading response: %s",
+			"%v : Error while reading response: %s",
+			path,
 			err.Error(),
 		)
+		return model.ChatGPTNewsParams{}, err
+	}
+	// TODO Проверить, что ответ содержит следующие поля, добавить рекурсивные попытки еще раз вызвать
+	if answer.Error != "" {
+		c.log.Logf(
+			logrus.ErrorLevel,
+			"%v : Error in response: %s",
+			path,
+			answer.Error,
+		)
+		if recursiveСounter <= 0 {
+			return model.ChatGPTNewsParams{}, errors.New("can't generate answer")
+		}
+		c.GenerateAnswer(message, recursiveСounter-1)
 		return model.ChatGPTNewsParams{}, err
 	}
 	content := answer.Choices[0].Message.Content
@@ -109,7 +129,8 @@ func (c *ChatGPT) GenerateAnswer(message string) (model.ChatGPTNewsParams, error
 	if err != nil {
 		c.log.Logf(
 			logrus.ErrorLevel,
-			"Error while reading response: %s",
+			"%v : Error while reading response: %s",
+			path,
 			err.Error(),
 		)
 		return model.ChatGPTNewsParams{}, err

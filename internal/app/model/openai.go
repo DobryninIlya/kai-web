@@ -18,6 +18,7 @@ type ChatGPTAnswer struct {
 		PromptTokens     int `json:"prompt_tokens"`
 		TotalTokens      int `json:"total_tokens"`
 	} `json:"usage"`
+	Error string `json:"error"`
 }
 
 type MessagesChatGPT struct {

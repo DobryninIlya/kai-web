@@ -53,11 +53,10 @@ func NewHandleVKUpdateHandler(store sqlstore.StoreInterface, log *logrus.Logger,
 				if err := store.API().ParseNews(upd, log, openai); err != nil {
 					log.Logf(
 						logrus.WarnLevel,
-						"%v : Новость не сохранена %v. Группа: vk.com/group%v. Текст: \n %v",
+						"%v : Новость не сохранена %v. Группа: vk.com/group%v.",
 						path,
 						err,
 						upd.Object.FromId,
-						upd.Object.Text,
 					)
 					return
 				}
