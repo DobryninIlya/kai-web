@@ -34,7 +34,7 @@ func MakeMigrations(db *sql.DB, log *logrus.Logger) {
 	if err := goose.Up(db, dirMigrations, options...); err != nil {
 		log.Logf(
 			logrus.WarnLevel,
-			"Ошибка миграций: %v",
+			"%v : Ошибка миграций: %v",
 			path,
 			err,
 		)
