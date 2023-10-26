@@ -66,10 +66,10 @@
     color: #171717;
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto;
-    font-size: 16px;
+    font-size: 20px;
     font-style: normal;
     font-weight: 500;
-    line-height: 20px; /* 125% */
+    line-height: 25px; /* 125% */
     letter-spacing: 0.1px;
 
     margin-bottom: 10px;
@@ -84,7 +84,7 @@
     color: #818C99;
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto;
-    font-size: 12px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: 16px; /* 133.333% */
@@ -96,7 +96,7 @@
     color: #818C99;
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto;
-    font-size: 12px;
+    font-size: 14px;
     font-style: normal;
     font-weight: 400;
     line-height: 16px; /* 133.333% */
@@ -109,11 +109,12 @@
     color: #171717;
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto-Light;
-    font-size: 12px;
+    font-size: 16px;
     font-style: normal;
     font-weight: 400;
-    line-height: 16px; /* 125% */
+    line-height: 23px; /* 125% */
     letter-spacing: 0.2px;
+    margin-top: 24px;
 }
 
 img {
@@ -202,4 +203,11 @@ img {
     line-height: 16px; /* 133.333% */
     letter-spacing: 0.2px;
     margin-bottom: 15px;
+}
+
+.ai_content_alert {
+    width: 228px;
+    height: auto;
+    display: flex;
+    margin: 0px;
 }

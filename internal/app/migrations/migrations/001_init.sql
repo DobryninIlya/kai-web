@@ -284,7 +284,8 @@ create table if not exists news
     date        date    default now(),
     tag         char(25),
     preview_url char(256),
-    author      integer default 0
+    author      integer default 0,
+    ai_correct boolean DEFAULT false
 );
 
 alter table news
@@ -323,6 +324,9 @@ create table if not exists mobile_users
 
 alter table mobile_users
     owner to botkai;
+
+-- ALTER TABLE IF EXISTS news
+--     ADD COLUMN ai_correct boolean DEFAULT false;
 
 
 -- +goose Down

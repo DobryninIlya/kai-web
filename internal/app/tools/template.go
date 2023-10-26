@@ -158,7 +158,12 @@ func GetNewsPage(news model.News) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	result := fmt.Sprintf(tmp, news.Author, news.AuthorName, news.Date.Time.Format("02.01.2006"), news.Header, news.PreviewURL, news.Body)
+	var aiContentAlert string
+	if news.AICorrect {
+		aiContentAlert = "<img class=\"ai_content_alert\" src=\"/static/img/ai_content_alert.svg\" alt=\"\">"
+
+	}
+	result := fmt.Sprintf(tmp, news.PreviewURL, news.Author, news.AuthorName, news.Date.Time.Format("02.01.2006"), news.Header, aiContentAlert, news.Body)
 	return []byte(result), nil
 
 }

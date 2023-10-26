@@ -164,7 +164,7 @@ func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {
 func (r ApiRepository) GetNewsById(id int) (model.News, error) {
 	var news model.News
 	news.Id = id
-	err := r.store.db.QueryRow("SELECT n.header, n.description, n.body, n.date, n.preview_url, a.name FROM public.news AS n LEFT JOIN public.news_authors AS a ON n.author = a.id WHERE n.id=$1",
+	err := r.store.db.QueryRow("SELECT n.header, n.description, n.body, n.date, n.preview_url, a.name, n.ai_correct FROM public.news AS n LEFT JOIN public.news_authors AS a ON n.author = a.id WHERE n.id=$1",
 		id,
 	).Scan(
 		&news.Header,
@@ -173,19 +173,21 @@ func (r ApiRepository) GetNewsById(id int) (model.News, error) {
 		&news.Date,
 		&news.PreviewURL,
 		&news.AuthorName,
+		&news.AICorrect,
 	)
 	return news, err
 }
 
 func (r ApiRepository) MakeNews(news model.News) (int, error) {
 	var id int
-	err := r.store.db.QueryRow("INSERT INTO public.news (header, description, body, preview_url, tag, author) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id",
+	err := r.store.db.QueryRow("INSERT INTO public.news (header, description, body, preview_url, tag, author, ai_correct) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id",
 		news.Header,
 		news.Description,
 		news.Body,
 		news.PreviewURL,
 		news.Tag,
 		news.Author,
+		news.AICorrect,
 	).Scan(
 		&id,
 	)
@@ -264,6 +266,9 @@ func (r ApiRepository) ParseNews(update model.VKUpdate, log *logrus.Logger, open
 			path,
 			err,
 		)
+	}
+	if err == nil && newsParams.Header != "" && newsParams.Description != "" {
+		news.AICorrect = true
 	}
 	var header string
 	if newsParams.Header == "" {
