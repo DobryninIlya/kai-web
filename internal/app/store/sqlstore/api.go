@@ -281,7 +281,7 @@ func (r ApiRepository) ParseNews(update model.VKUpdate, log *logrus.Logger, open
 		news.Header = newsParams.Header
 	}
 	images := formatter.GetImages(update.Object.Attachments)
-	news.Body = strings.ReplaceAll(body, "\n", "<br><br>") + images
+	news.Body = strings.ReplaceAll(body, "\n", "<br>") + images
 	news.Tag = formatter.GetTagsInText(body)
 	if len(news.Tag) > maxTagLength {
 		news.Tag = ""
