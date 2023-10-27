@@ -1,9 +1,11 @@
 package vk_api
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"io"
+	"main/internal/app/model"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -12,6 +14,7 @@ import (
 
 const vkTemplate = "https://api.vk.com/method/%s?v=5.131&%s"
 const vkSendMethod = "messages.send"
+const vkGetUploadURL = "photos.getMessagesUploadServer"
 
 type APIvk struct {
 	vkToken    string
@@ -24,7 +27,6 @@ func NewAPIvk() *APIvk {
 		vkTemplate: vkTemplate,
 	}
 }
-
 
 // SendMessageVKids отправляет сообщение всем пользователям из списка
 func (r APIvk) SendMessageVKids(log *logrus.Logger, uId []int64, message string, buttons string) bool {
@@ -56,4 +58,26 @@ func (r APIvk) SendMessageVKids(log *logrus.Logger, uId []int64, message string,
 	}
 	defer resp.Body.Close()
 	return true
+}
+
+func (r APIvk) GetUploadURL() (string, error) {
+	params := fmt.Sprintf("access_token=%s",
+		r.vkToken,
+	)
+	url := fmt.Sprintf(r.vkTemplate, vkGetUploadURL, params)
+	resp, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	body, err := io.ReadAll(resp.Body)
+	var answer model.UploadServerAnswer
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	err = json.Unmarshal(body, &answer)
+	if err != nil {
+		return "", err
+	}
+	return answer.Response.UploadURL, nil
 }
