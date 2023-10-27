@@ -52,7 +52,7 @@ func (a *App) Close() error {
 func (a *App) configureRouter() {
 	a.router.Route("/api", func(r chi.Router) {
 		r.Route("/image", func(r chi.Router) {
-			r.Post("/upload", image_handler.NewPostPhotoHandler(a.logger, a.filePath))
+			r.Post("/tasks", image_handler.NewPostPhotoHandler(a.logger, a.filePath, a.store))
 		})
 	})
 

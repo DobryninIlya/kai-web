@@ -18,7 +18,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&configPath, "config-path", path.Join("configs", "vk_app.toml"), "path to config file")
+	flag.StringVar(&configPath, "config-path", path.Join("configs", "image_host.toml"), "path to config file")
 }
 
 func main() {
