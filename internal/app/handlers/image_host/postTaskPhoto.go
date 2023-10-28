@@ -12,7 +12,7 @@ import (
 	"path/filepath"
 )
 
-func NewPostPhotoHandler(log *logrus.Logger, filePath string, store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewPostTaskPhotoHandler(log *logrus.Logger, filePath string, store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const funcPath = "handlers.api.getMe.NewWhoIAmHandler"
 
