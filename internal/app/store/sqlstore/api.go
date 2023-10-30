@@ -84,8 +84,7 @@ func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiC
 			err = r.store.db.QueryRow("SELECT token FROM public.api_clients WHERE uid=$1",
 				client.UID,
 			).Scan(&newToken)
-		}
-		if err != nil {
+		} else {
 			return "", err
 		}
 	}

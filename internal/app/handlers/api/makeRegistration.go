@@ -51,8 +51,7 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 				h.ErrLongData.Error(),
 			)
 		}
-		token, err := store.API().
-			RegistrationToken(ctx, &res, fbAPI)
+		token, err := store.API().RegistrationToken(ctx, &res, fbAPI)
 		if err != nil && token == "" {
 			log.Logf(
 				logrus.ErrorLevel,
