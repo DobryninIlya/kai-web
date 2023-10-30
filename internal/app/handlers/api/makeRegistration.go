@@ -2,6 +2,7 @@ package api_handler
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"github.com/sirupsen/logrus"
@@ -62,7 +63,8 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 				h.ErrorHandlerAPI(w, r, http.StatusNotFound, errors.New("пользователь не найден. Проверьте UID"))
 				return
 			}
-			if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") {
+			if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") ||
+				errors.Is(sql.ErrNoRows, err) {
 				h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)
 				return
 			}
