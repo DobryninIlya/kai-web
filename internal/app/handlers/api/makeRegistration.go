@@ -63,8 +63,8 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 				h.ErrorHandlerAPI(w, r, http.StatusNotFound, errors.New("пользователь не найден. Проверьте UID"))
 				return
 			}
-			if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") ||
-				errors.Is(sql.ErrNoRows, err) {
+			if strings.Contains(err.Error(), "UNIQUE constraint") || strings.Contains(err.Error(), "ограничение уникальности") ||
+				strings.Contains(err.Error(), "unique constraint") || errors.Is(sql.ErrNoRows, err) {
 				h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)
 				return
 			}
