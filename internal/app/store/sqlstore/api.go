@@ -107,7 +107,7 @@ func (r ApiRepository) SaveMobileUserInfo(user model.ApiClient) error {
 		user.IDCard,
 		user.Groupname,
 	).Scan(&user.UID)
-	if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") {
+	if strings.Contains(err.Error(), "UNIQUE constraint") || strings.Contains(err.Error(), "ограничение уникальности") {
 		err = r.store.db.QueryRow("UPDATE public.mobile_users SET name=$1, faculty=$2, idcard=$3, groupname=$4 WHERE uid=$5 RETURNING uid",
 			user.Name,
 			user.Faculty,
