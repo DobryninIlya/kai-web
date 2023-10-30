@@ -53,7 +53,7 @@ func NewPostTaskPhotoHandler(log *logrus.Logger, filePath string, store sqlstore
 			return
 		}
 
-		urlPath := fmt.Sprintf("http://%s/images/groups/tasks/%s/%s", r.Host, client.Groupname, fileName)
+		urlPath := fmt.Sprintf("http://%s/image/groups/tasks/%s/%s", r.Host, client.Groupname, fileName)
 		h.RespondAPI(w, r, http.StatusOK, struct {
 			URL string `json:"url"`
 		}{

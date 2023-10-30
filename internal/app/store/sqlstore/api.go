@@ -79,10 +79,12 @@ func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiC
 		client.DeviceTag,
 		newToken,
 	).Scan(&client.UID)
-	if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") {
-		err = r.store.db.QueryRow("SELECT token FROM public.api_clients WHERE uid=$1",
-			client.UID,
-		).Scan(&newToken)
+	if err != nil {
+		if strings.Contains(err.Error(), "UNIQUE constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") {
+			err = r.store.db.QueryRow("SELECT token FROM public.api_clients WHERE uid=$1",
+				client.UID,
+			).Scan(&newToken)
+		}
 		if err != nil {
 			return "", err
 		}

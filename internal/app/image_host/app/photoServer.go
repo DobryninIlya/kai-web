@@ -7,6 +7,7 @@ import (
 	image_handler "main/internal/app/handlers/image_host"
 	"main/internal/app/store/sqlstore"
 	"net/http"
+	"path/filepath"
 )
 
 type App struct {
@@ -56,5 +57,6 @@ func (a *App) configureRouter() {
 			r.Post("/users", image_handler.NewPostUserProfilePhotoHandler(a.logger, a.filePath, a.store))
 		})
 	})
-
+	a.router.Handle("/image/users/*", http.StripPrefix("/image/", http.FileServer(http.Dir(filepath.Join(a.filePath)))))
+	a.router.Handle("/image/groups/tasks/*", http.StripPrefix("/image/", http.FileServer(http.Dir(filepath.Join(a.filePath)))))
 }
