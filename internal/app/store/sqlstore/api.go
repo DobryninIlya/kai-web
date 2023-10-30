@@ -80,7 +80,7 @@ func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiC
 		newToken,
 	).Scan(&client.UID)
 	if err != nil {
-		if strings.Contains(err.Error(), "unique constraint failed") || strings.Contains(err.Error(), "ограничение уникальности") {
+		if strings.Contains(err.Error(), "unique constraint") || strings.Contains(err.Error(), "ограничение уникальности") {
 			err = r.store.db.QueryRow("SELECT token FROM public.api_clients WHERE uid=$1",
 				client.UID,
 			).Scan(&newToken)
