@@ -2,7 +2,6 @@ package api_handler
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"github.com/sirupsen/logrus"
@@ -12,7 +11,6 @@ import (
 	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
 	"net/http"
-	"strings"
 )
 
 func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, log *logrus.Logger, fbAPI *firebase.FirebaseAPI) func(w http.ResponseWriter, r *http.Request) {
@@ -63,13 +61,13 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 				h.ErrorHandlerAPI(w, r, http.StatusNotFound, errors.New("пользователь не найден. Проверьте UID"))
 				return
 			}
-			if strings.Contains(err.Error(), "UNIQUE constraint") || strings.Contains(err.Error(), "ограничение уникальности") ||
-				strings.Contains(err.Error(), "unique constraint") || errors.Is(sql.ErrNoRows, err) {
-				h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)
-				return
-			}
-			h.ErrorHandlerAPI(w, r, http.StatusInternalServerError, err)
-			return
+			//if strings.Contains(err.Error(), "UNIQUE constraint") || strings.Contains(err.Error(), "ограничение уникальности") ||
+			//	strings.Contains(err.Error(), "unique constraint") || errors.Is(sql.ErrNoRows, err) {
+			//	h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)
+			//	return
+			//}
+			//h.ErrorHandlerAPI(w, r, http.StatusInternalServerError, err)
+			//return
 		}
 		result := struct {
 			Token string `json:"token"`
