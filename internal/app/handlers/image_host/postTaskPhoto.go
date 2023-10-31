@@ -35,7 +35,6 @@ func NewPostTaskPhotoHandler(log *logrus.Logger, filePath string, store sqlstore
 			h.ErrorHandlerAPI(w, r, http.StatusInternalServerError, err)
 			return
 		}
-		//filename := header.Filename
 		fileExt := filepath.Ext(header.Filename)
 		fileName := uuid.New().String() + fileExt
 		path := filepath.Join(filePath, "groups", "tasks", client.Groupname)
