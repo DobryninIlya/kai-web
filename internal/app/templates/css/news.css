@@ -1,3 +1,25 @@
+:root {
+    /*--primary-color: #4CAF50;*/
+    /*--primary-color-hover: #3e8e41;*/
+    /*--text-color: #ffffff;*/
+    --background-color: #fff;
+    --secondary-color: #818C99;
+    --text-color:  #171717;
+    --open-news-button-color: #EBECEE;
+    --hashtag-color: #4A4A4A;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background-color: #000    ;
+        --secondary-color: #eae9e9;
+        --text-color: #e3e3e3;
+        --open-news-button-color: #EBECEE;
+        --hashtag-color: #d9d9d9;
+    }
+}
+
+
 .news {
     max-width: 450px;
     margin: 0 auto;
@@ -73,7 +95,7 @@ body {
     height: auto;
     display: block;
 
-    color: #171717;
+    color: var(--text-color);
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto;
     font-size: 20px;
@@ -91,7 +113,7 @@ body {
     width: auto;
     height: auto;
     display: block;
-    color: #818C99;
+    color: var(--secondary-color);
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto;
     font-size: 14px;
@@ -103,7 +125,7 @@ body {
 }
 
 .author {
-    color: #818C99;
+    color: var(--secondary-color);
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto;
     font-size: 14px;
@@ -116,7 +138,7 @@ body {
 }
 
 .news_body {
-    color: #171717;
+    color: var(--text-color);
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto-Light;
     font-size: 16px;
@@ -190,14 +212,14 @@ img {
     line-height: 28px; /* 200% */
 
     border-radius: 8px;
-    background: #EBECEE;
+    background: var(--open-news-button-color);
 
     /*margin-bottom: 25px;*/
     margin-bottom: 5px;
 }
 
 .news_preview {
-    color: #818C99;
+    color: var(--secondary-color);
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto-Light;
     font-size: 12px;
@@ -209,7 +231,7 @@ img {
 }
 
 .hashtag {
-    color: #4A4A4A;
+    color: var(--hashtag-color);
     font-feature-settings: 'clig' off, 'liga' off;
     font-family: Roboto;
     font-size: 12px;
@@ -246,6 +268,4 @@ img {
     background-color: #3e8e41;
 }
 
-.news {
-    background: white;
-}
+
