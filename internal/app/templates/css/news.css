@@ -245,3 +245,7 @@ img {
 .back_to_main_news:hover {
     background-color: #3e8e41;
 }
+
+.news {
+    background: white;
+}
