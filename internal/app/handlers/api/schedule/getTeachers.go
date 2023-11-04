@@ -1,4 +1,4 @@
-package api_handler
+package schedule
 
 import (
 	"github.com/go-chi/chi"

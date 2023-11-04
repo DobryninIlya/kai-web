@@ -6,6 +6,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"main/internal/app/firebase"
 	api "main/internal/app/handlers/api"
+	"main/internal/app/handlers/api/schedule"
+	task "main/internal/app/handlers/api/tasks"
 	"main/internal/app/handlers/web_app"
 	"main/internal/app/mailer"
 	"main/internal/app/openai"
@@ -81,13 +83,13 @@ func (a *App) configureRouter() {
 		r.Get("/week", api.NewWeekParityHandler(a.weekParity)) // Текущая четность недели
 		r.Route("/schedule", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
-			r.Get("/{groupid}", api.NewScheduleHandler(a.store, a.logger))                        // Расписание полностью
-			r.Get("/{groupid}/by_margin", api.NewLessonsHandler(a.store, a.logger, a.weekParity)) // На день с отступом margin от текущего дня
-			r.Get("/{groupid}/teachers", api.NewTeachersHandler(a.store, a.logger))               // Список преподавателей
+			r.Get("/{groupid}", schedule.NewScheduleHandler(a.store, a.logger))                        // Расписание полностью
+			r.Get("/{groupid}/by_margin", schedule.NewLessonsHandler(a.store, a.logger, a.weekParity)) // На день с отступом margin от текущего дня
+			r.Get("/{groupid}/teachers", schedule.NewTeachersHandler(a.store, a.logger))               // Список преподавателей
 		})
 		r.Route("/groups", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
-			r.Get("/{group}", api.NewIdByGroupHandler(a.store, a.logger)) // ID группы по ее номеру
+			r.Get("/{group}", schedule.NewIdByGroupHandler(a.store, a.logger)) // ID группы по ее номеру
 		})
 		//r.Get("/", api.NewLessonsHandler(a.store, a.logger))
 		r.Route("/feedback", func(r chi.Router) {
@@ -110,7 +112,12 @@ func (a *App) configureRouter() {
 			r.Post("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger, a.openai))
 			r.Get("/collect", api.NewHandleVKUpdateHandler(a.store, a.logger, a.openai))
 		})
-
+		r.Route("/tasks", func(r chi.Router) {
+			//r.Use(a.authorizationByToken)
+			r.Get("/{groupname}", task.NewGetTaskHandler(a.store, a.logger))
+			r.Post("/", task.NewTaskHandler(a.store, a.logger))
+			r.Delete("/{ID}", task.NewDeleteTaskHandler(a.store, a.logger))
+		})
 		r.Get("/doc", api.NewDocumentationPageHandler())                                      // Главная страница документации
 		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                          // Страница документации
 		r.Post("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // Получение токена

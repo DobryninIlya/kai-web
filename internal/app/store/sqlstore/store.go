@@ -12,6 +12,7 @@ type Store struct {
 	verificationRepository *VerificationRepository
 	apiRepository          *ApiRepository
 	mailingRepository      *MailingRepository
+	taskRepository         *TaskRepository
 }
 
 // New ...
@@ -80,4 +81,16 @@ func (s *Store) Mail() *MailingRepository {
 	}
 
 	return s.mailingRepository
+}
+
+func (s *Store) Task() *TaskRepository {
+	if s.taskRepository != nil {
+		return s.taskRepository
+	}
+
+	s.taskRepository = &TaskRepository{
+		store: s,
+	}
+
+	return s.taskRepository
 }

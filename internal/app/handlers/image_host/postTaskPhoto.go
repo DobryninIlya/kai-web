@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
 )
 
 func NewPostTaskPhotoHandler(log *logrus.Logger, filePath string, store sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
@@ -37,7 +38,7 @@ func NewPostTaskPhotoHandler(log *logrus.Logger, filePath string, store sqlstore
 		}
 		fileExt := filepath.Ext(header.Filename)
 		fileName := uuid.New().String() + fileExt
-		path := filepath.Join(filePath, "groups", "tasks", client.Groupname)
+		path := filepath.Join(filePath, "groups", "tasks", strconv.Itoa(client.Groupname))
 		os.Mkdir(path, 0755)
 		path = filepath.Join(path, fileName)
 		err = os.WriteFile(path, data, 0666)
@@ -52,7 +53,7 @@ func NewPostTaskPhotoHandler(log *logrus.Logger, filePath string, store sqlstore
 			return
 		}
 
-		urlPath := fmt.Sprintf("http://%s/image/groups/tasks/%s/%s", r.Host, client.Groupname, fileName)
+		urlPath := fmt.Sprintf("http://%s/image/groups/tasks/%s/%s", client.Groupname, fileName)
 		h.RespondAPI(w, r, http.StatusOK, struct {
 			URL string `json:"url"`
 		}{

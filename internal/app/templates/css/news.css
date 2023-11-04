@@ -140,6 +140,9 @@ img {
     display: block;
     max-height: 400px;
     max-width: 100%;
+    margin-right: auto;
+    margin-left: auto;
+    width: auto;
 }
 
 .author_badge {
@@ -155,7 +158,8 @@ img {
 
 .preview_img_list {
     max-width: 100%;
-    max-height: 230px;
+    width: auto;
+    max-height: 430px;
     /*width: auto;*/
     height: auto;
     border-radius: 10px;

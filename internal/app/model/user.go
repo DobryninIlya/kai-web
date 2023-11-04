@@ -37,5 +37,5 @@ type MobileUser struct {
 	Name      string `json:"name"`
 	Faculty   string `json:"faculty"`
 	IDCard    int    `json:"id_card"`
-	Groupname string `json:"groupname"`
+	Groupname int    `json:"groupname"`
 }

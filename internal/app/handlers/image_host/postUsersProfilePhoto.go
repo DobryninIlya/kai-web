@@ -74,8 +74,8 @@ func NewPostUserProfilePhotoHandler(log *logrus.Logger, filePath string, store s
 			return
 		}
 
-		urlPath := fmt.Sprintf("https://%s/image/users/user_%s", r.Host, fileName)
-		urlPathThumb := fmt.Sprintf("https://%s/image/users/thumb_%s", r.Host, fileName)
+		urlPath := fmt.Sprintf("/image/users/user_%s", r.Host, fileName)
+		urlPathThumb := fmt.Sprintf("/image/users/thumb_%s", r.Host, fileName)
 		h.RespondAPI(w, r, http.StatusOK, struct {
 			URL   string `json:"url"`
 			Thumb string `json:"thumbnail"`

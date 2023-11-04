@@ -6,4 +6,5 @@ type StoreInterface interface {
 	Verification() *VerificationRepository
 	API() *ApiRepository
 	Mail() *MailingRepository
+	Task() *TaskRepository
 }

@@ -1,4 +1,4 @@
-package api_handler
+package schedule
 
 import (
 	"github.com/go-chi/chi"
@@ -10,9 +10,9 @@ import (
 	"strconv"
 )
 
-func NewScheduleHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w http.ResponseWriter, r *http.Request) {
+func NewLessonsHandler(store sqlstore.StoreInterface, log *logrus.Logger, weekParity int) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.api.getSchedule.NewScheduleHandler"
+		const path = "handlers.api.getLesson.NewLessonHandler"
 		groupId := chi.URLParam(r, "groupid")
 		groupIdI, err := strconv.Atoi(groupId)
 		if err != nil || groupId == "" {
@@ -27,29 +27,27 @@ func NewScheduleHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		if err != nil || groupIdI <= 0 {
-			if err != nil {
-				log.Logf(
-					logrus.ErrorLevel,
-					"%s : Ошибка получения параметров url запроса: %v",
-					path,
-					err.Error(),
-				)
-			}
+		params := r.URL.Query()
+		margin := params.Get("margin")
+		marginI := 0
+		if margin != "" {
+			marginI, err = strconv.Atoi(margin)
+		}
+		if groupIdI <= 0 {
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		lessons, err := store.Schedule().GetScheduleByGroup(groupIdI)
+		lessons, _, err := store.Schedule().GetCurrentDaySchedule(groupIdI, marginI, weekParity)
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,
-				"%s : Ошибка получения расписания группы: %v",
+				"%s : Ошибка получения текущего расписания на день : %v",
 				path,
 				err.Error(),
 			)
 		}
 		result := struct {
-			Lessons model.Schedule `json:"schedule"`
+			Schedule []model.Lesson `json:"schedule"`
 		}{
 			lessons,
 		}

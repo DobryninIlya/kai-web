@@ -123,15 +123,15 @@ func (r ApiRepository) SaveMobileUserInfo(user model.ApiClient) error {
 
 func (r ApiRepository) CheckToken(tokenStr string) (model.ApiClient, error, int) {
 	var client model.ApiClient
-	var name, groupname, faculty sql.NullString
-	var idcard sql.NullInt32
+	var name, faculty sql.NullString
+	var idcard, groupname sql.NullInt32
 	err := r.store.db.QueryRow("SELECT c.uid, c.device_tag, c.create_date, mu.name, mu.groupname, mu.idcard, mu.faculty FROM public.api_clients AS c LEFT JOIN public.mobile_users AS mu ON c.uid = mu.uid WHERE token=$1",
 		tokenStr,
 	).Scan(&client.UID, &client.DeviceTag, &client.CreateDate, &name, &groupname, &idcard, &faculty)
 	client.Name = name.String
-	client.Groupname = groupname.String
 	client.Faculty = faculty.String
 	client.IDCard = int(idcard.Int32)
+	client.Groupname = int(groupname.Int32)
 	if err != nil || len(client.UID) == 0 {
 		return model.ApiClient{}, errors.New("bad token"), http.StatusForbidden
 	}
