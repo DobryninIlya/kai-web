@@ -49,6 +49,12 @@ func (r APIvk) SendMessageVKids(log *logrus.Logger, uId []int64, message string,
 	)
 	url := fmt.Sprintf(r.vkTemplate, vkSendMethod, params)
 	resp, err := http.Get(url)
+	if resp.StatusCode != http.StatusOK {
+		var body []byte
+		body, _ = io.ReadAll(resp.Body)
+		log.Printf("VK: Ошибка отправки сообщения: %v", string(body))
+		return false
+	}
 	if err != nil {
 		log.Printf("Ошибка API. Отправка сообщений: %v", err)
 	}
