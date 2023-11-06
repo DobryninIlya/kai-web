@@ -79,6 +79,7 @@ func (m *Mailing) SendMailVK(message string, buttons string) int {
 		go func() {
 			for recipient := range m.vkChan {
 				m.vkLocker.Lock()
+				start := time.Now()
 				var j int
 				var result bool
 				for result = m.vk.SendMessageVKids(m.log, recipient, message, buttons); !result; {
@@ -107,8 +108,11 @@ func (m *Mailing) SendMailVK(message string, buttons string) int {
 						recipient,
 					)
 				}
-
-				time.Sleep(time.Second / vkAPIQueryLimit)
+				sleepTime := time.Second/vkAPIQueryLimit - time.Since(start)
+				if sleepTime < 0 {
+					sleepTime = -sleepTime
+				}
+				time.Sleep(sleepTime)
 				m.vkLocker.Unlock()
 			}
 		}()
