@@ -524,8 +524,3 @@ func GetLoadingPage() []byte {
 	tmp, _ := GetLoadingTemplate()
 	return []byte(tmp)
 }
-
-func GetTelegramRedirectPage() []byte {
-	tmp, _ := GetTelegramRedirect()
-	return []byte(tmp)
-}

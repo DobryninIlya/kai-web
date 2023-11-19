@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
+	"log"
 	"main/internal/app/authorization"
 	"main/internal/app/firebase"
 	api "main/internal/app/handlers/api"
@@ -169,6 +170,7 @@ func (a *App) configureRouter() {
 			r.Get("/", portal.NewAuthLinkHandler(secretKey)) // Получение подписи (доступно для авторизованных сервисов)
 		})
 		r.Route("/authorization", func(r chi.Router) {
+			r.Use(a.parseURLParamsFromTelegramStart)
 			r.Use(a.checkSignTelegram)
 			r.Get("/", portal.NewPortalPageHandler(secretKey))
 			r.Route("/telegram", func(r chi.Router) {
@@ -176,6 +178,7 @@ func (a *App) configureRouter() {
 			})
 		})
 		r.Route("/attestation", func(r chi.Router) {
+			r.Use(a.parseURLParamsFromTelegramStart)
 			r.Use(a.loadingMiddleware)
 			r.Use(a.checkSignTelegram)
 			r.Get("/", portal.NewAttestationPageHandler(a.store, a.logger, a.auth, secretKey))
@@ -290,24 +293,29 @@ func (a *App) checkSign(h http.Handler) http.Handler {
 	})
 }
 
+func (a *App) parseURLParamsFromTelegramStart(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tgWebAppStartParam := r.URL.Query().Get("tgWebAppStartParam")
+		if tgWebAppStartParam != "" {
+			resultString, err := processQueryString(tgWebAppStartParam)
+			if err != nil {
+				log.Println(err)
+			} else {
+				updateRequestParams(r, resultString)
+			}
+		}
+		rw := &responseWriter{w, http.StatusOK}
+		h.ServeHTTP(rw, r)
+
+		return
+	})
+}
 func (a *App) checkSignTelegram(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		log := a.logger.WithFields(logrus.Fields{
 			"remote_addr": r.RemoteAddr,
 		})
 		urlSign := r.FormValue("sign")
-		tgWebAppStartParam := r.URL.Query().Get("tgWebAppStartParam")
-		if tgWebAppStartParam != "" {
-			resultString, err := processQueryString(tgWebAppStartParam)
-			if err != nil {
-				log.Log(
-					logrus.WarnLevel,
-					"Ошибка преобразования url строки из телеграмма",
-				)
-			} else {
-				updateRequestParams(r, resultString)
-			}
-		}
 		if urlSign == "" {
 			urlSign = r.URL.Query().Get("sign")
 		}
