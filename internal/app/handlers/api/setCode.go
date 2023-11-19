@@ -11,12 +11,12 @@ import (
 func NewSetCodeHandler(store *sqlstore.StoreInterface) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const path = "handlers.api.makeRegistration.NewSetCodeHandler"
-		groupId := chi.URLParam(r, "code")
-		if groupId == "" {
+		code := chi.URLParam(r, "code")
+		if code == "" {
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, errors.New("код подтверждения не указан"))
 			return
 		}
-		(*store).API().ConfirmationCode = groupId
+		(*store).API().SetConfirmationCode(code)
 		h.RespondAPI(w, r, http.StatusOK, "токен успешно задан")
 	}
 }

@@ -1,4 +1,4 @@
-package api_handler
+package auth
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"errors"
 	"github.com/sirupsen/logrus"
 	"io"
+	"main/internal/app/authorization"
 	"main/internal/app/firebase"
 	h "main/internal/app/handlers/web_app"
 	"main/internal/app/model"
@@ -15,10 +16,10 @@ import (
 	"strings"
 )
 
-func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, log *logrus.Logger, fbAPI firebase.FirebaseAPIInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewRegistrationByPasswordHandler(ctx context.Context, store sqlstore.StoreInterface, log *logrus.Logger, fbAPI firebase.FirebaseAPIInterface, auth authorization.AuthorizationInterface) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.api.makeRegistration.NewRegistrationHandler"
-		var res model.ApiClient
+		const path = "handlers.api.makeRegistration.auth.ewRegistrationByPasswordHandler"
+		var res model.ApiRegistration
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
 			log.Logf(
@@ -31,7 +32,7 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 			return
 		}
 		err = json.Unmarshal(body, &res)
-		if err != nil || res.DeviceTag == "" || res.UID == "" {
+		if err != nil || res.Login == "" || res.Password == "" || res.UID == "" {
 			if err != nil {
 				log.Logf(
 					logrus.ErrorLevel,
@@ -51,7 +52,7 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 				h.ErrLongData.Error(),
 			)
 		}
-		token, err := store.API().RegistrationToken(ctx, &res, fbAPI)
+		token, err := store.API().RegistrationUserByPassword(ctx, &res, fbAPI, auth, res.Login, res.Password)
 		if err != nil && token == "" {
 			log.Logf(
 				logrus.ErrorLevel,
@@ -59,10 +60,6 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 				path,
 				err.Error(),
 			)
-			if err == sqlstore.ErrUserNotFound {
-				h.ErrorHandlerAPI(w, r, http.StatusNotFound, errors.New("пользователь не найден. Проверьте UID"))
-				return
-			}
 			if strings.Contains(err.Error(), "UNIQUE constraint") || strings.Contains(err.Error(), "ограничение уникальности") ||
 				strings.Contains(err.Error(), "unique constraint") || errors.Is(sql.ErrNoRows, err) {
 				h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)

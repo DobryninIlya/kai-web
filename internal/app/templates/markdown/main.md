@@ -79,18 +79,15 @@
 
 # **Секция /token** 
 
-### 3. POST **/api/token** 
+### 3. POST **api/registration**
 Регистрирует нового API клиента и возвращает его токен.
 Принимаемый payload:
 ```json
 {
-    "uid": "adbcdef123", // unique constraint max-len=35
-    "device_tag": "SM-1234" // len=16
-	// Следющие поля заполняются при последующих запросах GET /token
-	"groupname": 4201, // int
-	"name": "Name Surname Patronymic", // len=120
-	"faculty": "ИКТЗИ", // len=20, устанавливается при регистрации по зачетной книжке (номер сутд билета)
-	"id_card": 456123, // устанавливается при регистрации по зачетной книжке (номер сутд билета)
+    "uid": "adbcdef123", // UID Firebase | unique constraint max-len=35
+    "device_tag": "SM-1234" // Устройство | len=16
+	"login": "NameSM", // Логин пользователя
+	"password": "password123" // Пароль пользователя (от личного кабинета)
 	
 }
 ```
@@ -98,15 +95,15 @@ uid - идентификатор пользователя от Firebase
 
 device_tag - тэг устройства от производителя
 
-В случае, если пользователь с таким uid уже есть в базе данных, то возвращается токен этого пользователя.
+В случае, если пользователь с таким uid уже есть в базе данных, то возвращается ошибка
 
-Обязательные поля для получения токена - uid, device_tag. 
-В последующем, в запросе необходимо передавать все актуальные данные для обновления в базе данных. В ответ будет поступать token (актуальный).
+```json
+{
+  "error": "unique constraint failed for one of the field, probably already registered"
+}
+```
 
-При наличии буквы "П" перед номером зачетной книжки, она упускается и отправляется только число.
-В целом, ввод букв в номере зачетной книжки следует запрещать.
-
-При успешном ответе возвращается:
+При успешном ответе возвращается токен:
 ```json
 {
 	"result": {
@@ -123,6 +120,7 @@ device_tag - тэг устройства от производителя
  **the length of one of parameters is too much** - *поле uid или device_tag превышает допустимую длину*
 
  **user not found** - *ошибка получения данных от Firebase: данные о пользователе не найдены*
+ **unique constraint failed for one of the field, probably already registered** - *пользователь уже зарегистрирован* (необходимо запросить токен)
 
 [Аворизация по токену](doc/autorization)
 
@@ -130,18 +128,21 @@ device_tag - тэг устройства от производителя
 Возвращает известную информацию о владельце токена
 ```json
 {
-	"result":
-	{
-		"uid":"dsadasdasdasdasdasds",
-		"device_tag":"SM-1234         ",
-		"create_date":
-		{
-			"Time":"2023-10-06T00:00:00Z",
-			"Status":2,
-			"InfinityModifier":0
-		}
+	"result": {
+		"uid": "Tjf8dC9mZ6V8cLzGltKSCrhrLdq1       ",
+		"device_tag": "SM-1234         ",
+		"token": "ce20ff5c18c65a5fdsfsdfsdfsdfdsfaqr28b26f9ed263e8eb00fe7e28e49d9705",
+		"create_date": {
+			"Time": "2023-11-16T00:00:00Z",
+			"Status": 2,
+			"InfinityModifier": 0
+		},
+		"name": "Иванов Иван Иванович",
+		"groupname": 4215,
+		"login": "Login"
 	}
 }
+
 ```
 
 ---
@@ -163,6 +164,7 @@ device_tag - тэг устройства от производителя
 ---
 
 # **Секция api/attestation** _(с авторизацией)_
+# DEPRECATED | Секция не поддерживается. Используйте api/auth/attestation
 
 ### 6. GET **/api/attestation/** 
 Получает баллы аттестации
@@ -314,4 +316,53 @@ device_tag - тэг устройства от производителя
         "date": null
       },
 	.....
+```
+
+# **Секция /api/auth**
+
+### 15. GET **/api/auth/personal** 
+Получает ФИО по токену
+
+```json
+{
+  "result": {
+    "user": {
+      "FirstName": "Ivan",
+      "LastName": "Ivanov",
+      "MiddleName": "Ivanovich"
+    }
+  }
+}
+
+```
+
+
+### 16. GET **/api/auth/group**
+Получает номер группы по токену
+
+```json
+{
+  "result": {
+	"group": "4215"
+  }
+}
+```
+
+
+### 17. GET **/api/auth/attestation** 
+Получает баллы аттестации по токену
+
+```json
+{
+  "result": {
+    "attestation": [
+      {
+        "Number": 1,
+        "Name": "Технологическая (проектно-технологическая) практика",
+        "Assessments": [
+          {
+            "YourScore": 20,
+            "MaxScore": 20
+          },
+			... 10 assessments
 ```

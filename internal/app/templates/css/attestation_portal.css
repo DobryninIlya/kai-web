@@ -1,0 +1,84 @@
+.att_header {
+    font-family: Inter;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.1px;
+    text-align: left;
+    margin-left: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.att_element {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    width: auto;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 16px;
+}
+
+.att_name {
+    margin: 0;
+    position: relative;
+    flex-grow: 8; /* Изменено значение с 1 на 8 */
+}
+
+.att_name_text {
+    font-family: Inter;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    text-align: left;
+    margin: 0px;
+
+}
+
+.main_block {
+    width: 100%;
+}
+
+.arrow_img {
+    left: 50%;
+    top: 50%;
+    transform: translateY(-50%);
+    position: relative;
+
+}
+
+.arrow_btn {
+    position: relative;
+    width: 50px;
+}
+
+
+.att_desc_text {
+    font-family: Inter;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 17px;
+    letter-spacing: 0.1px;
+    text-align: left;
+    margin: 0px;
+    color: #818C99;
+}
+
+.att_name {
+    width: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+@font-face {
+    src: url("Inter-Regular.ttf");
+    font-family: Inter;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 27px;
+    letter-spacing: -0.065em;
+    text-align: left;
+
+}

@@ -15,7 +15,7 @@ var (
 	ErrIncorrectParams  = errors.New("url params is incorrect")
 	ErrCantCreated      = errors.New("cant create this")
 	ErrInternal         = errors.New("internal server error")
-	ErrUniqueConstraint = errors.New("unique constraint failed for one of the field")
+	ErrUniqueConstraint = errors.New("unique constraint failed for one of the field, probably already registered")
 	ErrLongData         = errors.New("the length of one of parameters is too much")
 	ErrNotImplemented   = errors.New("this method is not implemented")
 	ErrForbidden        = errors.New("you cant do this")

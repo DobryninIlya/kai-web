@@ -35,7 +35,12 @@ type RegistrationData struct {
 type MobileUser struct {
 	UID       string `json:"uid,omitempty"`
 	Name      string `json:"name"`
-	Faculty   string `json:"faculty"`
-	IDCard    int    `json:"id_card"`
-	Groupname int    `json:"groupname"`
+	Faculty   string `json:"faculty,omitempty"`
+	IDCard    int    `json:"id_card,omitempty"`
+	Groupname int    `json:"groupname,omitempty"`
+}
+
+type TelegramUser struct {
+	TelegramID int64 `json:"telegram_id"`
+	ApiRegistration
 }

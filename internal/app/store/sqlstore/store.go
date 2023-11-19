@@ -10,7 +10,7 @@ type Store struct {
 	userRepository         *UserRepository
 	scheduleRepository     *ScheduleRepository
 	verificationRepository *VerificationRepository
-	apiRepository          *ApiRepository
+	apiRepository          ApiRepositoryInterface
 	mailingRepository      *MailingRepository
 	taskRepository         *TaskRepository
 }
@@ -59,7 +59,7 @@ func (s *Store) Verification() *VerificationRepository {
 	return s.verificationRepository
 }
 
-func (s *Store) API() *ApiRepository {
+func (s *Store) API() ApiRepositoryInterface {
 	if s.apiRepository != nil {
 		return s.apiRepository
 	}

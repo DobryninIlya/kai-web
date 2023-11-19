@@ -50,6 +50,42 @@ func GetNewsTemplate() (string, error) {
 	return strings.Join(data, "\n"), nil
 }
 
+func GetRegistrationPortalTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "registration_portal.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetAttestationTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "attestation_portal.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetAttestationListElementTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "attestation_element.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetAttestationElementTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "attestation_page.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
 func GetMainTemplate() (string, error) {
 	data, err := readFile(filepath.Join("internal", "app", path, "main.html"))
 	if err != nil {
@@ -69,6 +105,15 @@ func GetRegistrationTemplate() (string, error) {
 
 func GetRegistrationIDcardTemplate() (string, error) {
 	data, err := readFile(filepath.Join("internal", "app", path, "registrationIDcard.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetLoadingTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "loading.html"))
 	if err != nil {
 		log.Println(err)
 		return "", err
@@ -424,4 +469,50 @@ func readFile(path string) ([]string, error) {
 	}
 	return rows, nil
 
+}
+
+func GetRegistrationPortal(url string) []byte {
+	tmp, _ := GetRegistrationPortalTemplate()
+	result := fmt.Sprintf(tmp, url)
+	return []byte(result)
+
+}
+
+func getAttestationList(disciplines []model.Discipline, tgID, sign string) []byte {
+	tmp, _ := GetAttestationListElementTemplate()
+	result := ""
+	for i, discipline := range disciplines {
+		urlPath := fmt.Sprintf("%v?tg_id=%v&sign=%v", i, tgID, sign)
+		result += fmt.Sprintf(tmp, discipline.Name, discipline.FinalGrade, urlPath)
+	}
+	return []byte(result)
+}
+
+func GetAttestationPage(disciplines []model.Discipline, tgID, sign string) []byte {
+	tmp, _ := GetAttestationTemplate()
+	result := fmt.Sprintf(tmp, string(getAttestationList(disciplines, tgID, sign)))
+	return []byte(result)
+}
+
+func GetAttestationElementPage(disciplines model.Discipline) []byte {
+	tmp, _ := GetAttestationElementTemplate()
+	result := fmt.Sprintf(tmp, disciplines.FinalGrade, disciplines.Name,
+		disciplines.Assessments[0].YourScore,
+		disciplines.Assessments[0].YourScore, disciplines.Assessments[0].MaxScore,
+		disciplines.Assessments[1].YourScore,
+		disciplines.Assessments[1].YourScore, disciplines.Assessments[1].MaxScore,
+		disciplines.Assessments[2].YourScore,
+		disciplines.Assessments[2].YourScore, disciplines.Assessments[2].MaxScore,
+		disciplines.Assessments[3].YourScore,
+		disciplines.Assessments[3].YourScore, disciplines.Assessments[3].MaxScore,
+		disciplines.Assessments[4].YourScore,
+		disciplines.Assessments[4].YourScore, disciplines.Assessments[4].MaxScore,
+		disciplines.TraditionalGrade,
+	)
+	return []byte(result)
+}
+
+func GetLoadingPage() []byte {
+	tmp, _ := GetLoadingTemplate()
+	return []byte(tmp)
 }

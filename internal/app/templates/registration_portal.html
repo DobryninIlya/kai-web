@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/static/css/registration_portal.css">
+    <script src="/static/js/auth_portal.js" defer></script>
+    <title>Портал авторизации</title>
+</head>
+<body>
+<div class="main_block">
+    <div class="header_block">
+    <img class="main_logo" src="https://i.ibb.co/fCB0bLx/image.png">
+        <p class="header_block_text">Авторизация в приложении</p>
+        <p class="header_block_text_desc">Введите логин и пароль, которые привязаны к аккаунту КАИ</p>
+    </div>
+    <button class="open_form_btn">Войти по логину и паролю</button>
+    <form class="auth_form" id="main_auth_form" style="display: none;">
+        <input type="hidden" name="params" value="%v">
+<!--        <input type="hidden" name="sign" value="%v">-->
+        <input type="text" class="input_login input" name="login" placeholder="Логин">
+        <input type="password" class="input_password input" name="password" placeholder="Пароль">
+        <input type="submit" class="submit_btn input" id="main_auth_form_btn" value="Войти">
+    </form>
+    <div class="header_block_text_desc" id="status"></div>
+    <div class="result" id="result"></div>
+</div>
+</body>
+</html>

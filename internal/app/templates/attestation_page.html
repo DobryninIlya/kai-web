@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Аттестация</title>
+  <link rel="stylesheet" href="/static/css/attestation_element.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="/static/js/attestation_page.js" defer></script>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+<div class="main_block">
+  <div class="header_block">
+    <img src="/static/img/icon-arrow-left.svg" class="arrow-left-btn" id="go-back-btn">
+    <p class="att_header">Аттестация</p>
+    <p></p>
+  </div>
+
+  <div class="att_element_body">
+    <p class="att_element_body_header">Твои баллы: %v</p>
+    <div class="element_block">
+      <p class="element_block_header">Предмет:</p>
+      <p class="element_block_text">%v</p>
+    </div>
+    <div class="attestation_block">
+      <div class="attestation_block_header">
+        <p class="attestation_block_header_text">Аттестация №1 </p>
+        <p class="attestation_block_counter">— %v</p>
+        <div class="open_desc_button">
+        <img src="/static/img/icon-arrow-bottom.svg" class="arrow-bottom-btn">
+        </div>
+      </div>
+      <div class="attestation_block_assessment" style="display: none">
+        <p class="element_block_header">Твой балл:</p>
+        <p class="element_block_text">%v</p>
+        <p class="element_block_header">Максимальный балл:</p>
+        <p class="element_block_text">%v</p>
+      </div>
+    </div>
+    <div class="attestation_block">
+      <div class="attestation_block_header">
+        <p class="attestation_block_header_text">Аттестация №2 </p>
+        <p class="attestation_block_counter">— %v</p>
+        <div class="open_desc_button">
+          <img src="/static/img/icon-arrow-bottom.svg" class="arrow-bottom-btn">
+        </div>
+      </div>
+      <div class="attestation_block_assessment" style="display: none">
+        <p class="element_block_header">Твой балл:</p>
+        <p class="element_block_text">%v</p>
+        <p class="element_block_header">Максимальный балл:</p>
+        <p class="element_block_text">%v</p>
+      </div>
+    </div>
+    <div class="attestation_block">
+      <div class="attestation_block_header">
+        <p class="attestation_block_header_text">Аттестация №3 </p>
+        <p class="attestation_block_counter">— %v</p>
+        <div class="open_desc_button">
+          <img src="/static/img/icon-arrow-bottom.svg" class="arrow-bottom-btn">
+        </div>
+      </div>
+      <div class="attestation_block_assessment" style="display: none">
+        <p class="element_block_header">Твой балл:</p>
+        <p class="element_block_text">%v</p>
+        <p class="element_block_header">Максимальный балл:</p>
+        <p class="element_block_text">%v</p>
+      </div>
+    </div>
+    <div class="attestation_block">
+      <div class="attestation_block_header">
+        <p class="attestation_block_header_text">Аттестация №4 </p>
+        <p class="attestation_block_counter">— %v</p>
+        <div class="open_desc_button">
+          <img src="/static/img/icon-arrow-bottom.svg" class="arrow-bottom-btn">
+        </div>
+      </div>
+      <div class="attestation_block_assessment" style="display: none">
+        <p class="element_block_header">Твой балл:</p>
+        <p class="element_block_text">%v</p>
+        <p class="element_block_header">Максимальный балл:</p>
+        <p class="element_block_text">%v</p>
+      </div>
+    </div>
+    <div class="attestation_block">
+      <div class="attestation_block_header">
+        <p class="attestation_block_header_text">Аттестация №5 </p>
+        <p class="attestation_block_counter">— %v</p>
+        <div class="open_desc_button">
+          <img src="/static/img/icon-arrow-bottom.svg" class="arrow-bottom-btn">
+        </div>
+      </div>
+      <div class="attestation_block_assessment" style="display: none">
+        <p class="element_block_header">Твой балл:</p>
+        <p class="element_block_text">%v</p>
+        <p class="element_block_header">Максимальный балл:</p>
+        <p class="element_block_text">%v</p>
+      </div>
+    </div>
+    <p class="attestation_block_header_text">Итог: %v </p>
+  </div>
+</div>
+</body>
+</html>

@@ -7,6 +7,11 @@ import (
 	"google.golang.org/api/option"
 )
 
+//go:generate go run github.com/vektra/mockery/v2@v2.28.2 --name=FirebaseAPIInterface --no-internal-structs
+type FirebaseAPIInterface interface {
+	GetFirebaseUser(ctx context.Context, uid string) (*auth.UserRecord, error)
+}
+
 type FirebaseAPI struct {
 	Client    *auth.Client
 	ProjectID string

@@ -4,8 +4,11 @@ import (
 	"context"
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
+	"main/internal/app/authorization"
 	"main/internal/app/firebase"
 	api "main/internal/app/handlers/api"
+	"main/internal/app/handlers/api/auth"
+	portal "main/internal/app/handlers/api/portal"
 	"main/internal/app/handlers/api/schedule"
 	task "main/internal/app/handlers/api/tasks"
 	"main/internal/app/handlers/web_app"
@@ -14,6 +17,7 @@ import (
 	"main/internal/app/store/influxdb"
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tg_api"
+	"main/internal/app/tools"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -34,6 +38,7 @@ type App struct {
 	weekParity  int
 	metrics     *influxdb.Metrics
 	openai      *openai.ChatGPT
+	auth        authorization.AuthorizationInterface
 }
 
 func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI, config Config) *App {
@@ -55,6 +60,7 @@ func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string,
 		metrics:     influxdb.NewMetrics(ctx, config.InfluxDBToken, config.InfluxDBURL, config.InfluxDBName, logger),
 		ctx:         ctx,
 		openai:      openai.NewChatGPT(ctx, logger, "gpt-3.5-turbo", 0.7, "user"),
+		auth:        authorization.NewAuthorization(),
 	}
 	a.openai.WithPrompt(openai.NEWS_PROMPT)
 	a.configureRouter()
@@ -80,6 +86,12 @@ func (a *App) configureRouter() {
 				r.Get("/vk", api.NewSendMailVKHandler(a.store, a.logger, a.mailer)) // Отправка сообщения в ВК
 			})
 		})
+		r.Post("/registration", auth.NewRegistrationByPasswordHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Регистрация по логину и паролю
+		r.Route("/auth", func(r chi.Router) {
+			r.Get("/personal", auth.NewAboutInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))      // Номер группы")
+			r.Get("/group", auth.NewGroupInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))         // Номер группы")
+			r.Get("/attestation", auth.NewAttestationHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Номер группы")
+		})
 		r.Get("/week", api.NewWeekParityHandler(a.weekParity)) // Текущая четность недели
 		r.Route("/schedule", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
@@ -96,12 +108,12 @@ func (a *App) configureRouter() {
 			r.Use(a.authorizationByToken)
 			r.Post("/", api.NewFeedbackHandler(a.store, a.logger, a.tgApi)) // Отправка отзыва в чат
 		})
-		r.Route("/attestation", func(r chi.Router) {
+		r.Route("/attestation", func(r chi.Router) { // DEPRECATED
 			r.Use(a.authorizationByToken)
-			r.Get("/", api.NewScoreHandler(a.logger))        // Список оценок БРС
-			r.Get("/faculties", api.NewFacHandler(a.logger)) // Список факультетов
-			r.Get("/groups", api.NewGroupsHandler(a.logger)) // Список групп
-			r.Get("/person", api.NewPersonHandler(a.logger)) // Список фио
+			r.Get("/", api.NewScoreHandler(a.logger))        // DEPRECATED Список оценок БРС
+			r.Get("/faculties", api.NewFacHandler(a.logger)) // DEPRECATED Список факультетов
+			r.Get("/groups", api.NewGroupsHandler(a.logger)) // DEPRECATED Список групп
+			r.Get("/person", api.NewPersonHandler(a.logger)) // DEPRECATED Список фио
 		})
 		r.Route("/news", func(r chi.Router) {
 			r.Post("/", api.NewMakeNewsHandler(a.store, a.logger))
@@ -118,13 +130,13 @@ func (a *App) configureRouter() {
 			r.Post("/", task.NewTaskHandler(a.store, a.logger))
 			r.Delete("/{ID}", task.NewDeleteTaskHandler(a.store, a.logger))
 		})
-		r.Get("/doc", api.NewDocumentationPageHandler())                                      // Главная страница документации
-		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler())                          // Страница документации
-		r.Post("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // Получение токена
-		r.Get("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI))  // Получение токена
-		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger))                       // Информация из токена
-		r.Get("/confirmation_code/{code}", api.NewSetCodeHandler(&a.store))                   // Установка токена верификации до перезагрузки
-		r.Get("/echo", api.NewEchoHandler())                                                  // Эхо  метод для теста
+		r.Get("/doc", api.NewDocumentationPageHandler())             // Главная страница документации
+		r.Get("/doc/{page}", api.NewDocumentationOtherPageHandler()) // Страница документации
+		//r.Post("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI)) // DEPRECATED Получение токена
+		//r.Get("/token", api.NewRegistrationHandler(a.ctx, a.store, a.logger, a.firebaseAPI))  // DEPRECATED Получение токена
+		r.Get("/token/whoiam", api.NewWhoIAmHandler(a.store, a.logger))     // Информация из токена
+		r.Get("/confirmation_code/{code}", api.NewSetCodeHandler(&a.store)) // Установка токена верификации до перезагрузки
+		r.Get("/echo", api.NewEchoHandler())                                // Эхо  метод для теста
 	})
 	a.router.Route("/web", func(r chi.Router) {
 		r.Use(a.checkSign)
@@ -146,7 +158,26 @@ func (a *App) configureRouter() {
 			r.Get("/get_person", web_app.NewPersonHandler(a.logger))
 			r.Get("/get_fac", web_app.NewFacHandler(a.logger))
 			r.Get("/get_score", web_app.NewScoreHandler(a.logger))
+		})
 
+	})
+	a.router.Route("/portal", func(r chi.Router) { // Портал для сервисов ботов
+		r.Route("/sign", func(r chi.Router) {
+			r.Use(a.authorizationBySecretPhrase)
+			r.Get("/", portal.NewAuthLinkHandler(secretKey)) // Получение подписи (доступно для авторизованных сервисов)
+		})
+		r.Route("/authorization", func(r chi.Router) {
+			r.Use(a.checkSignTelegram)
+			r.Get("/", portal.NewPortalPageHandler(secretKey))
+			r.Route("/telegram", func(r chi.Router) {
+				r.Post("/", portal.NewAuthTelegramHandler(a.store, a.logger, secretKey, a.auth))
+			})
+		})
+		r.Route("/attestation", func(r chi.Router) {
+			r.Use(a.loadingMiddleware)
+			r.Use(a.checkSignTelegram)
+			r.Get("/", portal.NewAttestationPageHandler(a.store, a.logger, a.auth, secretKey))
+			r.Get("/{id}", portal.NewAttestationElementPageHandler(a.store, a.logger, a.auth))
 		})
 
 	})
@@ -184,18 +215,20 @@ func (a *App) authorizationBySecretPhrase(next http.Handler) http.Handler {
 	})
 }
 
-//func imageStatusCodeHandler(next http.Handler) http.Handler {
-//	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-//		rec := &responseWriter{w, http.StatusOK}
-//
-//		next.ServeHTTP(rec, r)
-//		if rec.code >= 400 && rec.code < 500 {
-//			fmt.Sprintf("<div><img src=\"https://http.cat/%d\"></div>", rec.code)
-//			w.Header().Set("Content-Type", "text/html; charset=utf-8")
-//			w.WriteHeader(rec.code)
-//		}
-//	})
-//}
+func (a *App) loadingMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		loading := r.URL.Query().Get("loading")
+		if loading == "true" {
+			// Если параметр loading=true, показываем страницу загрузки
+			w.Write(tools.GetLoadingPage())
+			w.WriteHeader(http.StatusOK)
+			return
+		} else {
+			// Иначе, обрабатываем запрос как обычно
+			next.ServeHTTP(w, r)
+		}
+	})
+}
 
 func cssHandler(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -242,6 +275,31 @@ func (a *App) checkSign(h http.Handler) http.Handler {
 		ok := web_app.VerifyLaunchParams(r.RequestURI, secretKey)
 		if ok != nil {
 			logger.Log(
+				logrus.WarnLevel,
+				"the signature didn't match.",
+			)
+			w.WriteHeader(http.StatusForbidden)
+			return
+		}
+		rw := &responseWriter{w, http.StatusOK}
+		h.ServeHTTP(rw, r)
+
+		return
+	})
+}
+
+func (a *App) checkSignTelegram(h http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		log := a.logger.WithFields(logrus.Fields{
+			"remote_addr": r.RemoteAddr,
+		})
+		urlSign := r.FormValue("sign")
+		if urlSign == "" {
+			urlSign = r.URL.Query().Get("sign")
+		}
+		sign := portal.GetSignForURLParams(r.URL.Query(), secretKey)
+		if sign != urlSign {
+			log.Log(
 				logrus.WarnLevel,
 				"the signature didn't match.",
 			)

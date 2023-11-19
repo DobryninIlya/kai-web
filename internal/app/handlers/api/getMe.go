@@ -24,8 +24,9 @@ func NewWhoIAmHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(w 
 			h.ErrorHandlerAPI(w, r, http.StatusInternalServerError, err)
 			return
 		}
+		client.EncryptedPassword = nil
 		result := struct {
-			model.ApiClient
+			model.ApiRegistration
 		}{
 			client,
 		}

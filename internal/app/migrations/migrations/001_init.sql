@@ -317,8 +317,6 @@ create table if not exists mobile_users
     uid       char(35) not null
         primary key,
     name      char(120),
-    faculty   char(20),
-    idcard    integer,
     groupname integer
 );
 

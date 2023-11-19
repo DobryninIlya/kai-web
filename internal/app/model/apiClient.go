@@ -11,3 +11,10 @@ type ApiClient struct {
 	CreateDate pgtype.Date `json:"create_date,omitempty"`
 	MobileUser
 }
+
+type ApiRegistration struct {
+	ApiClient
+	Login             string `json:"c,omitempty"`
+	Password          string `json:"password,omitempty"`
+	EncryptedPassword []byte `json:"encrypted_password,omitempty"`
+}

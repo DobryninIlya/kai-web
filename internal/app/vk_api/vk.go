@@ -19,12 +19,14 @@ const vkGetUploadURL = "photos.getMessagesUploadServer"
 type APIvk struct {
 	vkToken    string
 	vkTemplate string
+	httpClient http.Client
 }
 
 func NewAPIvk() *APIvk {
 	return &APIvk{
 		vkToken:    os.Getenv("VK_TOKEN"),
 		vkTemplate: vkTemplate,
+		httpClient: http.Client{},
 	}
 }
 
@@ -48,7 +50,7 @@ func (r APIvk) SendMessageVKids(log *logrus.Logger, uId []int64, message string,
 		buttons,
 	)
 	url := fmt.Sprintf(r.vkTemplate, vkSendMethod, params)
-	resp, err := http.Get(url)
+	resp, err := r.httpClient.Get(url)
 	if resp.StatusCode != http.StatusOK {
 		var body []byte
 		body, _ = io.ReadAll(resp.Body)
@@ -71,11 +73,12 @@ func (r APIvk) GetUploadURL() (string, error) {
 		r.vkToken,
 	)
 	url := fmt.Sprintf(r.vkTemplate, vkGetUploadURL, params)
-	resp, err := http.Get(url)
+	resp, err := r.httpClient.Get(url)
 	if err != nil {
 		return "", err
 	}
 	body, err := io.ReadAll(resp.Body)
+	defer resp.Body.Close()
 	var answer model.UploadServerAnswer
 	if err != nil {
 		return "", err
