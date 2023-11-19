@@ -120,6 +120,14 @@ func GetLoadingTemplate() (string, error) {
 	}
 	return strings.Join(data, "\n"), nil
 }
+func GetTelegramRedirect() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "tg_redirect.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
 
 func GetMainStylesheet() ([]byte, error) {
 	data, err := readFile(filepath.Join("internal", "app", path, "css", "main.css"))
@@ -514,5 +522,10 @@ func GetAttestationElementPage(disciplines model.Discipline) []byte {
 
 func GetLoadingPage() []byte {
 	tmp, _ := GetLoadingTemplate()
+	return []byte(tmp)
+}
+
+func GetTelegramRedirectPage() []byte {
+	tmp, _ := GetTelegramRedirect()
 	return []byte(tmp)
 }

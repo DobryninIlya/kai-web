@@ -19,8 +19,10 @@ import (
 	"main/internal/app/tg_api"
 	"main/internal/app/tools"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 )
 
@@ -294,6 +296,18 @@ func (a *App) checkSignTelegram(h http.Handler) http.Handler {
 			"remote_addr": r.RemoteAddr,
 		})
 		urlSign := r.FormValue("sign")
+		tgWebAppStartParam := r.URL.Query().Get("tgWebAppStartParam")
+		if tgWebAppStartParam != "" {
+			resultString, err := processQueryString(tgWebAppStartParam)
+			if err != nil {
+				log.Log(
+					logrus.WarnLevel,
+					"Ошибка преобразования url строки из телеграмма",
+				)
+			} else {
+				updateRequestParams(r, resultString)
+			}
+		}
 		if urlSign == "" {
 			urlSign = r.URL.Query().Get("sign")
 		}
@@ -321,4 +335,33 @@ func (a *App) APIMetricsMiddleware(next http.Handler) http.Handler {
 		// Вызываем следующий обработчик
 		next.ServeHTTP(w, r)
 	})
+}
+
+func processQueryString(input string) (string, error) {
+	// Декодируем URL-параметры
+	decoded, err := url.QueryUnescape(input)
+	if err != nil {
+		return "", err
+	}
+
+	// Заменяем тройной знак ___ на знак &
+	processed := strings.ReplaceAll(decoded, "___", "&")
+
+	return processed, nil
+}
+
+func updateRequestParams(r *http.Request, queryString string) (*http.Request, error) {
+	// Разбираем строку с URL-параметрами в url.Values
+	queryValues, err := url.ParseQuery(queryString)
+	if err != nil {
+		return nil, err
+	}
+
+	// Обновляем параметры запроса в r.URL
+	r.URL.RawQuery = queryValues.Encode()
+
+	// Обновляем параметры запроса в r.Form
+	r.Form = queryValues
+
+	return r, nil
 }
