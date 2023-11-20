@@ -125,6 +125,8 @@ func getAuthRequest(login, password, cookies string) (*http.Request, error) {
 		cookies, _ = getInitialCookies()
 	}
 	method := "POST"
+	login = strings.TrimSpace(login)
+	password = strings.TrimSpace(password)
 	payload := strings.NewReader(fmt.Sprintf("_58_formDate=1699709626094&_58_saveLastPath=false&_58_redirect=&_58_doActionAfterLogin=false&_58_login=%v&_58_password=%v", login, password))
 	req, err := http.NewRequest(method, AuthEndpoint, payload)
 	if err != nil {
@@ -168,6 +170,7 @@ func (r *Authorization) GetCookiesByPassword(login, password string) ([]*http.Co
 	} else {
 		log.Println("Куки файлы авторизации не найдены, количество: ", len(cookiesList))
 		log.Println(login, password)
+		log.Println(cookies)
 	}
 	if authCookie {
 		//user, err := r.GetAboutInfo(cookieHeader)
