@@ -1,3 +1,11 @@
+:root {
+    --background-color: #fff;
+    --text-color: #000;
+    --text-hint-color: #818C99;
+    --button-color: #0047FF;
+    --button-text-color: #fff;
+}
+
 @font-face {
     src: url("Inter-Regular.ttf");
     font-family: Inter;
@@ -19,6 +27,7 @@
     width: 100%;
     padding: 10px 16px;
     margin: 0px;
+    color: var(--text-color)
 }
 
 .element_block {
@@ -34,7 +43,7 @@
     font-weight: 400;
     line-height: 20px;
     letter-spacing: 0.1px;
-    color: #818C99;
+    color: var(--text-hint-color);
 }
 
 .element_block_text {
@@ -45,6 +54,7 @@
     font-weight: 500;
     line-height: 17px;
     letter-spacing: 0px;
+    color: var(--text-color);
 }
 
 .attestation_block_header_text {
@@ -55,6 +65,7 @@
     letter-spacing: 0em;
     text-align: left;
     margin: 0 auto 0 16px;
+    color: var(--text-color);
 }
 
 .attestation_block_assessment{
@@ -81,7 +92,7 @@
     display: flex;
     justify-content: space-between; /* Расположение элементов по краям */
     align-items: center;
-
+    color: var(--text-color)
 }
 
 .header_block {
@@ -119,7 +130,7 @@
     line-height: 22px;
     letter-spacing: 0em;
     text-align: left;
-    color: #B0B0B0;
+    color: var(--text-hint-color)
 
 }
 
