@@ -61,39 +61,6 @@ func NewAuthTelegramHandler(store sqlstore.StoreInterface, log *logrus.Logger, s
 				path,
 				err.Error(),
 			)
-			if redirectURL != "" {
-				params := strings.Split(redirectURL, "?")
-				var queryParams u.Values
-				if len(params) > 1 {
-					// Если в URL есть параметры
-					queryParams, _ = u.ParseQuery(params[1])
-					delete(queryParams, "loading")
-				} else {
-					// Если в URL нет параметров
-					queryParams = make(u.Values)
-				}
-
-				queryParams.Add("tg_id", tgID)
-				urlParams := queryParams.Encode()
-
-				sign := GetSignForStringParams(urlParams, secretKey)
-
-				redirectURL += "?" + urlParams + "&sign=" + sign
-
-				if loadingParam := queryParams.Get("loading"); loadingParam != "" {
-					redirectURL += "&loading=" + loadingParam
-				}
-				redirectURL = params[0] + "?" + urlParams + "&sign=" + sign
-				result := struct {
-					RedirectURL string `json:"redirect_url"`
-				}{
-					RedirectURL: redirectURL,
-				}
-				h.RespondAPI(w, r, http.StatusFound, result)
-				return
-			}
-			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, err)
-			return
 		}
 		if redirectURL != "" {
 			params := strings.Split(redirectURL, "?")
@@ -101,7 +68,7 @@ func NewAuthTelegramHandler(store sqlstore.StoreInterface, log *logrus.Logger, s
 			if len(params) > 1 {
 				// Если в URL есть параметры
 				queryParams, _ = u.ParseQuery(params[1])
-				delete(queryParams, "loading")
+				//delete(queryParams, "loading")
 			} else {
 				// Если в URL нет параметров
 				queryParams = make(u.Values)
@@ -117,7 +84,7 @@ func NewAuthTelegramHandler(store sqlstore.StoreInterface, log *logrus.Logger, s
 			if loadingParam := queryParams.Get("loading"); loadingParam != "" {
 				redirectURL += "&loading=" + loadingParam
 			}
-			redirectURL = params[0] + "?" + urlParams + "&sign=" + sign
+			redirectURL = params[0] + "?" + urlParams + "&sign=" + sign + "&loading=true"
 			result := struct {
 				RedirectURL string `json:"redirect_url"`
 			}{
@@ -126,5 +93,6 @@ func NewAuthTelegramHandler(store sqlstore.StoreInterface, log *logrus.Logger, s
 			h.RespondAPI(w, r, http.StatusFound, result)
 			return
 		}
+		h.RespondAPI(w, r, http.StatusFound, "ok")
 	}
 }
