@@ -16,6 +16,10 @@ input {
     color: var(--text-color);
 }
 
+#status {
+    color: var(--text-color);
+}
+
 
 .main_logo {
     width: 100px;
