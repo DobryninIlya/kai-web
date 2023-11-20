@@ -32,7 +32,6 @@ func NewAttestationHandler(ctx context.Context, store sqlstore.StoreInterface, l
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, err)
 			return
 		}
-
 		result := struct {
 			Attestation []model.Discipline `json:"attestation"`
 		}{

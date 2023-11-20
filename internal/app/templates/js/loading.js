@@ -4,10 +4,10 @@ var url = new URL(window.location.href);
 url.searchParams.delete('loading');
 
 let tgWebAppStartParamURL = url.searchParams.get("tgWebAppStartParam");
-tgWebAppStartParamURL = tgWebAppStartParamURL.replace(/---/g, '/');
-
 // Проверяем, есть ли параметр "tgWebAppStartParam"
+
 if (tgWebAppStartParamURL) {
+    tgWebAppStartParamURL = tgWebAppStartParamURL.replace(/---/g, '/');
     // Разбиваем параметр на отдельные значения
     const paramPairs = tgWebAppStartParamURL.split("___");
 

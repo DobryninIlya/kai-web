@@ -167,6 +167,7 @@ func (r *Authorization) GetCookiesByPassword(login, password string) ([]*http.Co
 		authCookie = true
 	} else {
 		log.Println("Куки файлы авторизации не найдены, количество: ", len(cookiesList))
+		log.Println(login, password)
 	}
 	if authCookie {
 		//user, err := r.GetAboutInfo(cookieHeader)

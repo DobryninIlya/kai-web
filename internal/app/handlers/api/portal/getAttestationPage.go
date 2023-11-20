@@ -17,12 +17,24 @@ func NewAttestationPageHandler(store sqlstore.StoreInterface, log *logrus.Logger
 		uid := "tg" + tgID
 		client, err := store.API().GetClient(uid)
 		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s: error while getting client: %s",
+				path,
+				err.Error(),
+			)
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, err)
 			return
 		}
 		sign := GetSignForURLParams(r.URL.Query(), secretKey)
 		list, err := auth.GetAttestationList(uid, client)
 		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s: error while getting attestation list: %s",
+				path,
+				err.Error(),
+			)
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, err)
 			return
 		}
