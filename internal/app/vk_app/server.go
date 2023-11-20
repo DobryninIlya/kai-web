@@ -357,6 +357,7 @@ func processQueryString(input string) (string, error) {
 
 	// Заменяем тройной знак ___ на знак &
 	processed := strings.ReplaceAll(decoded, "___", "&")
+	processed = strings.ReplaceAll(processed, "---", "/")
 
 	return processed, nil
 }

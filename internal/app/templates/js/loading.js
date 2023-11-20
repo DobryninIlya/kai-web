@@ -3,7 +3,8 @@ var url = new URL(window.location.href);
 // Удаляем параметр loading
 url.searchParams.delete('loading');
 
-const tgWebAppStartParamURL = url.searchParams.get("tgWebAppStartParam");
+let tgWebAppStartParamURL = url.searchParams.get("tgWebAppStartParam");
+let tgWebAppStartParamURL = tgWebAppStartParamURL.replace(/---/g, '/');
 
 // Проверяем, есть ли параметр "tgWebAppStartParam"
 if (tgWebAppStartParamURL) {
