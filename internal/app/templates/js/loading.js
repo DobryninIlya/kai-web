@@ -3,6 +3,26 @@ var url = new URL(window.location.href);
 // Удаляем параметр loading
 url.searchParams.delete('loading');
 
+const tgWebAppStartParamURL = url.searchParams.get("tgWebAppStartParam");
+
+// Проверяем, есть ли параметр "tgWebAppStartParam"
+if (tgWebAppStartParamURL) {
+    // Разбиваем параметр на отдельные значения
+    const paramPairs = tgWebAppStartParamURL.split("___");
+
+    // Преобразуем каждое значение в отдельный URL-параметр
+    paramPairs.forEach(pair => {
+        const [key, value] = pair.split("=");
+        let decodedValue = decodeURIComponent(value);
+        if (key == "loading") {
+            decodedValue = false;
+        }
+        url.searchParams.append(key, decodedValue);
+        console.log(key + " = " + decodedValue);
+    });
+    url.searchParams.delete('loading');
+    url.searchParams.delete('tgWebAppStartParam');
+}
 // Загружаем страницу из нового URL
 fetch(url.toString())
     .then(response => response.text())

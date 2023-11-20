@@ -77,7 +77,7 @@ func parseAttestationTable(body io.ReadCloser) ([]model.Discipline, error) {
 // Важно отметить, что возвращает только последний семестр последнего (текущего) курса (группы)
 func (r *Authorization) GetAttestationList(uid string, client model.ApiRegistration) ([]model.Discipline, error) {
 	value, ok := r.GetAttestations(uid)
-	if ok {
+	if ok && value != nil {
 		return value, nil
 	}
 	cookies, err := r.GetAuthorizedCookies(uid, client)

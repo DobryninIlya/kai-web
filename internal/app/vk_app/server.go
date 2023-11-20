@@ -24,6 +24,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -170,6 +171,7 @@ func (a *App) configureRouter() {
 			r.Get("/", portal.NewAuthLinkHandler(secretKey)) // Получение подписи (доступно для авторизованных сервисов)
 		})
 		r.Route("/authorization", func(r chi.Router) {
+			r.Use(ParallelHandlerMiddleware)
 			r.Use(a.parseURLParamsFromTelegramStart)
 			r.Use(a.checkSignTelegram)
 			r.Get("/", portal.NewPortalPageHandler(secretKey))
@@ -178,6 +180,7 @@ func (a *App) configureRouter() {
 			})
 		})
 		r.Route("/attestation", func(r chi.Router) {
+			r.Use(ParallelHandlerMiddleware)
 			r.Use(a.parseURLParamsFromTelegramStart)
 			r.Use(a.loadingMiddleware)
 			r.Use(a.checkSignTelegram)
@@ -372,4 +375,17 @@ func updateRequestParams(r *http.Request, queryString string) (*http.Request, er
 	r.Form = queryValues
 
 	return r, nil
+}
+
+// Middleware для параллельной обработки хэндлеров
+func ParallelHandlerMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var wg sync.WaitGroup
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			next.ServeHTTP(w, r)
+		}()
+		wg.Wait()
+	})
 }
