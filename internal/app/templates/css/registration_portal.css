@@ -12,6 +12,7 @@ body {
 
 input {
     background-color: var(--background-color);
+    border: 1px solid var(--text-hint-color);
     color: var(--text-color);
 }
 
