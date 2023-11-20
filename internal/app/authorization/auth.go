@@ -150,36 +150,41 @@ func (r *Authorization) GetCookiesByPassword(login, password string) ([]*http.Co
 	if err != nil {
 		return nil, err
 	}
-	client := &http.Client{}
-	resp, err := client.Do(req)
-
-	for resp.Request.Response != nil {
-		resp = resp.Request.Response
-	}
-
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-
-	cookiesList := resp.Cookies()
-	//cookieHeader := GetCookiesHeader(cookiesList)
 	var authCookie bool
-	if len(cookiesList) >= 7 {
-		authCookie = true
-	} else {
-		log.Println("Куки файлы авторизации не найдены, количество: ", len(cookiesList))
-		log.Println(login, password)
-		log.Println(cookies)
-	}
-	if authCookie {
-		//user, err := r.GetAboutInfo(cookieHeader)
-		//r.GetGroupNum(cookieHeader)
-		//if err != nil || user.FirstName == "" {
-		//	return nil, err
-		//}
+	for counter := 0; counter < 2; counter++ {
 
-		return cookiesList, nil
+		client := &http.Client{}
+		resp, err := client.Do(req)
+
+		for resp.Request.Response != nil {
+			resp = resp.Request.Response
+		}
+
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+
+		cookiesList := resp.Cookies()
+		//cookieHeader := GetCookiesHeader(cookiesList)
+		if len(cookiesList) >= 7 {
+			authCookie = true
+		} else {
+			log.Println("Куки файлы авторизации не найдены, количество: ", len(cookiesList))
+			log.Println(login, password)
+			log.Println(cookies)
+			continue
+		}
+
+		if authCookie {
+			//user, err := r.GetAboutInfo(cookieHeader)
+			//r.GetGroupNum(cookieHeader)
+			//if err != nil || user.FirstName == "" {
+			//	return nil, err
+			//}
+
+			return cookiesList, nil
+		}
 	}
 	return nil, ErrWrongPassword
 }
