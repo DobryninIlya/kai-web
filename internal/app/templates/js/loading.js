@@ -4,7 +4,7 @@ var url = new URL(window.location.href);
 url.searchParams.delete('loading');
 
 let tgWebAppStartParamURL = url.searchParams.get("tgWebAppStartParam");
-let tgWebAppStartParamURL = tgWebAppStartParamURL.replace(/---/g, '/');
+tgWebAppStartParamURL = tgWebAppStartParamURL.replace(/---/g, '/');
 
 // Проверяем, есть ли параметр "tgWebAppStartParam"
 if (tgWebAppStartParamURL) {
