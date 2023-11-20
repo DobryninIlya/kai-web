@@ -61,6 +61,7 @@ document.getElementById('main_auth_form').addEventListener('submit', function(e)
             .then(data => {
                 if (data.result) {
                     document.getElementById('result').innerHTML = "Ждите, перенаправляю..."
+                    // TODO: убрать эту штуку и сделать нормально:
                     document.getElementById('result').style = "background-color: #4CAF50; padding: 10px;"
                     window.location.href = data.result['redirect_url'];
                     return;
