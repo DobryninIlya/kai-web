@@ -19,6 +19,9 @@
     }
 }
 
+.head_title {
+    color: var(--text-color)
+}
 
 .news {
     max-width: 450px;
