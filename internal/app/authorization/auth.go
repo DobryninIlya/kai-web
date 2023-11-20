@@ -3,6 +3,7 @@ package authorization
 import (
 	"errors"
 	"fmt"
+	"log"
 	"main/internal/app/model"
 	"net/http"
 	"strings"
@@ -164,6 +165,8 @@ func (r *Authorization) GetCookiesByPassword(login, password string) ([]*http.Co
 	var authCookie bool
 	if len(cookiesList) >= 7 {
 		authCookie = true
+	} else {
+		log.Println("Куки файлы авторизации не найдены, количество: ", len(cookiesList))
 	}
 	if authCookie {
 		//user, err := r.GetAboutInfo(cookieHeader)
