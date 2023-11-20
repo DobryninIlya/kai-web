@@ -1,3 +1,13 @@
+:root {
+    --background-color: #fff;
+    --text-color: #000;
+    --text-hint-color: #818C99;
+}
+
+body {
+    background: var(--background-color);
+}
+
 @font-face {
     src: url("Inter-Regular.ttf");
     font-family: Inter;
@@ -47,4 +57,5 @@
     margin: 0px;
     display: block;
     position: relative;
+    color: var(--text-color);
 }

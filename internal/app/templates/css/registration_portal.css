@@ -1,3 +1,15 @@
+:root {
+    --background-color: #fff;
+    --text-color: #000;
+    --text-hint-color: #818C99;
+    --button-color: #0047FF;
+    --button-text-color: #FFFFFF;
+}
+
+body {
+    background: var(--background-color);
+}
+
 .main_logo {
     width: 100px;
     height: 100px;
@@ -12,6 +24,7 @@
     letter-spacing: 0.1px;
     text-align: center;
     margin: 12px;
+    color: var(--text-color)
 }
 
 .header_block_text_desc {
@@ -21,7 +34,7 @@
     line-height: 20px;
     letter-spacing: 0.1px;
     text-align: center;
-    color: #818C99;
+    color: var(--text-hint-color);
 
 }
 
@@ -30,9 +43,9 @@
     max-width: 328px;
     height: 44px;
     border-radius: 8px;
-    background-color: #0047FF;
+    background-color: var(--button-color);
     border: 0px;
-    color: #FFFFFF;
+    color: var(--button-text-color);
 
     font-family: Inter;
     font-size: 16px;
@@ -54,6 +67,7 @@
 }
 
 .main_block {
+    width: 100%;
     position: fixed;
     top: 50%;
     left: 50%;
