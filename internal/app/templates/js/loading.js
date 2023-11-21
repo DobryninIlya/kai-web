@@ -24,16 +24,25 @@ if (tgWebAppStartParamURL) {
     url.searchParams.delete('loading');
     url.searchParams.delete('tgWebAppStartParam');
 }
-// Загружаем страницу из нового URL
-fetch(url.toString())
-    .then(response => response.text())
-    .then(content => {
-        document.body.innerHTML = content;
-    });
 
-var loadingText = document.getElementById("loading_text_p");
-var dots = 0;
-setInterval(function() {
-    dots = (dots + 1) % 4;
-    loadingText.textContent = "Загрузка" + ".".repeat(dots);
-}, 500);
+function loadPage() {
+    fetch(url.toString())
+        .then(response => {
+            if (response.ok) {
+                return response.text();
+            } else {
+                throw new Error("Ошибка загрузки страницы");
+            }
+        })
+        .then(content => {
+            document.body.innerHTML = content;
+        })
+        .catch(error => {
+            console.error(error);
+            var loadingText = document.getElementById("loading_text_p");
+            loadingText.textContent = "Ошибка загрузки страницы. Попытка повторной загрузки через 5 секунд...";
+            setTimeout(loadPage, 5000);
+        });
+}
+
+loadPage();
