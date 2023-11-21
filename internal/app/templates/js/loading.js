@@ -40,7 +40,7 @@ function loadPage() {
         .catch(error => {
             console.error(error);
             var loadingText = document.getElementById("loading_text_p");
-            loadingText.textContent = "Ошибка загрузки страницы. Попытка повторной загрузки через 5 секунд...";
+            loadingText.textContent = "В этот раз потребуется чуть больше времени...";
             setTimeout(loadPage, 5000);
         });
 }
