@@ -489,6 +489,9 @@ func GetRegistrationPortal(url string) []byte {
 func getAttestationList(disciplines []model.Discipline, tgID, sign string) []byte {
 	tmp, _ := GetAttestationListElementTemplate()
 	result := ""
+	if len(disciplines) == 0 {
+		return []byte("<p class=\"att_header\">Данные не найдены. Попробуйте позже. </p>")
+	}
 	for i, discipline := range disciplines {
 		urlPath := fmt.Sprintf("%v?tg_id=%v&sign=%v", i, tgID, sign)
 		result += fmt.Sprintf(tmp, discipline.Name, discipline.FinalGrade, urlPath)

@@ -42,7 +42,9 @@ function loadPage() {
             var loadingText = document.getElementById("loading_text_p");
             loadingText.textContent = "В этот раз потребуется чуть больше времени...";
             setTimeout(loadPage, 5000);
+        // TODO добавить флаг выхода из этого цикла рекурсии
         });
 }
+
 
 loadPage();
