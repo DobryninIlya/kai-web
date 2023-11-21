@@ -46,5 +46,11 @@ function loadPage() {
         });
 }
 
+var loadingText = document.getElementById("loading_text_p");
+var dots = 0;
+setInterval(function() {
+    dots = (dots + 1) % 4;
+    loadingText.textContent = "Загрузка" + ".".repeat(dots);
+}, 500);
 
 loadPage();
