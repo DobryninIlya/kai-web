@@ -466,5 +466,16 @@ func (r ApiRepository) SaveTelegramAuth(user model.TelegramUser) error {
 		}
 		return err
 	}
+	_, err = r.store.db.Query("UPDATE public.tg_users SET is_verificated=$1, login=$2 WHERE id=$3",
+		true,
+		user.Login,
+		user.TelegramID,
+	)
+	if err != nil {
+		if strings.Contains(err.Error(), "unique constraint") || strings.Contains(err.Error(), "ограничение уникальности") {
+			return ErrAlreadyRegistered
+		}
+		return err
+	}
 	return nil
 }

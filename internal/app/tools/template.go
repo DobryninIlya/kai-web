@@ -490,7 +490,7 @@ func getAttestationList(disciplines []model.Discipline, tgID, sign string) []byt
 	tmp, _ := GetAttestationListElementTemplate()
 	result := ""
 	if len(disciplines) == 0 {
-		return []byte("<p class=\"att_header\">Данные не найдены. Попробуйте позже. </p>")
+		return []byte("<p class=\"att_header\">Сайт КАИ отправил пустой ответ. Попробуйте обновить страницу или попробовать позже </p>")
 	}
 	for i, discipline := range disciplines {
 		urlPath := fmt.Sprintf("%v?tg_id=%v&sign=%v", i, tgID, sign)
