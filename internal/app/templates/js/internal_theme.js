@@ -7,5 +7,8 @@ if (tg.themeParams != {}) {
     document.documentElement.style.setProperty('--text-hint-color', tg.themeParams.hint_color);
     document.documentElement.style.setProperty('--button-color', tg.themeParams.button_color);
     // document.documentElement.style.setProperty('--button-text-color', tg.themeParams.button_text_colorString);
-
+    const arrowElements = document.querySelectorAll('.arrow');
+    arrowElements.forEach((arrow) => {
+        arrow.setAttribute('fill', tg.themeParams.text_color);
+    });
 }
