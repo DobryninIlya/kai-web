@@ -9,6 +9,7 @@ import (
 	"io"
 	"main/internal/app/model"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -85,6 +86,7 @@ func (c *ChatGPT) GenerateAnswer(message string, recursiveСounter int) (model.C
 		return model.ChatGPTNewsParams{}, err
 	}
 	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+os.Getenv("OPENAI_API_KEY"))
 	client := &http.Client{Timeout: time.Minute}
 	resp, err := client.Do(req)
 	if err != nil {
