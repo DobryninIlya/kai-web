@@ -1,22 +1,27 @@
-<div class="news">
-    <img class="preview_img_list" src="%v">
+<div class="news newspreview" onclick="window.location.href='%v'">
     <div class="header_container">
         <div class="author">
-            <div class="author_badge"><img class="author_logo" src="/static/img/author_logo_%v.png">• %v</div>
+            <img class="author_logo" src="/static/img/author_logo_%v.png">
+            <div class="author_badge">%v
+                <div class="date">
+                    %v
+                </div>
+            </div>
         </div>
-        <div class="date">
-            %v
-        </div>
-    </div>
-    <div class="header_text">
-        %v
-    </div>
-    <div class="news_preview">
-        %v
+
     </div>
     <div class="hashtag">
         %v
     </div>
-    <div class="open_news_button" onclick="window.location.href='%v'">Читать</div>
-    <hr style="margin-bottom: 25px;">
-</div>
+    <div class="header_text">
+        %v
+    </div>
+    <img class="preview_img_list" src="%v">
+    <div class="views_counter">
+        <img class="views" src="/static/img/views.svg">
+        <p class="views_digit">
+            %v
+        </p>
+    </div>
+<!--    <div class="open_news_button" onclick="window.location.href='%v'">Читать</div>-->
+     </div>

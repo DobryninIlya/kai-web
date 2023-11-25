@@ -321,7 +321,7 @@ body {
 }
 
 @font-face {
-    src: url("Inter-Regular.ttf");
+    src: url("fonts/Inter-Regular.ttf");
     font-family: Inter;
     font-size: 22px;
     font-weight: 400;
@@ -332,7 +332,7 @@ body {
 }
 
 @font-face {
-    src: url("Inter-Thin.ttf");
+    src: url("fonts/Inter-Thin.ttf");
     font-family: Inter-Thin;
     font-size: 22px;
     font-weight: 400;

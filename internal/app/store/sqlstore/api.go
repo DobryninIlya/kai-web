@@ -201,7 +201,8 @@ func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {
 func (r ApiRepository) GetNewsById(id int) (model.News, error) {
 	var news model.News
 	news.Id = id
-	err := r.store.db.QueryRow("SELECT n.header, n.description, n.body, n.date, n.preview_url, a.name, n.ai_correct FROM public.news AS n LEFT JOIN public.news_authors AS a ON n.author = a.id WHERE n.id=$1",
+	//err := r.store.db.QueryRow("SELECT n.header, n.description, n.body, n.date, n.preview_url, a.name, n.ai_correct FROM public.news AS n LEFT JOIN public.news_authors AS a ON n.author = a.id WHERE n.id=$1",
+	err := r.store.db.QueryRow("SELECT * FROM get_news_with_views($1)",
 		id,
 	).Scan(
 		&news.Header,
@@ -211,6 +212,7 @@ func (r ApiRepository) GetNewsById(id int) (model.News, error) {
 		&news.PreviewURL,
 		&news.AuthorName,
 		&news.AICorrect,
+		&news.Views,
 	)
 	return news, err
 }
@@ -232,7 +234,7 @@ func (r ApiRepository) MakeNews(news model.News) (int, error) {
 }
 
 func (r ApiRepository) GetNewsPreviews(count, offset int) ([]model.News, error) {
-	rows, err := r.store.db.Query("SELECT n.id, n.header, n.description, n.date, n.preview_url, n.tag, a.name FROM public.news AS n JOIN public.news_authors AS a ON n.author = a.id ORDER BY id DESC LIMIT $1 OFFSET $2",
+	rows, err := r.store.db.Query("SELECT n.id, n.header, n.description, n.date, n.preview_url, n.tag, a.name, n.views FROM public.news AS n JOIN public.news_authors AS a ON n.author = a.id ORDER BY id DESC LIMIT $1 OFFSET $2",
 		count,
 		offset,
 	)
@@ -244,7 +246,7 @@ func (r ApiRepository) GetNewsPreviews(count, offset int) ([]model.News, error) 
 	for rows.Next() {
 		var news model.News
 		var previewUrl, tag sql.NullString
-		err := rows.Scan(&news.Id, &news.Header, &news.Description, &news.Date, &previewUrl, &tag, &news.AuthorName)
+		err := rows.Scan(&news.Id, &news.Header, &news.Description, &news.Date, &previewUrl, &tag, &news.AuthorName, &news.Views)
 		if previewUrl.Valid {
 			news.PreviewURL = previewUrl.String
 		} else {

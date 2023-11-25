@@ -198,7 +198,7 @@ func GetNewsPreviewsPage(news []model.News) ([]byte, error) {
 	}
 	var result string
 	for _, n := range news {
-		result += fmt.Sprintf(tmpNewsPreview, n.PreviewURL, n.Author, n.AuthorName, n.Date.Time.Format("02.01.2006"), n.Header, n.Description, n.Tag, n.Id)
+		result += fmt.Sprintf(tmpNewsPreview, n.Id, n.Author, n.AuthorName, n.Date.Time.Format("02.01.2006"), n.Tag, n.Header, n.PreviewURL, n.Views)
 
 	}
 	result = fmt.Sprintf(tmp, result)
@@ -216,7 +216,7 @@ func GetNewsPage(news model.News) ([]byte, error) {
 		aiContentAlert = "<img class=\"ai_content_alert\" src=\"/static/img/ai_content_alert.svg\" alt=\"\">"
 
 	}
-	result := fmt.Sprintf(tmp, news.PreviewURL, news.Author, news.AuthorName, news.Date.Time.Format("02.01.2006"), news.Header, aiContentAlert, news.Body)
+	result := fmt.Sprintf(tmp, news.Author, news.AuthorName, news.Views, news.Date.Time.Format("02.01.2006"), news.Header, aiContentAlert, news.PreviewURL, news.Body)
 	return []byte(result), nil
 
 }
