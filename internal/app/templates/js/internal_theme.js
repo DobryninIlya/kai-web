@@ -1,5 +1,5 @@
 let tg = window.Telegram.WebApp;
-if (document.style.getProperty('--tg-color-scheme' != 'light')) {
+if (document.documentElement.style.getProperty('--tg-color-scheme' != 'light')) {
     console.log(tg.themeParams.text_color)
     console.log(tg.themeParams)
     document.documentElement.style.setProperty('--background-color', tg.themeParams.bg_color);
