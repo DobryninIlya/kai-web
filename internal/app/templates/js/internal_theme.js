@@ -7,6 +7,7 @@ if (colorScheme != 'light') {
     root.style.setProperty('--background-color', tg.themeParams.bg_color);
     root.style.setProperty('--text-color', tg.themeParams.text_color);
     root.style.setProperty('--text-hint-color', tg.themeParams.hint_color);
+    root.style.setProperty('--text-color-depp-gray', tg.themeParams.hint_color);
     root.style.setProperty('--button-color', tg.themeParams.button_color);
     root.style.setProperty('--hashtag-color', tg.themeParams.hint_color);
     root.style.setProperty('--secondary-background-color', tg.themeParams.secondary_bg_color);
