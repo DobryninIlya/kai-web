@@ -527,3 +527,35 @@ func GetLoadingPage() []byte {
 	tmp, _ := GetLoadingTemplate()
 	return []byte(tmp)
 }
+
+func GetExamPageElementTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "exam_telegram_element.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetExamPageTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "exam_telegram.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetExamPage(examElems []model.Exam) []byte {
+	mainTemplate, err := GetExamPageTemplate()
+	if examElems == nil || err != nil {
+		return nil
+	}
+	examsAllString := ""
+	examElementTemplate, _ := GetExamPageElementTemplate()
+	for _, exam := range examElems {
+		prepodName := formatter.GetShortenName(exam.PrepodName)
+		examsAllString += fmt.Sprintf(examElementTemplate, exam.ExamDate, exam.ExamTime, exam.DisciplName, exam.AudNum, exam.BuildNum, prepodName) + "\n"
+	}
+	return []byte(fmt.Sprintf(mainTemplate, examsAllString))
+}

@@ -1,0 +1,109 @@
+:root {
+    --background-color: #fff;
+    --text-color: #000;
+    --text-color-depp-gray: #383838;
+    --text-hint-color: #818C99;
+    --button-color: #0047FF;
+    --button-text-color: #fff;
+}
+
+@font-face {
+    src: url("fonts/Inter-Regular.ttf");
+    font-family: Inter-Regular;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 27px;
+    letter-spacing: -0.065em;
+    text-align: left;
+
+}
+
+.att_header {
+    font-family: Inter-Regular;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between; /* Расположение элементов по краям */
+    align-items: center;
+    color: var(--text-color)
+}
+
+.header_block {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.exam_element {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.exam_icon {
+    margin-left: 16px;
+    margin-top: 10px;
+}
+
+body {
+    background: var(--background-color);
+}
+
+.exam_body {
+    max-width: 450px;
+    padding: 15px;
+    background: var(--background-color);
+    border-radius: 16px;
+    margin: 0 auto 25px;
+}
+
+.exam_date {
+    font-family: Inter-Regular;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 13px;
+    letter-spacing: 0.1px;
+    text-align: left;
+    color: var(--text-hint-color);
+    margin: 0px 0px 4px;
+}
+
+.exam_name {
+    font-family: Inter-Regular;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    text-align: left;
+    margin: 0px;
+    color: var(--text-color);
+}
+
+.exam_place {
+    font-family: Inter-Regular;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 13px;
+    letter-spacing: 0.1px;
+    text-align: left;
+    color: var(--text-color-depp-gray);
+    margin: 0px 0px 4px;
+}
+
+.exam_teacher {
+    font-family: Inter-Regular;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 13px;
+    letter-spacing: 0.1px;
+    text-align: left;
+    color: var(--text-hint-color);
+    margin: 0px;
+}

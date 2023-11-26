@@ -317,5 +317,4 @@ func (r ScheduleRepository) GetTeacherListStruct(groupId int) ([]model.Prepod, e
 	}
 
 	return prepodList, nil
-
 }

@@ -187,6 +187,7 @@ func (a *App) configureRouter() {
 			r.Get("/", portal.NewAttestationPageHandler(a.store, a.logger, a.auth, secretKey))
 			r.Get("/{id}", portal.NewAttestationElementPageHandler(a.store, a.logger, a.auth))
 		})
+		r.Get("/exam", portal.NewExamPageHandler(a.logger))
 
 	})
 	a.router.Handle("/static/css/*", http.StripPrefix("/static/css/", cssHandler(http.FileServer(http.Dir(filepath.Join("internal", "app", "templates", "css"))))))
