@@ -1,3 +1,12 @@
+:root {
+    --background-color: #fff;
+    --secondary-color: #818C99;
+    --text-color:  #171717;
+    --open-news-button-color: #EBECEE;
+    --hashtag-color: #4A4A4A;
+    --secondary-background-color: #f7f7f7;
+}
+
 @font-face {
     src: url("fonts/Inter-Medium.ttf");
     font-family: Inter-Medium;
@@ -25,6 +34,7 @@
     line-height: 24px;
     letter-spacing: 0.1px;
     text-align: center;
+    color: var(--text-color);
 }
 
 .no_data_block_desc {
@@ -34,5 +44,5 @@
     line-height: 20px;
     letter-spacing: 0.1px;
     text-align: center;
-
+    color: var(--text-hint-color)
 }
