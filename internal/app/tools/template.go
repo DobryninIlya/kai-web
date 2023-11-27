@@ -500,13 +500,21 @@ func getAttestationList(disciplines []model.Discipline, tgID, sign string) []byt
 }
 
 func GetAttestationPage(disciplines []model.Discipline, tgID, sign string) []byte {
-	tmp, _ := GetAttestationTemplate()
+	tmp, err := GetAttestationTemplate()
+	noData, _ := GetNoDataTemplate()
+	if len(disciplines) == 0 || err != nil {
+		return []byte(noData)
+	}
 	result := fmt.Sprintf(tmp, string(getAttestationList(disciplines, tgID, sign)))
 	return []byte(result)
 }
 
 func GetAttestationElementPage(disciplines model.Discipline) []byte {
-	tmp, _ := GetAttestationElementTemplate()
+	tmp, err := GetAttestationElementTemplate()
+	noData, _ := GetNoDataTemplate()
+	if reflect.DeepEqual(disciplines, model.Discipline{}) || err != nil {
+		return []byte(noData)
+	}
 	result := fmt.Sprintf(tmp, disciplines.FinalGrade, disciplines.Name,
 		disciplines.Assessments[0].YourScore,
 		disciplines.Assessments[0].YourScore, disciplines.Assessments[0].MaxScore,
@@ -548,8 +556,9 @@ func GetExamPageTemplate() (string, error) {
 
 func GetExamPage(examElems []model.Exam) []byte {
 	mainTemplate, err := GetExamPageTemplate()
+	noData, _ := GetNoDataTemplate()
 	if examElems == nil || err != nil {
-		return nil
+		return []byte(noData)
 	}
 	examsAllString := ""
 	examElementTemplate, _ := GetExamPageElementTemplate()
@@ -558,4 +567,13 @@ func GetExamPage(examElems []model.Exam) []byte {
 		examsAllString += fmt.Sprintf(examElementTemplate, exam.ExamDate, exam.ExamTime, exam.DisciplName, exam.AudNum, exam.BuildNum, prepodName) + "\n"
 	}
 	return []byte(fmt.Sprintf(mainTemplate, examsAllString))
+}
+
+func GetNoDataTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "no_data_template.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
 }
