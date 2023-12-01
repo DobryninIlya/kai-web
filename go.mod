@@ -7,6 +7,7 @@ require (
 	github.com/BurntSushi/toml v1.3.2
 	github.com/InfluxCommunity/influxdb3-go v0.3.0
 	github.com/PuerkitoBio/goquery v1.8.1
+	github.com/arran4/golang-ical v0.2.1
 	github.com/disintegration/imaging v1.6.2
 	github.com/go-chi/chi v4.1.0+incompatible
 	github.com/google/uuid v1.3.1

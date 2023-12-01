@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Платеж проведен</title>
+    <link rel="stylesheet" href="/static/css/payment_done_page.css">
+    <script src="https://telegram.org/js/telegram-web-app.js">
+        let tg = window.Telegram.WebApp;
+        tg.ready()
+        tg.expand()
+    </script>
+    <script src="/static/js/internal_theme.js" defer></script>
+</head>
+<body>
+<div class="success_body">
+    <img src="/static/img/success.png" alt="success" class="success_img">
+    <p class="payment_header">Спасибо Вам за подписку</p>
+    <p class="payment_text">Мы благодарим вас, что не остаетесь в стороне и помогаете нам улучшать проект</p>
+</div>
+</body>
+</html>

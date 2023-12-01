@@ -9,6 +9,8 @@ type Config struct {
 	InfluxDBName                  string `toml:"influxdb_name"`
 	InfluxDBToken                 string `toml:"influxdb_token"`
 	InfluxDBURL                   string `toml:"influxdb_url"`
+	ShopID                        int    `toml:"yookassa_shop_id"`
+	APIKey                        string `toml:"yookassa_api_key"`
 }
 
 // NewConfig ...

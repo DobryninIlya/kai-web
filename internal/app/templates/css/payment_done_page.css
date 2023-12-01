@@ -1,0 +1,65 @@
+:root {
+    /*--primary-color: #4CAF50;*/
+    /*--primary-color-hover: #3e8e41;*/
+    /*--text-color: #ffffff;*/
+    --background-color: #fff;
+    --secondary-color: #818C99;
+    --text-color:  #171717;
+    --open-news-button-color: #EBECEE;
+    --hashtag-color: #4A4A4A;
+    --secondary-background-color: #f7f7f7;
+    --text-hint-color: #818C99;
+}
+
+@font-face {
+    src: url("fonts/Inter-Medium.ttf");
+    font-family: Inter-Medium;
+    font-size: 22px;
+    font-weight: 400;
+    line-height: 27px;
+    letter-spacing: -0.065em;
+    text-align: left;
+
+}
+
+.success_body {
+    display: flex;
+    flex-direction: column;
+    margin: 16px auto;
+    justify-content: center;
+}
+
+.payment_header {
+    font-family: Inter-Medium;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 24px;
+    letter-spacing: 0.1px;
+    text-align: center;
+    color: var(--text-color);
+}
+
+.payment_text {
+    font-family: Inter-Medium;
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.1px;
+    text-align: center;
+    margin: 0px;
+    color: var(--text-hint-color);
+}
+
+.success_img {
+    height: 80px;
+    width: 80px;
+    margin: 0 auto;
+}
+
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh; /* высота блока на всю высоту экрана */
+    background: var(--background-color);
+}

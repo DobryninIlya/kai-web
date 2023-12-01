@@ -577,3 +577,40 @@ func GetNoDataTemplate() (string, error) {
 	}
 	return strings.Join(data, "\n"), nil
 }
+
+func GetDonePaymentTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "payment_done_page.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetStatusPaymentTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "payment_status_page.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetStatusPaymentPage(status string) []byte {
+	tmp, _ := GetStatusPaymentTemplate()
+	return []byte(fmt.Sprintf(tmp, status))
+}
+
+func GetMakePaymentTemplate() (string, error) {
+	data, err := readFile(filepath.Join("internal", "app", path, "payment_make_page.html"))
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return strings.Join(data, "\n"), nil
+}
+
+func GetMakePaymentPage() []byte {
+	tmp, _ := GetMakePaymentTemplate()
+	return []byte(tmp)
+}

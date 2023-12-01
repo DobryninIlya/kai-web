@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Платеж проведен</title>
+    <link rel="stylesheet" href="/static/css/payment_make_page.css">
+    <script src="https://telegram.org/js/telegram-web-app.js">
+        let tg = window.Telegram.WebApp;
+        tg.ready()
+        tg.expand()
+    </script>
+    <script src="/static/js/internal_theme.js" defer></script>
+    <script src="/static/js/subscribe.js" defer></script>
+</head>
+<body>
+<div class="success_body">
+    <img src="/static/img/success.png" alt="success" class="success_img">
+    <p class="payment_header">Поддержите наш проект</p>
+    <p class="payment_text">Помимо нашей огромной благодарности, вы также сможете пользоваться некоторыми преимуществами</p>
+    <div class="advantages_text">
+    <p class="payment_header" style="height:18px;">Преимущества подписки</p>
+    <div class="subscribe_list">
+        <div class="payment_element">
+            <img src="/static/img/plus_icon.svg" class="payment_img">
+            <p class="payment_desc">Расписание в виджете на главный экран</p>
+        </div>
+        <div class="payment_element">
+            <img src="/static/img/plus_icon.svg" class="payment_img">
+            <p class="payment_desc">Кастомные фоны пар в расписании</p>
+        </div>
+        <div class="payment_element">
+            <img src="/static/img/plus_icon.svg" class="payment_img">
+            <p class="payment_desc">Выделение имени в списке студентов группы</p>
+        </div>
+        <div class="payment_element">
+            <img src="/static/img/plus_icon.svg" class="payment_img">
+            <p class="payment_desc">Отсутствие обязательной подписки на новостной канал для использования чат-бота</p>
+        </div>
+        <div class="payment_element">
+            <img src="/static/img/plus_icon.svg" class="payment_img">
+            <p class="payment_desc">Увеличенный лимит создания заданий</p>
+        </div>
+    </div>
+    <div class="next" id="next_payment">
+        <p class="button_text">Перейти к оплате</p>
+    </div>
+    </div>
+    <div class="subscribe_pay" style="display:none;">
+        <p class="payment_header" style="height:18px;">Выберите тарифный план</p>
+        <fieldset>
+            <div class="payment_element">
+                <input type="radio" id="input_month" name="tariff"  value="month" checked>
+
+                <label for="input_month" class="payment_element">
+                    <p class="payment_desc_element">Месяц - 150 рублей</p>
+                </label>
+            </div>
+            <div class="payment_element">
+                <input type="radio" id="input_half_year" name="tariff"  value="half-year" >
+
+                <label for="input_half_year" class="payment_element">
+                    <p class="payment_desc_element">6 месяцев - 700 рублей</p>
+                </label>
+            </div>
+            <div class="payment_element">
+                <input type="radio" id="input_year" name="tariff" value="year" >
+
+                <label for="input_year" class="payment_element">
+                    <p class="payment_desc_element">1 год - 1100 рублей</p>
+                </label>
+            </div>
+        </fieldset>
+        <div class="next">
+            <p class="button_text" id="make_payment">Оплатить</p>
+        </div>
+    </div>
+</div>
+</body>
+</html>

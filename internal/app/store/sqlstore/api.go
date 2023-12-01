@@ -15,6 +15,7 @@ import (
 	"main/internal/app/formatter"
 	"main/internal/app/model"
 	"main/internal/app/openai"
+
 	"net/http"
 	"os"
 	"strings"
@@ -28,6 +29,7 @@ var (
 	ErrUserNotFoundInFirebase = errors.New("user not found in firebase")
 	ErrBadMobileUserInfo      = errors.New("incorrect mobile user info")
 	ErrAlreadyRegistered      = errors.New("user already registered")
+	ErrTransationAlreadyEnded = errors.New("transaction already ended")
 )
 
 type API interface {
@@ -56,6 +58,10 @@ type ApiRepositoryInterface interface {
 	GetConfirmationCode() string
 	RegistrationUserByPassword(ctx context.Context, client *model.ApiRegistration, firebase firebase.FirebaseAPIInterface, auth authorization.AuthorizationInterface, login, password string) (string, error)
 	SaveTelegramAuth(user model.TelegramUser) error
+	SaveTransaction(transaction model.Transaction) error
+	MakePremiumStatus(uid string) error
+	GetTransaction(uid string) (model.Transaction, error)
+	GetPaymentRequestByUID(uid string) (model.Transaction, error)
 }
 
 const (
@@ -480,4 +486,112 @@ func (r ApiRepository) SaveTelegramAuth(user model.TelegramUser) error {
 		return err
 	}
 	return nil
+}
+
+func (r ApiRepository) SaveTransaction(transaction model.Transaction) error {
+	_, err := r.store.db.Query("INSERT INTO public.payment_transactions (uid, ext_id, client_id, type) VALUES ($1, $2, $3, $4)",
+		transaction.UID,
+		transaction.ExtID,
+		transaction.ClientID,
+		transaction.Type,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r ApiRepository) GetTransaction(uid string) (transaction model.Transaction, err error) {
+	err = r.store.db.QueryRow("SELECT uid, ext_id, client_id, date, type, ended FROM public.payment_transactions WHERE ext_id=$1",
+		uid,
+	).Scan(
+		&transaction.UID,
+		&transaction.ExtID,
+		&transaction.ClientID,
+		&transaction.Date,
+		&transaction.Type,
+		&transaction.Ended,
+	)
+	if err != nil {
+		return transaction, err
+	}
+	return transaction, nil
+}
+
+func (r ApiRepository) endTransaction(uid string) error {
+	_, err := r.store.db.Query("UPDATE public.payment_transactions SET ended = true WHERE ext_id=$1",
+		uid,
+	)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r ApiRepository) MakePremiumStatus(uid string) error {
+	transaction, err := r.GetTransaction(uid)
+	if err != nil {
+		return err
+	}
+	if transaction.Ended {
+		return ErrTransationAlreadyEnded
+	}
+	var months, payed int
+	switch strings.TrimSpace(transaction.Type) {
+	case "month":
+		months = 1
+		payed = 150
+	case "half-year":
+		months = 6
+		payed = 700
+	case "year":
+		months = 12
+		payed = 1100
+	default:
+		return errors.New("wrong subscribe level")
+	}
+	_, err = r.store.db.Query("INSERT INTO public.premium_subscribe (uid, expire_date, date_of_last_payment, total_payed) VALUES ($1, $2, $3, $4)",
+		transaction.ClientID,
+		time.Now().AddDate(0, months, 0),
+		time.Now(),
+		payed,
+	)
+	if err != nil {
+		if strings.Contains(err.Error(), "unique constraint") || strings.Contains(err.Error(), "ограничение уникальности") {
+			_, err = r.store.db.Query("UPDATE public.premium_subscribe SET expire_date=$1, date_of_last_payment=$2, total_payed=total_payed+$3 WHERE uid=$4",
+				time.Now().AddDate(0, months, 0),
+				time.Now(),
+				payed,
+				transaction.ClientID,
+			)
+			if err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+	}
+	err = r.endTransaction(uid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (r ApiRepository) GetPaymentRequestByUID(uid string) (model.Transaction, error) {
+	var payment model.Transaction
+	err := r.store.db.QueryRow("SELECT uid, ext_id, client_id, date, type, ended FROM public.payment_transactions WHERE uid=$1",
+		uid,
+	).Scan(
+		&payment.UID,
+		&payment.ExtID,
+		&payment.ClientID,
+		&payment.Date,
+		&payment.Type,
+		&payment.Ended,
+	)
+	if err != nil {
+		return payment, err
+	}
+	return payment, nil
 }

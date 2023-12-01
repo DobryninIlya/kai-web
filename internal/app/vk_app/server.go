@@ -9,6 +9,7 @@ import (
 	"main/internal/app/firebase"
 	api "main/internal/app/handlers/api"
 	"main/internal/app/handlers/api/auth"
+	pay_handler "main/internal/app/handlers/api/payments"
 	portal "main/internal/app/handlers/api/portal"
 	"main/internal/app/handlers/api/schedule"
 	task "main/internal/app/handlers/api/tasks"
@@ -19,6 +20,7 @@ import (
 	"main/internal/app/store/sqlstore"
 	"main/internal/app/tg_api"
 	"main/internal/app/tools"
+	"main/internal/payments"
 	"net/http"
 	"net/url"
 	"os"
@@ -43,6 +45,7 @@ type App struct {
 	metrics     *influxdb.Metrics
 	openai      *openai.ChatGPT
 	auth        authorization.AuthorizationInterface
+	pay         payments.Yokassa
 }
 
 func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI, config Config) *App {
@@ -65,6 +68,7 @@ func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string,
 		ctx:         ctx,
 		openai:      openai.NewChatGPT(ctx, logger, "gpt-3.5-turbo", 0.7, "user"),
 		auth:        authorization.NewAuthorization(),
+		pay:         payments.NewYokassa(config.ShopID, config.APIKey, logger),
 	}
 	a.openai.WithPrompt(openai.NEWS_PROMPT)
 	a.configureRouter()
@@ -101,7 +105,8 @@ func (a *App) configureRouter() {
 			r.Use(a.authorizationByToken)
 			r.Get("/{groupid}", schedule.NewScheduleHandler(a.store, a.logger))                        // Расписание полностью
 			r.Get("/{groupid}/by_margin", schedule.NewLessonsHandler(a.store, a.logger, a.weekParity)) // На день с отступом margin от текущего дня
-			r.Get("/{groupid}/teachers", schedule.NewTeachersHandler(a.store, a.logger))               // Список преподавателей
+			r.Get("/{groupid}/teachers", schedule.NewTeachersHandler(a.store, a.logger))
+			r.Get("/{groupid}/ical", schedule.NewIcalHandler(a.store, a.logger, a.weekParity)) // Список преподавателей
 		})
 		r.Route("/groups", func(r chi.Router) {
 			r.Use(a.authorizationByToken)
@@ -192,6 +197,13 @@ func (a *App) configureRouter() {
 			r.Get("/", portal.NewExamPageHandler(a.logger))
 		})
 
+	})
+	a.router.Route("/payments", func(r chi.Router) {
+		r.Get("/request", pay_handler.NewPaymentRequestHandler(a.logger, a.store, a.pay))
+		r.Get("/check/{payment_id}", pay_handler.NewCheckPaymentRequestHandler(a.logger, a.store, a.pay))
+		r.Get("/done/{payment_id}", pay_handler.NewDonePaymentPageHandler(a.logger, a.store, a.pay))
+		r.Post("/notifications", pay_handler.NewNotificationsPaymentRequestHandler(a.logger, a.store, a.pay))
+		r.Get("/subscribe", pay_handler.NewMakePaymentPageHandler())
 	})
 	a.router.Handle("/static/css/*", http.StripPrefix("/static/css/", cssHandler(http.FileServer(http.Dir(filepath.Join("internal", "app", "templates", "css"))))))
 	a.router.Handle("/static/js/*", http.StripPrefix("/static/js/", http.FileServer(http.Dir(filepath.Join("internal", "app", "templates", "js")))))
