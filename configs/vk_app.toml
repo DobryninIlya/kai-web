@@ -6,3 +6,5 @@ firebase_service_account_key_path = "configs/serviceAccountKey.json"
 influxdb_name = "capypara"
 influxdb_url = "https://url"
 influxdb_token = "token=="
+yookassa_shop_id = 123456
+yookassa_api_key = "test_123_token"
