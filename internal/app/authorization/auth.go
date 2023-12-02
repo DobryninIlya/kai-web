@@ -34,6 +34,7 @@ type AuthorizationInterface interface {
 	GetAuthorizedCookies(uid string, client model.ApiRegistration) (cookie, error)
 	SetAttestations(key string, list []model.Discipline)
 	GetAttestations(key string) ([]model.Discipline, bool)
+	GetProfilePhotoURL(uid string, client model.ApiRegistration) (string, error)
 }
 
 type Authorization struct {

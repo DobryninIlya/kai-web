@@ -96,9 +96,10 @@ func (a *App) configureRouter() {
 		})
 		r.Post("/registration", auth.NewRegistrationByPasswordHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Регистрация по логину и паролю
 		r.Route("/auth", func(r chi.Router) {
-			r.Get("/personal", auth.NewAboutInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))      // Номер группы")
-			r.Get("/group", auth.NewGroupInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))         // Номер группы")
-			r.Get("/attestation", auth.NewAttestationHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Номер группы")
+			r.Get("/personal", auth.NewAboutInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))            // Номер группы")
+			r.Get("/profile_photo", auth.NewProfilePhotoURLHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Номер группы")
+			r.Get("/group", auth.NewGroupInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))               // Номер группы")
+			r.Get("/attestation", auth.NewAttestationHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))       // Номер группы")
 		})
 		r.Get("/week", api.NewWeekParityHandler(a.weekParity)) // Текущая четность недели
 		r.Route("/schedule", func(r chi.Router) {

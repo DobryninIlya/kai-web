@@ -366,3 +366,17 @@ device_tag - тэг устройства от производителя
           },
 			... 10 assessments
 ```
+
+### 18. GET **/api/auth/profile_photo**
+Получает url на фотографию профиля по токену
+
+Полученный путь необходимо прибавлять к https://kai.ru
+
+Пример ответа:
+```json
+{
+	"result": {
+		"photo_url": "/image/user_male_portrait?img_id=12532825&img_id_token=KfVwudcwBczXPoUNBk8nC5fSWWM%3D&t=1701531843682"
+	}
+}
+```
