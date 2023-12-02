@@ -13,15 +13,21 @@ document.getElementById("make_payment").addEventListener("click", function() {
     // Получаем значения параметров client_id и tariff из URL
     var urlParams = new URLSearchParams(window.location.search);
     var clientId = urlParams.get('client_id');
-    if (!clientId) {
-        console.log('Не указан client_id');
-        alert("Произошла ошибочка :(")
-        return;
-    }
+    var requestUrl = ""
     var tariff = document.querySelector('input[name="tariff"]:checked').value;
+    if (clientId) {
+        requestUrl = '/payments/request?level=' + tariff + '&client_id=' + clientId;
+
+    } else {
+        var tgWebAppStartParamURL = urlParams.get('tgWebAppStartParam');
+        tgWebAppStartParamURL = tgWebAppStartParamURL.replace(/=/, '%3D');
+        requestUrl = '/payments/request?tgWebAppStartParam=' + tgWebAppStartParamURL + '___level%3D' + tariff;
+
+    }
+    alert(requestUrl)
 
     // Формируем URL для запроса
-    var requestUrl = '/payments/request?level=' + tariff + '&client_id=' + clientId;
+    // var requestUrl = '/payments/request?level=' + tariff + '&client_id=' + clientId;
 
     // Отправляем запрос на сервер
     fetch(requestUrl)

@@ -199,6 +199,7 @@ func (a *App) configureRouter() {
 
 	})
 	a.router.Route("/payments", func(r chi.Router) {
+		r.Use(a.parseURLParamsFromTelegramStart)
 		r.Get("/request", pay_handler.NewPaymentRequestHandler(a.logger, a.store, a.pay))
 		r.Get("/check/{payment_id}", pay_handler.NewCheckPaymentRequestHandler(a.logger, a.store, a.pay))
 		r.Get("/done/{payment_id}", pay_handler.NewDonePaymentPageHandler(a.logger, a.store, a.pay))
