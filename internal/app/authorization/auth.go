@@ -37,7 +37,8 @@ type AuthorizationInterface interface {
 	SetAttestations(key string, list []model.Discipline)
 	GetAttestations(key string) ([]model.Discipline, bool)
 	GetProfilePhotoURL(uid string, client model.ApiRegistration) (string, error)
-	UploadProfilePhoto(uid string, client model.ApiRegistration, file io.Reader) error
+	UploadProfilePhoto(uid string, client model.ApiRegistration, file io.Reader, cmd string) error
+	ChangeProfilePhoto(uid string, client model.ApiRegistration, file io.Reader) error
 }
 
 type Authorization struct {

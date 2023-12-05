@@ -21,7 +21,7 @@ func NewPostProfilePhotoHandler(ctx context.Context, store sqlstore.StoreInterfa
 			return
 		}
 		file, _, err := r.FormFile("file")
-		err = auth.UploadProfilePhoto(client.UID, client, file)
+		err = auth.ChangeProfilePhoto(client.UID, client, file)
 		w.Header().Set("Content-Type", "application/json")
 		if err != nil {
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, err)

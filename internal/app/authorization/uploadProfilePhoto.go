@@ -120,7 +120,7 @@ func (r *Authorization) GetFormActionURL(uid string, client model.ApiRegistratio
 	return parseFormActionURL(resp.Body)
 }
 
-func GetUploadPhotoRequest(url string, cookies string, inputs map[string]string, file io.Reader) (*http.Request, error) {
+func GetUploadPhotoRequest(url string, cookies string, inputs map[string]string, file io.Reader, cmd string) (*http.Request, error) {
 	// Создаем буфер для записи multipart/form-data
 	var requestBody bytes.Buffer
 	writer := multipart.NewWriter(&requestBody)
@@ -137,8 +137,10 @@ func GetUploadPhotoRequest(url string, cookies string, inputs map[string]string,
 	for key, value := range inputs {
 		writer.WriteField(key, value)
 	}
-	writer.WriteField("_2_cmd", "add_temp")
-	writer.WriteField("_2_p_u_i_d_", "add_temp")
+	if cmd != "" {
+		writer.WriteField("_2_cmd", cmd)
+	}
+	//writer.WriteField("_2_p_u_i_d_", "add_temp")
 	writer.Close()
 	// Создаем запрос с телом формы
 	req, err := http.NewRequest("POST", url, &requestBody)
@@ -151,7 +153,7 @@ func GetUploadPhotoRequest(url string, cookies string, inputs map[string]string,
 	return req, nil
 }
 
-func (r *Authorization) UploadProfilePhoto(uid string, client model.ApiRegistration, file io.Reader) error {
+func (r *Authorization) UploadProfilePhoto(uid string, client model.ApiRegistration, file io.Reader, cmd string) error {
 	cookies, err := r.GetAuthorizedCookies(uid, client)
 	if err != nil {
 		return err
@@ -166,7 +168,7 @@ func (r *Authorization) UploadProfilePhoto(uid string, client model.ApiRegistrat
 		r.log.Logf(logrus.ErrorLevel, "Error while getting form action url: %s", err.Error())
 		return err
 	}
-	req, err := GetUploadPhotoRequest(formActionURL, GetCookiesHeader(cookies.Cookie), inputs, file)
+	req, err := GetUploadPhotoRequest(formActionURL, GetCookiesHeader(cookies.Cookie), inputs, file, cmd)
 	if err != nil {
 		r.log.Logf(logrus.ErrorLevel, "Error while getting upload photo request: %s", err.Error())
 		return err
@@ -177,11 +179,16 @@ func (r *Authorization) UploadProfilePhoto(uid string, client model.ApiRegistrat
 		r.log.Logf(logrus.ErrorLevel, "Error while uploading photo: %s", err.Error())
 		return err
 	}
-	body, err := io.ReadAll(resp.Body)
-	fmt.Println(string(body))
+	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
 		r.log.Logf(logrus.ErrorLevel, "Error while uploading photo: %s", err.Error())
 		return err
 	}
+	return nil
+}
+
+func (r *Authorization) ChangeProfilePhoto(uid string, client model.ApiRegistration, file io.Reader) error {
+	r.UploadProfilePhoto(uid, client, file, "add_temp") // Добавляем превью фотографии
+	r.UploadProfilePhoto(uid, client, file, "")         // Загружаем ее же повторно (таковы требования сайта)
 	return nil
 }

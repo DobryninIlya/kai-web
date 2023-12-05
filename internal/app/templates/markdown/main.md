@@ -356,6 +356,21 @@
 			... 10 assessments
 ```
 
+### 19. POST **/api/auth/profile_photo**
+Загружает фотографию профиля по токену
+
+Необходимо передать multipart/form-data с полем file, содержащим файл изображения
+
+Пример ответа:
+```json
+{
+	"result": {
+		"status": "ok"
+	}
+}
+```
+
+
 ### 18. GET **/api/auth/profile_photo**
 Получает url на фотографию профиля по токену
 
