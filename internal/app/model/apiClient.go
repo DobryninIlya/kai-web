@@ -5,8 +5,8 @@ import (
 )
 
 type ApiClient struct {
-	UID        string      `json:"uid,omitempty"`
-	DeviceTag  string      `json:"device_tag,omitempty"`
+	UID string `json:"uid,omitempty"`
+	//DeviceTag  string      `json:"device_tag,omitempty"`
 	Token      string      `json:"token,omitempty"`
 	CreateDate pgtype.Date `json:"create_date,omitempty"`
 	MobileUser
@@ -14,7 +14,7 @@ type ApiClient struct {
 
 type ApiRegistration struct {
 	ApiClient
-	Login             string `json:"c,omitempty"`
+	Login             string `json:"login,omitempty"`
 	Password          string `json:"password,omitempty"`
 	EncryptedPassword []byte `json:"encrypted_password,omitempty"`
 }

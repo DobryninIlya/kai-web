@@ -67,7 +67,7 @@ func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string,
 		metrics:     influxdb.NewMetrics(ctx, config.InfluxDBToken, config.InfluxDBURL, config.InfluxDBName, logger),
 		ctx:         ctx,
 		openai:      openai.NewChatGPT(ctx, logger, "gpt-3.5-turbo", 0.7, "user"),
-		auth:        authorization.NewAuthorization(),
+		auth:        authorization.NewAuthorization(logger),
 		pay:         payments.NewYokassa(config.ShopID, config.APIKey, logger),
 	}
 	a.openai.WithPrompt(openai.NEWS_PROMPT)
@@ -94,12 +94,13 @@ func (a *App) configureRouter() {
 				r.Get("/vk", api.NewSendMailVKHandler(a.store, a.logger, a.mailer)) // Отправка сообщения в ВК
 			})
 		})
-		r.Post("/registration", auth.NewRegistrationByPasswordHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Регистрация по логину и паролю
+		r.Post("/registration", auth.NewRegistrationByPasswordHandler(a.ctx, a.store, a.logger, a.auth)) // Регистрация по логину и паролю
 		r.Route("/auth", func(r chi.Router) {
-			r.Get("/personal", auth.NewAboutInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))            // Номер группы")
-			r.Get("/profile_photo", auth.NewProfilePhotoURLHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Номер группы")
-			r.Get("/group", auth.NewGroupInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))               // Номер группы")
-			r.Get("/attestation", auth.NewAttestationHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))       // Номер группы")
+			r.Get("/personal", auth.NewAboutInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))              // Номер группы")
+			r.Get("/profile_photo", auth.NewProfilePhotoURLHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))   // Номер группы")
+			r.Post("/profile_photo", auth.NewPostProfilePhotoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Номер группы")
+			r.Get("/group", auth.NewGroupInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))                 // Номер группы")
+			r.Get("/attestation", auth.NewAttestationHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))         // Номер группы")
 		})
 		r.Get("/week", api.NewWeekParityHandler(a.weekParity)) // Текущая четность недели
 		r.Route("/schedule", func(r chi.Router) {

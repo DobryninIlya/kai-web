@@ -81,25 +81,22 @@
 
 ### 3. POST **api/registration**
 Регистрирует нового API клиента и возвращает его токен.
+Если пользователь зарегистрирован - возвращает токен.
+
 Принимаемый payload:
 ```json
 {
-    "uid": "adbcdef123", // UID Firebase | unique constraint max-len=35
-    "device_tag": "SM-1234" // Устройство | len=16
 	"login": "NameSM", // Логин пользователя
 	"password": "password123" // Пароль пользователя (от личного кабинета)
 	
 }
 ```
-uid - идентификатор пользователя от Firebase
 
-device_tag - тэг устройства от производителя
-
-В случае, если пользователь с таким uid уже есть в базе данных, то возвращается ошибка
+В случае неверного пароля возвращается:
 
 ```json
 {
-  "error": "unique constraint failed for one of the field, probably already registered"
+	"error": "wrong password"
 }
 ```
 
@@ -115,13 +112,6 @@ device_tag - тэг устройства от производителя
 
 Ошибки:
 
- **unique constraint failed for one of the field** - *поле uid уже имеется в базе данных*
-
- **the length of one of parameters is too much** - *поле uid или device_tag превышает допустимую длину*
-
- **user not found** - *ошибка получения данных от Firebase: данные о пользователе не найдены*
- **unique constraint failed for one of the field, probably already registered** - *пользователь уже зарегистрирован* (необходимо запросить токен)
-
 [Аворизация по токену](doc/autorization)
 
 ### 4. GET **/api/token/whoiam** _(с авторизацией)_
@@ -130,7 +120,6 @@ device_tag - тэг устройства от производителя
 {
 	"result": {
 		"uid": "Tjf8dC9mZ6V8cLzGltKSCrhrLdq1       ",
-		"device_tag": "SM-1234         ",
 		"token": "ce20ff5c18c65a5fdsfsdfsdfsdfdsfaqr28b26f9ed263e8eb00fe7e28e49d9705",
 		"create_date": {
 			"Time": "2023-11-16T00:00:00Z",

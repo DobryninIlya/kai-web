@@ -31,7 +31,7 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 			return
 		}
 		err = json.Unmarshal(body, &res)
-		if err != nil || res.DeviceTag == "" || res.UID == "" {
+		if err != nil || res.UID == "" {
 			if err != nil {
 				log.Logf(
 					logrus.ErrorLevel,
@@ -43,7 +43,7 @@ func NewRegistrationHandler(ctx context.Context, store sqlstore.StoreInterface, 
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadPayload)
 			return
 		}
-		if len(res.DeviceTag) > 16 || len(res.UID) > 35 {
+		if len(res.UID) > 35 {
 			log.Logf(
 				logrus.ErrorLevel,
 				"%s : Ошибка создания токена. Длина deviceTag или deviceId превышена : %v",

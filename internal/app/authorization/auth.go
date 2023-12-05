@@ -3,6 +3,8 @@ package authorization
 import (
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
+	"io"
 	"log"
 	"main/internal/app/model"
 	"net/http"
@@ -35,11 +37,13 @@ type AuthorizationInterface interface {
 	SetAttestations(key string, list []model.Discipline)
 	GetAttestations(key string) ([]model.Discipline, bool)
 	GetProfilePhotoURL(uid string, client model.ApiRegistration) (string, error)
+	UploadProfilePhoto(uid string, client model.ApiRegistration, file io.Reader) error
 }
 
 type Authorization struct {
 	Cookies      SafeMap
 	Attestations AttestationCache
+	log          *logrus.Logger
 }
 
 type SafeMap struct {
@@ -206,9 +210,10 @@ func (r *Authorization) GetAttestations(key string) ([]model.Discipline, bool) {
 	return value, ok
 }
 
-func NewAuthorization() *Authorization {
+func NewAuthorization(log *logrus.Logger) *Authorization {
 	return &Authorization{
 		Cookies:      *NewSafeMap(),
 		Attestations: *NewAttestationCache(),
+		log:          log,
 	}
 }

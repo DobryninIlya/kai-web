@@ -23,13 +23,13 @@ import (
 )
 
 var (
-	ErrBadNews                = errors.New("новость не подходит для публикации")
-	ErrBadPhoto               = errors.New("новость не подходит для публикации, не содержит фото")
-	ErrUserNotFound           = errors.New("user not found")
-	ErrUserNotFoundInFirebase = errors.New("user not found in firebase")
-	ErrBadMobileUserInfo      = errors.New("incorrect mobile user info")
-	ErrAlreadyRegistered      = errors.New("user already registered")
-	ErrTransationAlreadyEnded = errors.New("transaction already ended")
+	ErrBadNews                 = errors.New("новость не подходит для публикации")
+	ErrBadPhoto                = errors.New("новость не подходит для публикации, не содержит фото")
+	ErrUserNotFound            = errors.New("user not found")
+	ErrUserNotFoundInFirebase  = errors.New("user not found in firebase")
+	ErrBadMobileUserInfo       = errors.New("incorrect mobile user info")
+	ErrAlreadyRegistered       = errors.New("user already registered")
+	ErrTransaсtionAlreadyEnded = errors.New("transaction already ended")
 )
 
 type API interface {
@@ -56,12 +56,14 @@ type ApiRepositoryInterface interface {
 	SaveMobileUserInfo(user model.ApiClient) error
 	SetConfirmationCode(code string)
 	GetConfirmationCode() string
-	RegistrationUserByPassword(ctx context.Context, client *model.ApiRegistration, firebase firebase.FirebaseAPIInterface, auth authorization.AuthorizationInterface, login, password string) (string, error)
+	RegistrationUserByPassword(ctx context.Context, client *model.ApiRegistration, auth authorization.AuthorizationInterface, login, password string) (string, error)
 	SaveTelegramAuth(user model.TelegramUser) error
 	SaveTransaction(transaction model.Transaction) error
 	MakePremiumStatus(uid string) error
 	GetTransaction(uid string) (model.Transaction, error)
 	GetPaymentRequestByUID(uid string) (model.Transaction, error)
+	GetTokenByUID(uid string) (string, error)
+	GenerateUID(login, password string) string
 }
 
 const (
@@ -89,14 +91,25 @@ func (r ApiRepository) generateToken() token {
 	resultToken := token(hashValue)
 
 	return resultToken
-
 }
 
+func (r ApiRepository) GenerateUID(login, password string) string {
+	// генерируем случайную строку заданной длины
+	// объединяем login и password
+	combinedString := login + password
+
+	// хэшируем объединенную строку
+	hashBytes := sha256.Sum256([]byte(combinedString))
+	hashValue := fmt.Sprintf("%x", hashBytes)
+
+	return hashValue
+}
+
+// RegistrationToken DEPRECATED
 // RegistrationToken регистрирует нового апи-клиента и возвращает уникальный токен
 func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiClient, firebase firebase.FirebaseAPIInterface) (string, error) {
 	ctx, _ = context.WithDeadline(ctx, time.Now().Add(3*time.Second))
 	fbUser, err := firebase.GetFirebaseUser(ctx, client.UID)
-	// TODO: Добавить сохранение данных пользователя в базу данных из возвращаемой выше функции
 	if err != nil || len(fbUser.UID) == 0 {
 		return "", ErrUserNotFoundInFirebase
 	}
@@ -104,9 +117,8 @@ func (r ApiRepository) RegistrationToken(ctx context.Context, client *model.ApiC
 		return "", ErrUserNotFound
 	}
 	newToken := string(r.generateToken())
-	err = r.store.db.QueryRow("INSERT INTO public.api_clients(uid, device_tag, token) VALUES ($1, $2, $3) RETURNING uid",
+	err = r.store.db.QueryRow("INSERT INTO public.api_clients(uid, token) VALUES ($1, $2, $3) RETURNING uid",
 		client.UID,
-		client.DeviceTag,
 		newToken,
 	).Scan(&client.UID)
 	if err != nil {
@@ -148,14 +160,25 @@ func (r ApiRepository) SaveMobileUserInfo(user model.ApiClient) error {
 	return nil
 }
 
+func (r ApiRepository) GetTokenByUID(uid string) (string, error) {
+	var clientToken string
+	err := r.store.db.QueryRow("SELECT token FROM public.api_clients WHERE uid=$1",
+		uid,
+	).Scan(&clientToken)
+	if err != nil {
+		return "", err
+	}
+	return clientToken, nil
+}
+
 func (r ApiRepository) CheckToken(tokenStr string) (model.ApiRegistration, error, int) {
 	var client model.ApiRegistration
 	var name, login sql.NullString
 	var groupname sql.NullInt32
 	err := r.store.db.QueryRow(
-		"SELECT c.uid, c.device_tag, c.create_date, mu.name, mu.groupname, pw.login, pw.encrypted_password FROM public.api_clients AS c JOIN public.mobile_users AS mu ON c.uid = mu.uid JOIN public.mobile_user_password AS pw ON c.uid = pw.uid WHERE token=$1",
+		"SELECT c.uid, c.create_date, mu.name, mu.groupname, pw.login, pw.encrypted_password FROM public.api_clients AS c JOIN public.mobile_users AS mu ON c.uid = mu.uid JOIN public.mobile_user_password AS pw ON c.uid = pw.uid WHERE token=$1",
 		tokenStr,
-	).Scan(&client.UID, &client.DeviceTag, &client.CreateDate, &name, &groupname, &login, &client.EncryptedPassword)
+	).Scan(&client.UID, &client.CreateDate, &name, &groupname, &login, &client.EncryptedPassword)
 	client.Login = login.String
 	client.Name = name.String
 	client.Groupname = int(groupname.Int32)
@@ -191,11 +214,10 @@ func (r ApiRepository) CheckSecret(secret string) (bool, error, int) {
 // GetTokenInfo получает информацию о владельце токена
 func (r ApiRepository) GetTokenInfo(tokenStr string) (model.ApiClient, error) {
 	var res model.ApiClient
-	err := r.store.db.QueryRow("SELECT uid, device_tag, create_date FROM public.api_clients WHERE token=$1",
+	err := r.store.db.QueryRow("SELECT uid, create_date FROM public.api_clients WHERE token=$1",
 		tokenStr,
 	).Scan(
 		&res.UID,
-		&res.DeviceTag,
 		&res.CreateDate,
 	)
 	if err != nil || len(res.UID) == 0 {
@@ -375,30 +397,22 @@ func (r ApiRepository) GetConfirmationCode() string {
 	return r.ConfirmationCode
 }
 
-func (r ApiRepository) RegistrationUserByPassword(ctx context.Context, client *model.ApiRegistration, firebase firebase.FirebaseAPIInterface,
+func (r ApiRepository) RegistrationUserByPassword(ctx context.Context, client *model.ApiRegistration,
 	auth authorization.AuthorizationInterface, login, password string) (string, error) {
-
-	ctxFirebase, _ := context.WithDeadline(ctx, time.Now().Add(5*time.Second))
-	fbUser, err := firebase.GetFirebaseUser(ctxFirebase, client.UID)
-	// TODO: Добавить сохранение данных пользователя в базу данных из возвращаемой выше функции
-	if err != nil || len(fbUser.UID) == 0 {
-		return "", ErrUserNotFoundInFirebase
-	}
-	if len(fbUser.UID) == 0 {
-		return "", ErrUserNotFound
-	}
+	uid := r.GenerateUID(login, password)
+	client.UID = uid
 	cookies, err := auth.GetCookiesByPassword(login, password)
 	if err != nil {
 		return "", err
 	}
-	auth.SetCookies(fbUser.UID, cookies)
-	aboutInfo, err := auth.GetAboutInfo(fbUser.UID, *client)
+	auth.SetCookies(uid, cookies)
+	aboutInfo, err := auth.GetAboutInfo(uid, *client)
 	if err != nil {
 		return "", err
 	}
 	client.Name = aboutInfo.FirstName + " " + aboutInfo.LastName + " " + aboutInfo.MiddleName
 	authorization.Encrypt(&client.EncryptedPassword, password)
-	group, err := auth.GetGroupNum(fbUser.UID, *client)
+	group, err := auth.GetGroupNum(uid, *client)
 	if err != nil {
 		return "", err
 	}
@@ -407,7 +421,7 @@ func (r ApiRepository) RegistrationUserByPassword(ctx context.Context, client *m
 	if err != nil {
 		return "", err
 	}
-	auth.SetCookies(fbUser.UID, cookies)
+	auth.SetCookies(uid, cookies)
 	return tokenStr, nil
 }
 
@@ -420,7 +434,7 @@ func (r ApiRepository) saveMobileUser(ctx context.Context, client *model.ApiRegi
 	// Запросы на вставку данных в таблицы
 	insertMobileUserPassword := `INSERT INTO public.mobile_user_password (uid, login, encrypted_password) VALUES ($1, $2, $3)`
 	insertMobileUser := `INSERT INTO public.mobile_users (uid, name, groupname) VALUES ($1, $2, $3)`
-	insertAPIClient := `INSERT INTO public.api_clients (uid, device_tag, token) VALUES ($1, $2, $3)`
+	insertAPIClient := `INSERT INTO public.api_clients (uid, token) VALUES ($1, $2)`
 
 	// Данные для вставки
 	uid := client.UID
@@ -428,7 +442,6 @@ func (r ApiRepository) saveMobileUser(ctx context.Context, client *model.ApiRegi
 	encryptedPassword := client.EncryptedPassword
 	name := client.Name
 	groupname := client.Groupname
-	deviceTag := client.DeviceTag
 	newToken := r.generateToken()
 
 	// Вставка данных в таблицу mobile_user_password
@@ -448,7 +461,7 @@ func (r ApiRepository) saveMobileUser(ctx context.Context, client *model.ApiRegi
 	}
 
 	// Вставка данных в таблицу api_clients
-	_, err = tx.ExecContext(ctx, insertAPIClient, uid, deviceTag, newToken)
+	_, err = tx.ExecContext(ctx, insertAPIClient, uid, newToken)
 	if err != nil {
 		// Ошибка при вставке данных, отмена транзакции
 		tx.Rollback()
@@ -534,7 +547,7 @@ func (r ApiRepository) MakePremiumStatus(uid string) error {
 		return err
 	}
 	if transaction.Ended {
-		return ErrTransationAlreadyEnded
+		return ErrTransaсtionAlreadyEnded
 	}
 	var months, payed int
 	switch strings.TrimSpace(transaction.Type) {

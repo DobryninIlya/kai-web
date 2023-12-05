@@ -293,9 +293,8 @@ alter table news
 
 create table if not exists api_clients
 (
-    uid         char(35) not null
+    uid         char(64) not null
         primary key,
-    device_tag  char(16),
     token       char(64),
     create_date date default now()
 );
@@ -314,7 +313,7 @@ alter table news_authors
 
 create table if not exists mobile_users
 (
-    uid       char(35) not null
+    uid       char(64) not null
         primary key,
     name      char(120),
     groupname integer

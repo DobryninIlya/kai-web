@@ -25,7 +25,7 @@ func NewDonePaymentPageHandler(log *logrus.Logger, store sqlstore.StoreInterface
 		}
 		if result.Status == "succeeded" {
 			err = store.API().MakePremiumStatus(extID)
-			if err != nil && err != sqlstore.ErrTransationAlreadyEnded {
+			if err != nil && err != sqlstore.ErrTransaсtionAlreadyEnded {
 				log.Log(logrus.ErrorLevel, path+": "+err.Error()+" paymentID: "+extID)
 				h.ErrorHandlerAPI(w, r, http.StatusInternalServerError, err)
 				return

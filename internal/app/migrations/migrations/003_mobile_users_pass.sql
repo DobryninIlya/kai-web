@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE IF NOT EXISTS public.mobile_user_password
 (
-    uid character(35) NOT NULL,
+    uid character(64) NOT NULL,
     login character(50),
     encrypted_password bytea,
     PRIMARY KEY (uid)

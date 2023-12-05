@@ -8,7 +8,6 @@ import (
 	"github.com/sirupsen/logrus"
 	"io"
 	"main/internal/app/authorization"
-	"main/internal/app/firebase"
 	h "main/internal/app/handlers/web_app"
 	"main/internal/app/model"
 	"main/internal/app/store/sqlstore"
@@ -16,9 +15,9 @@ import (
 	"strings"
 )
 
-func NewRegistrationByPasswordHandler(ctx context.Context, store sqlstore.StoreInterface, log *logrus.Logger, fbAPI firebase.FirebaseAPIInterface, auth authorization.AuthorizationInterface) func(w http.ResponseWriter, r *http.Request) {
+func NewRegistrationByPasswordHandler(ctx context.Context, store sqlstore.StoreInterface, log *logrus.Logger, auth authorization.AuthorizationInterface) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
-		const path = "handlers.api.makeRegistration.auth.ewRegistrationByPasswordHandler"
+		const path = "handlers.api.makeRegistration.auth.newRegistrationByPasswordHandler"
 		var res model.ApiRegistration
 		body, err := io.ReadAll(r.Body)
 		if err != nil {
@@ -32,7 +31,7 @@ func NewRegistrationByPasswordHandler(ctx context.Context, store sqlstore.StoreI
 			return
 		}
 		err = json.Unmarshal(body, &res)
-		if err != nil || res.Login == "" || res.Password == "" || res.UID == "" {
+		if err != nil || res.Login == "" || res.Password == "" {
 			if err != nil {
 				log.Logf(
 					logrus.ErrorLevel,
@@ -44,7 +43,7 @@ func NewRegistrationByPasswordHandler(ctx context.Context, store sqlstore.StoreI
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadPayload)
 			return
 		}
-		if len(res.DeviceTag) > 16 || len(res.UID) > 35 {
+		if len(res.UID) > 35 {
 			log.Logf(
 				logrus.ErrorLevel,
 				"%s : Ошибка создания токена. Длина deviceTag или deviceId превышена : %v",
@@ -52,19 +51,26 @@ func NewRegistrationByPasswordHandler(ctx context.Context, store sqlstore.StoreI
 				h.ErrLongData.Error(),
 			)
 		}
-		token, err := store.API().RegistrationUserByPassword(ctx, &res, fbAPI, auth, res.Login, res.Password)
+		token, err := store.API().RegistrationUserByPassword(ctx, &res, auth, res.Login, res.Password)
 		if err != nil && token == "" {
+			if strings.Contains(err.Error(), "UNIQUE constraint") || strings.Contains(err.Error(), "ограничение уникальности") ||
+				strings.Contains(err.Error(), "unique constraint") || errors.Is(sql.ErrNoRows, err) {
+				//h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)
+				token, err = store.API().GetTokenByUID(store.API().GenerateUID(res.Login, res.Password))
+				result := struct {
+					Token string `json:"token"`
+				}{
+					Token: token,
+				}
+				h.RespondAPI(w, r, http.StatusOK, result)
+				return
+			}
 			log.Logf(
 				logrus.ErrorLevel,
 				"%s : Ошибка получения токена: %v",
 				path,
 				err.Error(),
 			)
-			if strings.Contains(err.Error(), "UNIQUE constraint") || strings.Contains(err.Error(), "ограничение уникальности") ||
-				strings.Contains(err.Error(), "unique constraint") || errors.Is(sql.ErrNoRows, err) {
-				h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)
-				return
-			}
 			h.ErrorHandlerAPI(w, r, http.StatusInternalServerError, err)
 			return
 		}

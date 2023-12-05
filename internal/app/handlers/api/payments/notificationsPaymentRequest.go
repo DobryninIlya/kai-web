@@ -33,7 +33,7 @@ func NewNotificationsPaymentRequestHandler(log *logrus.Logger, store sqlstore.St
 		}
 		if result.Status == "succeeded" {
 			err = store.API().MakePremiumStatus(notification.Object.Id)
-			if err != nil && err != sqlstore.ErrTransationAlreadyEnded {
+			if err != nil && err != sqlstore.ErrTransaсtionAlreadyEnded {
 				log.Log(logrus.ErrorLevel, path+": "+err.Error()+" paymentID: "+notification.Object.Id)
 				h.ErrorHandlerAPI(w, r, http.StatusInternalServerError, err)
 				return

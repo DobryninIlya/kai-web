@@ -1,7 +1,7 @@
 -- +goose Up
 CREATE TABLE IF NOT EXISTS public.premium_subscribe
 (
-    uid character(35) COLLATE pg_catalog."default" NOT NULL,
+    uid character(64) COLLATE pg_catalog."default" NOT NULL,
     expire_date date,
     date_of_last_payment date,
     total_payed integer,
