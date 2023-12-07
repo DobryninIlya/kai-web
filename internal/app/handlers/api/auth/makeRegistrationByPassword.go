@@ -54,7 +54,7 @@ func NewRegistrationByPasswordHandler(ctx context.Context, store sqlstore.StoreI
 		token, err := store.API().RegistrationUserByPassword(ctx, &res, auth, res.Login, res.Password)
 		if err != nil && token == "" {
 			if strings.Contains(err.Error(), "UNIQUE constraint") || strings.Contains(err.Error(), "ограничение уникальности") ||
-				strings.Contains(err.Error(), "unique constraint") || errors.Is(sql.ErrNoRows, err) {
+				strings.Contains(err.Error(), "unique constraint") || errors.Is(sql.ErrNoRows, err) || err.Error() == "cant save user" {
 				//h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrUniqueConstraint)
 				token, err = store.API().GetTokenByUID(store.API().GenerateUID(res.Login, res.Password))
 				result := struct {
