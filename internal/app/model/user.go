@@ -42,5 +42,7 @@ type MobileUser struct {
 
 type TelegramUser struct {
 	TelegramID int64 `json:"telegram_id"`
+	GroupID    int   `json:"group_id"`
+	GroupName  int   `json:"group_name"`
 	ApiRegistration
 }

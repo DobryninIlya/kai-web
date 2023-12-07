@@ -22,7 +22,7 @@ func GetSignForURLParams(params url.Values, secretKey string) string {
 	)
 
 	for key, value := range params {
-		if key == "sign" || key == "secret" || key == "loading" {
+		if key == "sign" || key == "secret" || key == "loading" || key[0] == '_' {
 			continue
 		}
 		query = append(query, queryParameter{key, value[0]})

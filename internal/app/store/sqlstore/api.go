@@ -64,6 +64,8 @@ type ApiRepositoryInterface interface {
 	GetPaymentRequestByUID(uid string) (model.Transaction, error)
 	GetTokenByUID(uid string) (string, error)
 	GenerateUID(login, password string) string
+	GetTelegramUserByID(id int) (model.TelegramUser, error)
+	CheckPremiumByUID(uid string) bool
 }
 
 const (
@@ -402,24 +404,29 @@ func (r ApiRepository) RegistrationUserByPassword(ctx context.Context, client *m
 	uid := r.GenerateUID(login, password)
 	client.UID = uid
 	cookies, err := auth.GetCookiesByPassword(login, password)
+	fmt.Println(client.Password)
 	if err != nil {
-		return "", err
+		log.Println(err.Error())
+		return "", errors.New("incorrect cookies")
 	}
 	auth.SetCookies(uid, cookies)
 	aboutInfo, err := auth.GetAboutInfo(uid, *client)
 	if err != nil {
-		return "", err
+		log.Println(err.Error())
+		return "", errors.New("cant get about info")
 	}
 	client.Name = aboutInfo.FirstName + " " + aboutInfo.LastName + " " + aboutInfo.MiddleName
 	authorization.Encrypt(&client.EncryptedPassword, password)
 	group, err := auth.GetGroupNum(uid, *client)
 	if err != nil {
-		return "", err
+		log.Println(err.Error())
+		return "", errors.New("cant get group number info")
 	}
 	client.Groupname = group
 	tokenStr, err := r.saveMobileUser(ctx, client)
 	if err != nil {
-		return "", err
+		log.Println(err.Error())
+		return "", errors.New("cant save user")
 	}
 	auth.SetCookies(uid, cookies)
 	return tokenStr, nil
@@ -607,4 +614,35 @@ func (r ApiRepository) GetPaymentRequestByUID(uid string) (model.Transaction, er
 		return payment, err
 	}
 	return payment, nil
+}
+
+func (r ApiRepository) GetTelegramUserByID(id int) (model.TelegramUser, error) {
+	var user model.TelegramUser
+	err := r.store.db.QueryRow("SELECT id, groupname, groupid FROM public.tg_users WHERE id=$1",
+		id,
+	).Scan(
+		&user.TelegramID,
+		&user.Groupname,
+		&user.GroupID,
+	)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
+}
+
+func (r ApiRepository) CheckPremiumByUID(uid string) bool {
+	var expireDate time.Time
+	err := r.store.db.QueryRow("SELECT expire_date FROM public.premium_subscribe WHERE uid=$1",
+		uid,
+	).Scan(
+		&expireDate,
+	)
+	if err != nil {
+		return false
+	}
+	if time.Now().After(expireDate) {
+		return false
+	}
+	return true
 }

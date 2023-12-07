@@ -108,7 +108,12 @@ func (a *App) configureRouter() {
 			r.Get("/{groupid}", schedule.NewScheduleHandler(a.store, a.logger))                        // Расписание полностью
 			r.Get("/{groupid}/by_margin", schedule.NewLessonsHandler(a.store, a.logger, a.weekParity)) // На день с отступом margin от текущего дня
 			r.Get("/{groupid}/teachers", schedule.NewTeachersHandler(a.store, a.logger))
-			r.Get("/{groupid}/ical", schedule.NewIcalHandler(a.store, a.logger, a.weekParity)) // Список преподавателей
+			r.Get("/{groupid}/ical", schedule.NewIcalHandler(a.store, a.logger, a.weekParity)) // Импорт файла календаря в виджеты
+		})
+		r.Route("/icalendar", func(r chi.Router) {
+			r.Use(a.parseURLParamsFromTelegramStart)
+			r.Use(a.checkSignTelegram)
+			r.Get("/", schedule.NewIcalHandler(a.store, a.logger, a.weekParity))
 		})
 		r.Route("/groups", func(r chi.Router) {
 			r.Use(a.authorizationByToken)

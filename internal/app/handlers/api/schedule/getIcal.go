@@ -1,7 +1,6 @@
 package schedule
 
 import (
-	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 	h "main/internal/app/handlers/web_app"
 	"main/internal/app/icalendar"
@@ -13,9 +12,10 @@ import (
 func NewIcalHandler(store sqlstore.StoreInterface, log *logrus.Logger, weekParity int) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		const path = "handlers.api.getLesson.NewLessonHandler"
-		groupId := chi.URLParam(r, "groupid")
-		groupIdI, err := strconv.Atoi(groupId)
-		if err != nil || groupId == "" {
+		params := r.URL.Query()
+		userID := params.Get("user_id")
+		userIDI, err := strconv.Atoi(userID)
+		if err != nil || userID == "" {
 			if err != nil {
 				log.Logf(
 					logrus.ErrorLevel,
@@ -27,26 +27,34 @@ func NewIcalHandler(store sqlstore.StoreInterface, log *logrus.Logger, weekParit
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		params := r.URL.Query()
 		margin := params.Get("margin")
 		marginI := 0
 		if margin != "" {
 			marginI, err = strconv.Atoi(margin)
 		}
-		if groupIdI <= 0 {
+		if userIDI <= 0 {
 			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
 			return
 		}
-		//lessons, _, err := store.Schedule().GetCurrentDaySchedule(groupIdI, marginI, weekParity)
-		//if err != nil {
-		//	log.Logf(
-		//		logrus.ErrorLevel,
-		//		"%s : Ошибка получения текущего расписания на день : %v",
-		//		path,
-		//		err.Error(),
-		//	)
-		//}
-		icalFile, err := icalendar.GenerateICalendar(store.Schedule(), groupIdI, marginI, weekParity, 10)
+		if !store.API().CheckPremiumByUID("tg" + userID) {
+			if marginI > 3 {
+				h.ErrorHandlerAPI(w, r, http.StatusForbidden, h.ErrForbidden)
+				return
+			}
+		}
+
+		user, err := store.API().GetTelegramUserByID(userIDI)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения пользователя: %v",
+				path,
+				err.Error(),
+			)
+			h.ErrorHandlerAPI(w, r, http.StatusBadRequest, h.ErrBadID)
+			return
+		}
+		icalFile, err := icalendar.GenerateICalendar(store.Schedule(), user.GroupID, marginI, weekParity, marginI)
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,
