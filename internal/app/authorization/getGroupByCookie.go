@@ -1,6 +1,7 @@
 package authorization
 
 import (
+	"fmt"
 	"github.com/PuerkitoBio/goquery"
 	"io"
 	"main/internal/app/model"
@@ -10,7 +11,7 @@ import (
 )
 
 func GetGroupRequest(cookies string) (*http.Request, error) {
-	req, err := http.NewRequest("GET", MyGroupPage, nil)
+	req, err := http.NewRequest("GET", MyJobForm, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -38,21 +39,25 @@ func (r *Authorization) GetGroupNum(uid string, apiClient model.ApiRegistration)
 	return ParseGroupNum(resp.Body)
 }
 
-func ParseGroupNum(body io.ReadCloser) (int, error) {
-	defer body.Close()
+func ParseGroupNum(body io.Reader) (int, error) {
 	doc, err := goquery.NewDocumentFromReader(body)
 	if err != nil {
 		return 0, err
 	}
-	defer body.Close()
-	input := doc.Find("input.field[name='_myGroup_WAR_myGroup10_orgUnit']")
-	groupElement := input.Last()
-	group := groupElement.Parent().Text()
-	group = strings.ReplaceAll(group, "\n", "")
-	group = strings.ReplaceAll(group, "\t", "")
-	groupNum, err := strconv.Atoi(group)
+
+	// Find the row with the group information
+	row := doc.Find("tr:contains('Группа №')")
+	if row.Length() == 0 {
+		return 0, fmt.Errorf("Group information not found")
+	}
+
+	// Extract the group number
+	groupNum := row.Find("td.new_white_td1").Text()
+	groupNum = strings.TrimSpace(groupNum)
+	groupNumInt, err := strconv.Atoi(groupNum)
 	if err != nil {
 		return 0, err
 	}
-	return groupNum, nil
+
+	return groupNumInt, nil
 }

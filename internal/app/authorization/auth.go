@@ -19,6 +19,7 @@ const (
 	AboutPage       = "https://kai.ru/group/guest/common/about-me"
 	AttestationPage = "https://kai.ru/group/guest/student/attestacia"
 	MyGroupPage     = "https://kai.ru/group/guest/student/moa-gruppa"
+	MyJobForm       = "https://kai.ru/group/guest/job-form"
 )
 
 var (

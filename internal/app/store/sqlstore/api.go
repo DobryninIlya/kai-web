@@ -404,7 +404,6 @@ func (r ApiRepository) RegistrationUserByPassword(ctx context.Context, client *m
 	uid := r.GenerateUID(login, password)
 	client.UID = uid
 	cookies, err := auth.GetCookiesByPassword(login, password)
-	fmt.Println(client.Password)
 	if err != nil {
 		log.Println(err.Error())
 		return "", errors.New("incorrect cookies")
