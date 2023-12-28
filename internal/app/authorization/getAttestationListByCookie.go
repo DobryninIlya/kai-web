@@ -49,7 +49,8 @@ func parseAttestationTable(body io.ReadCloser) ([]model.Discipline, error) {
 				discipline.Number, _ = strconv.Atoi(cell.Text())
 			case 1:
 				discipline.Name = cell.Find("a").Text()
-			case 2, 3, 4, 5, 6, 7, 8, 9, 10, 11:
+			//case 2, 3, 4, 5, 6, 7, 8, 9, 10, 11:
+			case 2, 4, 6, 8, 10: // TODO убрать через 1
 				assessment := model.Assessment{}
 				assessment.YourScore, _ = strconv.Atoi(cell.Text())
 				assessment.MaxScore, _ = strconv.Atoi(cell.Next().Text())

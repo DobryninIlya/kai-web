@@ -178,7 +178,7 @@ func (r ApiRepository) CheckToken(tokenStr string) (model.ApiRegistration, error
 	var name, login sql.NullString
 	var groupname sql.NullInt32
 	err := r.store.db.QueryRow(
-		"SELECT c.uid, c.create_date, mu.name, mu.groupname, pw.login, pw.encrypted_password FROM public.api_clients AS c JOIN public.mobile_users AS mu ON c.uid = mu.uid JOIN public.mobile_user_password AS pw ON c.uid = pw.uid WHERE token=$1",
+		"SELECT c.uid, c.create_date, TRIM(TRAILING ' ' FROM mu.name) AS name, mu.groupname, TRIM(TRAILING ' ' FROM pw.login) AS login, pw.encrypted_password FROM public.api_clients AS c JOIN public.mobile_users AS mu ON c.uid = mu.uid JOIN public.mobile_user_password AS pw ON c.uid = pw.uid WHERE token=$1",
 		tokenStr,
 	).Scan(&client.UID, &client.CreateDate, &name, &groupname, &login, &client.EncryptedPassword)
 	client.Login = login.String

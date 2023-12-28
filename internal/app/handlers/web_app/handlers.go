@@ -41,7 +41,8 @@ func Respond(w http.ResponseWriter, r *http.Request, code int, data interface{})
 			enc := json.NewEncoder(w)
 			enc.SetIndent("", "  ")
 			enc.Encode(data)
-			w.Header().Set("Contsent-Type", "application/json")
+
+			w.Header().Set("Content-Type", "application/json")
 			return
 		}
 		w.Write(byteData)

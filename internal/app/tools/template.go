@@ -494,7 +494,7 @@ func getAttestationList(disciplines []model.Discipline, tgID, sign string) []byt
 	}
 	for i, discipline := range disciplines {
 		urlPath := fmt.Sprintf("%v?tg_id=%v&sign=%v", i, tgID, sign)
-		result += fmt.Sprintf(tmp, discipline.Name, discipline.FinalGrade, urlPath)
+		result += fmt.Sprintf(tmp, discipline.Name, discipline.PreliminaryGrade, urlPath)
 	}
 	return []byte(result)
 }
@@ -515,7 +515,7 @@ func GetAttestationElementPage(disciplines model.Discipline) []byte {
 	if reflect.DeepEqual(disciplines, model.Discipline{}) || err != nil {
 		return []byte(noData)
 	}
-	result := fmt.Sprintf(tmp, disciplines.FinalGrade, disciplines.Name,
+	result := fmt.Sprintf(tmp, disciplines.PreliminaryGrade, disciplines.Name,
 		disciplines.Assessments[0].YourScore,
 		disciplines.Assessments[0].YourScore, disciplines.Assessments[0].MaxScore,
 		disciplines.Assessments[1].YourScore,
@@ -526,7 +526,7 @@ func GetAttestationElementPage(disciplines model.Discipline) []byte {
 		disciplines.Assessments[3].YourScore, disciplines.Assessments[3].MaxScore,
 		disciplines.Assessments[4].YourScore,
 		disciplines.Assessments[4].YourScore, disciplines.Assessments[4].MaxScore,
-		disciplines.TraditionalGrade,
+		disciplines.PreliminaryGrade,
 	)
 	return []byte(result)
 }
