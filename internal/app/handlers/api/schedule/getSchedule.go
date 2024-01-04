@@ -48,10 +48,20 @@ func NewScheduleHandler(store sqlstore.StoreInterface, log *logrus.Logger) func(
 				err.Error(),
 			)
 		}
+		resultLessons, err := store.Schedule().GetScheduleWithDeletedLessons(lessons, groupIdI)
+		if err != nil {
+			log.Logf(
+				logrus.ErrorLevel,
+				"%s : Ошибка получения расписания группы: %v",
+				path,
+				err.Error(),
+			)
+			return
+		}
 		result := struct {
 			Lessons model.Schedule `json:"schedule"`
 		}{
-			lessons,
+			resultLessons,
 		}
 		h.RespondAPI(w, r, http.StatusOK, result)
 	}

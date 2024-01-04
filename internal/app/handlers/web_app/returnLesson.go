@@ -26,7 +26,7 @@ func NewReturnLessonHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 			ErrorHandler(w, r, http.StatusBadRequest, ErrBadPayload)
 			return
 		}
-		user, err := store.User().Find(uIdI)
+		_, err = store.User().Find(uIdI)
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,
@@ -46,7 +46,7 @@ func NewReturnLessonHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 			ErrorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не вернуть занятие в расписание: %v", err)))
 			return
 		}
-		_, err = store.Schedule().ReturnDeletedLesson(*user, lessonIdI, uniqString)
+		_, err = store.Schedule().ReturnDeletedLesson(lessonIdI, uniqString)
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,

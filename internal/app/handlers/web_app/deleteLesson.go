@@ -48,7 +48,7 @@ func NewDeleteLessonHandler(store sqlstore.StoreInterface, log *logrus.Logger) f
 			ErrorHandler(w, r, http.StatusForbidden, errors.New(fmt.Sprintf("Не удалось пометить занятие как удаленное: %v", err)))
 			return
 		}
-		_, err = store.Schedule().MarkDeletedLesson(*user, lessonIdI, uniqString)
+		_, err = store.Schedule().MarkDeletedLesson(strconv.Itoa(user.ID), user.Group, lessonIdI, uniqString, "vk")
 		if err != nil {
 			log.Logf(
 				logrus.ErrorLevel,

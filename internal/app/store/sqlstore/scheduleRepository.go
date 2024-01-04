@@ -54,13 +54,13 @@ func (r ScheduleRepository) GetIdByGroup(id int) (int, error) {
 	return 0, errors.New("Расписание не найдено для группы: " + strconv.Itoa(id))
 }
 
-func (r ScheduleRepository) MarkDeletedLesson(user model.User, lessonId int, uniqString string) (int, error) {
+func (r ScheduleRepository) MarkDeletedLesson(creator string, groupid int, lessonId int, uniqString string, platform string) (int, error) {
 	var result int
 	if err := r.store.db.QueryRow(
 		"INSERT INTO public.deleted_lessons(groupid, creator, creator_platform, lesson_id, date, uniqstring) VALUES ($1, $2, $3, $4, NOW(), $5) RETURNING id;",
-		user.Group,
-		user.ID,
-		"vk",
+		groupid,
+		creator,
+		platform,
 		lessonId,
 		uniqString,
 	).Scan(&result); err != nil {
@@ -69,7 +69,7 @@ func (r ScheduleRepository) MarkDeletedLesson(user model.User, lessonId int, uni
 	return result, nil
 }
 
-func (r ScheduleRepository) ReturnDeletedLesson(user model.User, lessonId int, uniqString string) (int, error) {
+func (r ScheduleRepository) ReturnDeletedLesson(lessonId int, uniqString string) (int, error) {
 	var result int
 	if err := r.store.db.QueryRow(
 		"DELETE FROM public.deleted_lessons WHERE lesson_id=$1 AND uniqstring=$2 RETURNING id;",
@@ -246,15 +246,41 @@ func (r ScheduleRepository) GetCurrentDaySchedule(groupId int, margin int, weekP
 
 func GetScheduleStruct(body []byte) model.Schedule {
 	re := regexp.MustCompile("\\s+")
+	//re := regexp.MustCompile("\\s{2,}\"")
+	//re := regexp.MustCompile("\\s+(?=\").|(?<=\\s)\"")
 	s := string(bytes.TrimSpace(body))
-	s = re.ReplaceAllString(s, " ")
+	//s := string(bytes.TrimRight(body, " "))
+	s = re.ReplaceAllString(s, ` `)
 	body = []byte(s)
 	var shed model.Schedule
 	err := json.Unmarshal(body, &shed)
 	if err != nil {
 		log.Println(err)
 	}
+	val := reflect.ValueOf(&shed).Elem()
+	trimRightSpaces(val)
 	return shed
+}
+
+func trimRightSpaces(value reflect.Value) {
+	switch value.Kind() {
+	case reflect.Ptr:
+		trimRightSpaces(value.Elem())
+	case reflect.Struct:
+		for i := 0; i < value.NumField(); i++ {
+			field := value.Field(i)
+			trimRightSpaces(field)
+		}
+	case reflect.Slice:
+		for i := 0; i < value.Len(); i++ {
+			trimRightSpaces(value.Index(i))
+		}
+	case reflect.String:
+		if value.CanSet() {
+			newValue := strings.TrimRight(value.String(), " ")
+			value.SetString(newValue)
+		}
+	}
 }
 
 func (r ScheduleRepository) GetScheduleByGroup(group int) (model.Schedule, error) {
@@ -317,4 +343,42 @@ func (r ScheduleRepository) GetTeacherListStruct(groupId int) ([]model.Prepod, e
 	}
 
 	return prepodList, nil
+}
+
+func (r ScheduleRepository) GetScheduleWithDeletedLessons(schedule model.Schedule, groupId int) (model.Schedule, error) {
+	deletedLessons, err := r.GetDeletedLessonsByGroup(groupId)
+	if err != nil {
+		return model.Schedule{}, err
+	}
+	day1, _ := checkDeletedLessonsInDay(schedule.Day1, deletedLessons)
+	schedule.Day1 = day1
+	day2, _ := checkDeletedLessonsInDay(schedule.Day2, deletedLessons)
+	schedule.Day2 = day2
+	day3, _ := checkDeletedLessonsInDay(schedule.Day3, deletedLessons)
+	schedule.Day3 = day3
+	day4, _ := checkDeletedLessonsInDay(schedule.Day4, deletedLessons)
+	schedule.Day4 = day4
+	day5, _ := checkDeletedLessonsInDay(schedule.Day5, deletedLessons)
+	schedule.Day5 = day5
+	day6, _ := checkDeletedLessonsInDay(schedule.Day6, deletedLessons)
+	schedule.Day6 = day6
+
+	return schedule, nil
+}
+
+func checkDeletedLessonsInDay(lessons []model.Lesson, deletedLessons []model.DeletedLessonsMin) ([]model.Lesson, error) {
+	for i, lesson := range lessons {
+		lessonType := strings.TrimSpace(lesson.DisciplType)
+		uniqstring := lessonType + "_" + strings.TrimSpace(lesson.DayTime) + "_" + strings.TrimSpace(lesson.DayDate)
+		disciplNum, err := strconv.Atoi(lesson.DisciplNum)
+		if err != nil {
+			return nil, err
+		}
+		for _, deletedLesson := range deletedLessons {
+			if deletedLesson.LessonId == disciplNum && strings.TrimSpace(deletedLesson.Uniqstring) == uniqstring {
+				lessons[i].MarkedDeleted = true
+			}
+		}
+	}
+	return lessons, nil
 }

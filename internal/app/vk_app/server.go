@@ -96,11 +96,11 @@ func (a *App) configureRouter() {
 		})
 		r.Post("/registration", auth.NewRegistrationByPasswordHandler(a.ctx, a.store, a.logger, a.auth)) // Регистрация по логину и паролю
 		r.Route("/auth", func(r chi.Router) {
-			r.Get("/personal", auth.NewAboutInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))              // Номер группы")
-			r.Get("/profile_photo", auth.NewProfilePhotoURLHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))   // Номер группы")
-			r.Post("/profile_photo", auth.NewPostProfilePhotoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth)) // Номер группы")
-			r.Get("/group", auth.NewGroupInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))                 // Номер группы")
-			r.Get("/attestation", auth.NewAttestationHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))         // Номер группы")
+			r.Get("/personal", auth.NewAboutInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))
+			r.Get("/profile_photo", auth.NewProfilePhotoURLHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))
+			r.Post("/profile_photo", auth.NewPostProfilePhotoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))
+			r.Get("/group", auth.NewGroupInfoHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))
+			r.Get("/attestation", auth.NewAttestationHandler(a.ctx, a.store, a.logger, a.firebaseAPI, a.auth))
 		})
 		r.Get("/week", api.NewWeekParityHandler(a.weekParity)) // Текущая четность недели
 		r.Route("/schedule", func(r chi.Router) {
@@ -109,6 +109,7 @@ func (a *App) configureRouter() {
 			r.Get("/{groupid}/by_margin", schedule.NewLessonsHandler(a.store, a.logger, a.weekParity)) // На день с отступом margin от текущего дня
 			r.Get("/{groupid}/teachers", schedule.NewTeachersHandler(a.store, a.logger))
 			r.Get("/{groupid}/ical", schedule.NewIcalHandler(a.store, a.logger, a.weekParity)) // Импорт файла календаря в виджеты
+			r.Get("/delete_lesson", auth.NewDeleteLessonHandler(a.store, a.logger))
 		})
 		r.Route("/icalendar", func(r chi.Router) {
 			r.Use(a.parseURLParamsFromTelegramStart)
