@@ -6,6 +6,7 @@ import (
 	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 	"log"
+	"main/internal/app/alice"
 	"main/internal/app/firebase"
 	"main/internal/app/migrations"
 	"main/internal/app/store/sqlstore"
@@ -19,10 +20,11 @@ func Start(ctx context.Context, config *Config) (*App, error) {
 	store := sqlstore.New(db)
 	migrations.MakeMigrations(db, logrus.New())
 	firebaseAPI, err := firebase.NewFirebaseAPI(config.FirebaseServiceAccountKeyPath, config.FirebaseProjectID)
+	alice := alice.NewAlice(ctx, logrus.New())
 	if err != nil {
 		log.Fatalf("Ошибка инициализации Firebase API: %v. Проверьте, находится ли serviceAccountKey.json в папке configs.", err.Error())
 	}
-	srv := newApp(ctx, &store, config.BindAddr, config.Chetnost, firebaseAPI, *config)
+	srv := newApp(ctx, &store, config.BindAddr, config.Chetnost, firebaseAPI, *config, alice)
 	//return http.ListenAndServe(config.BindAddr, srv)
 	return srv, nil
 }

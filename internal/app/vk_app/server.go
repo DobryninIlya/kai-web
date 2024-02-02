@@ -5,6 +5,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/sirupsen/logrus"
 	"log"
+	"main/internal/app/alice"
 	"main/internal/app/authorization"
 	"main/internal/app/firebase"
 	api "main/internal/app/handlers/api"
@@ -14,6 +15,7 @@ import (
 	"main/internal/app/handlers/api/schedule"
 	task "main/internal/app/handlers/api/tasks"
 	"main/internal/app/handlers/web_app"
+	aliceHandler "main/internal/app/handlers/yandex"
 	"main/internal/app/mailer"
 	"main/internal/app/openai"
 	"main/internal/app/store/influxdb"
@@ -46,9 +48,10 @@ type App struct {
 	openai      *openai.ChatGPT
 	auth        authorization.AuthorizationInterface
 	pay         payments.Yokassa
+	alice       *alice.Alice
 }
 
-func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI, config Config) *App {
+func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string, weekParity int, firebaseAPI *firebase.FirebaseAPI, config Config, aliceProcessor *alice.Alice) *App {
 	router := chi.NewRouter()
 	server := &http.Server{
 		Addr:    bindAddr,
@@ -69,6 +72,7 @@ func newApp(ctx context.Context, store sqlstore.StoreInterface, bindAddr string,
 		openai:      openai.NewChatGPT(ctx, logger, "gpt-3.5-turbo", 0.7, "user"),
 		auth:        authorization.NewAuthorization(logger),
 		pay:         payments.NewYokassa(config.ShopID, config.APIKey, logger),
+		alice:       aliceProcessor,
 	}
 	a.openai.WithPrompt(openai.NEWS_PROMPT)
 	a.configureRouter()
@@ -213,6 +217,10 @@ func (a *App) configureRouter() {
 		r.Get("/done/{payment_id}", pay_handler.NewDonePaymentPageHandler(a.logger, a.store, a.pay))
 		r.Post("/notifications", pay_handler.NewNotificationsPaymentRequestHandler(a.logger, a.store, a.pay))
 		r.Get("/subscribe", pay_handler.NewMakePaymentPageHandler())
+	})
+	a.router.Route("/yandex", func(r chi.Router) {
+		r.Use(a.parseURLParamsFromTelegramStart)
+		r.Get("/alice", aliceHandler.NewAliceHandler(a.ctx, a.store, a.logger, a.alice)) //TODO Здесь гейтвей для Алисы
 	})
 	a.router.Handle("/static/css/*", http.StripPrefix("/static/css/", cssHandler(http.FileServer(http.Dir(filepath.Join("internal", "app", "templates", "css"))))))
 	a.router.Handle("/static/js/*", http.StripPrefix("/static/js/", http.FileServer(http.Dir(filepath.Join("internal", "app", "templates", "js")))))
